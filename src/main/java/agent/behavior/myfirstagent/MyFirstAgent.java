@@ -43,9 +43,8 @@ public class MyFirstAgent extends Behavior {
                 if (perception.getCellPerceptionOnRelPos(x, y).isWalkable()) {
                     agentAction.step(agentState.getX() + x, agentState.getY() + y);
                     return;
-                }
-                else if (!agentState.hasCarry() && perception.getCellPerceptionOnRelPos(x, y).containsPacket()) {
-                    agentAction.pickPacket(agentState.getX()+x, agentState.getY()+y);
+                } else if (!agentState.hasCarry() && perception.getCellPerceptionOnRelPos(x, y).containsPacket()) {
+                    agentAction.pickPacket(agentState.getX() + x, agentState.getY() + y);
                     return;
                 }
             }

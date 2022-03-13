@@ -64,14 +64,15 @@ public class MyFirstAgent extends Behavior {
                     return;
                 }
             }
-        } else if (agentState.hasCarry() && agentState.seesDestination()) {
+        } else if (agentState.hasCarry() && agentState.seesDestination(agentState.getCarry().get().getColor())) {
             int man_dist = Integer.MAX_VALUE;
+            var packetColor = agentState.getCarry().get().getColor();
             Coordinate closestDestination = null;
             Coordinate move = new Coordinate(0, 0);
             for (int i = offsetX; i < offsetX + width; i++) {
                 for (int j = offsetY; j < offsetY + height; j++) {
                     if (perception.getCellPerceptionOnAbsPos(i, j) != null
-                            && perception.getCellPerceptionOnAbsPos(i, j).containsAnyDestination()) {
+                            && perception.getCellPerceptionOnAbsPos(i, j).containsDestination(packetColor)) {
                         int d = Math.abs(i - agentState.getX()) + Math.abs(j - agentState.getY());
                         if (d < man_dist) {
                             man_dist = d;

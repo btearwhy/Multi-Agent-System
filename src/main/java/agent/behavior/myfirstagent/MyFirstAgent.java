@@ -31,7 +31,7 @@ public class MyFirstAgent extends Behavior {
         // find the closest packet using manhattan distance and move towards it
         if (!agentState.hasCarry() && agentState.seesPacket()) {
             int man_dist = Integer.MAX_VALUE;
-            Coordinate closestPacket;
+            Coordinate closestPacket = null;
             Coordinate move = new Coordinate(0,0);
             for (int i = offsetX; i < offsetX + width; i++) {
                 for (int j = offsetY; j < offsetY + height; j++) {
@@ -48,11 +48,52 @@ public class MyFirstAgent extends Behavior {
                     }
                 }
             }
-            // take the move
-            if (perception.getCellPerceptionOnRelPos(move.getX(), move.getY()) != null
-                    && perception.getCellPerceptionOnRelPos(move.getX(), move.getY()).isWalkable()) {
-                agentAction.step(agentState.getX() + move.getX(), agentState.getY() + move.getY());
+            if (closestPacket != null
+                    && Math.abs(closestPacket.getX() - agentState.getX()) <= 1
+                    && Math.abs(closestPacket.getY() - agentState.getY()) <= 1) {
+                // packet is neighbor
+                agentAction.pickPacket(closestPacket.getX(), closestPacket.getY());
                 return;
+            } else {
+                // take the move
+                if (perception.getCellPerceptionOnRelPos(move.getX(), move.getY()) != null
+                        && perception.getCellPerceptionOnRelPos(move.getX(), move.getY()).isWalkable()) {
+                    agentAction.step(agentState.getX() + move.getX(), agentState.getY() + move.getY());
+                    return;
+                }
+            }
+        } else if (agentState.hasCarry() && agentState.seesDestination()) {
+            int man_dist = Integer.MAX_VALUE;
+            Coordinate closestDestination = null;
+            Coordinate move = new Coordinate(0,0);
+            for (int i = offsetX; i < offsetX + width; i++) {
+                for (int j = offsetY; j < offsetY + height; j++) {
+                    if (perception.getCellPerceptionOnAbsPos(i, j) != null
+                            && perception.getCellPerceptionOnAbsPos(i, j).containsAnyDestination()) {
+                        int d = Math.abs(i - perception.getSelfX()) + Math.abs(j - perception.getSelfY());
+                        if (d < man_dist) {
+                            man_dist = d;
+                            closestDestination = new Coordinate(i, j);
+                            move = new Coordinate(
+                                    (int) Math.signum(i - perception.getSelfX()),
+                                    (int) Math.signum(j - perception.getSelfY()));
+                        }
+                    }
+                }
+            }
+            if (closestDestination != null
+                    && Math.abs(closestDestination.getX() - agentState.getX()) <= 1
+                    && Math.abs(closestDestination.getY() - agentState.getY()) <= 1){
+                // Destination is neighbor
+                agentAction.putPacket(closestDestination.getX(), closestDestination.getY());
+                return;
+            } else {
+                // take the move
+                if (perception.getCellPerceptionOnRelPos(move.getX(), move.getY()) != null
+                        && perception.getCellPerceptionOnRelPos(move.getX(), move.getY()).isWalkable()) {
+                    agentAction.step(agentState.getX() + move.getX(), agentState.getY() + move.getY());
+                    return;
+                }
             }
         } else {
             // take a random move

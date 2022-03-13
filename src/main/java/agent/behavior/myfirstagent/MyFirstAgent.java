@@ -9,7 +9,6 @@ import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
 import environment.Coordinate;
-import org.checkerframework.checker.units.qual.C;
 
 public class MyFirstAgent extends Behavior {
 
@@ -32,7 +31,7 @@ public class MyFirstAgent extends Behavior {
         if (!agentState.hasCarry() && agentState.seesPacket()) {
             int man_dist = Integer.MAX_VALUE;
             Coordinate closestPacket = null;
-            Coordinate move = new Coordinate(0,0);
+            Coordinate move = new Coordinate(0, 0);
             for (int i = offsetX; i < offsetX + width; i++) {
                 for (int j = offsetY; j < offsetY + height; j++) {
                     if (perception.getCellPerceptionOnAbsPos(i, j) != null
@@ -65,7 +64,7 @@ public class MyFirstAgent extends Behavior {
         } else if (agentState.hasCarry() && agentState.seesDestination()) {
             int man_dist = Integer.MAX_VALUE;
             Coordinate closestDestination = null;
-            Coordinate move = new Coordinate(0,0);
+            Coordinate move = new Coordinate(0, 0);
             for (int i = offsetX; i < offsetX + width; i++) {
                 for (int j = offsetY; j < offsetY + height; j++) {
                     if (perception.getCellPerceptionOnAbsPos(i, j) != null
@@ -83,7 +82,7 @@ public class MyFirstAgent extends Behavior {
             }
             if (closestDestination != null
                     && Math.abs(closestDestination.getX() - agentState.getX()) <= 1
-                    && Math.abs(closestDestination.getY() - agentState.getY()) <= 1){
+                    && Math.abs(closestDestination.getY() - agentState.getY()) <= 1) {
                 // Destination is neighbor
                 agentAction.putPacket(closestDestination.getX(), closestDestination.getY());
                 return;

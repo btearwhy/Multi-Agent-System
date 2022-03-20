@@ -1,0 +1,77 @@
+description "Change among different behaviours"
+
+
+# ------------------------------------------------
+# The amount of the behavior states the agent has
+# ------------------------------------------------
+nbStates 6
+
+
+# Enumeration of the behavior agent states
+1 agent.behavior.basic.DoNothing
+nbArgs 0
+2 agent.behavior.basic.MoveToPacket
+nbArgs 0
+3 agent.behavior.wander.Wander
+nbArgs 0
+4 agent.behavior.basic.MoveToDestination
+nbArgs 0
+5 agent.behavior.basic.Picking
+nbArgs 0
+6 agent.behavior.basic.Delivering
+nbArgs 0
+
+
+# ---------------------------------------------------------------
+# The amount of behavior changes for the agent
+#  (only necessary when more than 1 agent behavior is specified)
+# ---------------------------------------------------------------
+nbChanges 8
+
+agent.behavior.basic.change.ConditionOne
+nbArgs 0
+priority 0
+source 1
+target 2
+
+agent.behavior.basic.change.ConditionTwo
+nbArgs 0
+priority 0
+source 1
+target 3
+
+agent.behavior.basic.change.ConditionThree
+nbArgs 0
+priority 0
+source 1
+target 4
+
+agent.behavior.basic.change.ConditionFour
+nbArgs 0
+priority 0
+source 2
+target 5
+
+agent.behavior.basic.change.ConditionFive
+nbArgs 0
+priority 0
+source 4
+target 6
+
+agent.behavior.basic.change.ConditionSix
+nbArgs 0
+priority 0
+source 5
+target 1
+
+agent.behavior.basic.change.ConditionSeven
+nbArgs 0
+priority 0
+source 6
+target 1
+
+agent.behavior.basic.change.ConditionEight
+nbArgs 0
+priority 0
+source 3
+target 1

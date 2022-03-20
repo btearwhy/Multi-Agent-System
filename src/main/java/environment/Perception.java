@@ -107,6 +107,22 @@ public class Perception {
     }
 
 
+    public int getPerceptionSize(){
+        return width * height;
+    }
+
+    public List<CellPerception> getAllCells(){
+        List<CellPerception> cellPerceptions = new ArrayList<>();
+        for (int i = 0; i < cells.length; i++){
+            for(int j = 0; j < cells[i].length; j++){
+                if(cells[i][j] != null){
+                    cellPerceptions.add(cells[i][j]);
+                }
+            }
+        }
+        return cellPerceptions;
+    }
+
 
     /**
      *  Returns all Representations that are situated right next to the agent that issued this

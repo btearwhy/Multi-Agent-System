@@ -56,7 +56,6 @@ public class ActiveItemContainer {
             this.logger.fine(String.format("Nb AgentImps = %d", agentIds.size()));
 
             String behaviorFile = Variables.IMPLEMENTATIONS_PATH + behavior + ".txt";
-
             this.logger.fine(String.format("Behavior file %s opened.", behaviorFile));
             for (ActiveItemID id : agentIds) {
                 AgentImp imp = new FileAgentImp(id, behaviorFile, eventBus);

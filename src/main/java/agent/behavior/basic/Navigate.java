@@ -16,6 +16,7 @@ import environment.Perception;
 import environment.world.packet.PacketRep;
 
 import java.awt.*;
+import java.util.Random;
 
 /**
  * @author     ：mmzs
@@ -43,22 +44,35 @@ public class Navigate extends Behavior {
         if(previous.endsWith(";")) Utils.updatePreviousDistanceFragment(agentState, String.valueOf(Perception.manhattanDistance(x, y, goal.getX(), goal.getY())));
         if(Integer.valueOf(previous.substring(previous.indexOf(";") + 1)) >= Perception.manhattanDistance(x, y, goal.getX(), goal.getY())){
             Utils.updatePreviousDistanceFragment(agentState, String.valueOf(Perception.manhattanDistance(x, y, goal.getX(), goal.getY())));
-            dir = Utils.getClockwiseDirection(agentState, dir);
-            Utils.step(agentState, agentAction, x + Utils.moves.get(dir).getX(), y + Utils.moves.get(dir).getY());
+            collideHandle(agentState, agentAction, dir);
         }
         else{
-            Coordinate preCor = Utils.getCoordinateFromString(previous.substring(0, previous.indexOf(";")));
-            int prevDir = Utils.getDir(preCor.getX(), preCor.getY(), agentState.getX(), agentState.getY());
+            int prevDir = Utils.getPreviousDir(agentState);
             int checkDir = (prevDir + 7) % 8;
             if(agentState.getPerception().getCellPerceptionOnAbsPos(x + Utils.moves.get(checkDir).getX(), y + Utils.moves.get(checkDir).getY()) == null ||
                     !agentState.getPerception().getCellPerceptionOnAbsPos(x + Utils.moves.get(checkDir).getX(), y + Utils.moves.get(checkDir).getY()).isWalkable()){
-                dir = Utils.getClockwiseDirection(agentState, prevDir);
-                Utils.step(agentState, agentAction, x + Utils.moves.get(dir).getX(), y + Utils.moves.get(dir).getY());
+                collideHandle(agentState, agentAction, prevDir);
             }
             else{
-                Utils.step(agentState, agentAction, x + Utils.moves.get(checkDir).getX(), y + Utils.moves.get(checkDir).getY());
+                collideHandle(agentState, agentAction, checkDir);
+                Utils.updatePreviousDir(agentState, (checkDir + 7) % 8);
             }
         }
         Utils.updateMemoryFragment(agentState);
+    }
+
+    private void collideHandle(AgentState agentState, AgentAction agentAction, int intendedDir){
+        int x = agentState.getX();
+        int y = agentState.getY();
+        if(agentState.getPerception().getCellPerceptionOnAbsPos(x + Utils.moves.get(intendedDir).getX(), y + Utils.moves.get(intendedDir).getY()) != null &&
+                agentState.getPerception().getCellPerceptionOnAbsPos(x + Utils.moves.get(intendedDir).getX(), y + Utils.moves.get(intendedDir).getY()).containsAgent()) {
+            Random ra = new Random();
+            if (ra.nextInt(2) < 1) {
+                agentAction.skip();
+                return;
+            }
+        }
+        intendedDir = Utils.getClockwiseDirection(agentState, intendedDir);
+        Utils.step(agentState, agentAction, x + Utils.moves.get(intendedDir).getX(), y + Utils.moves.get(intendedDir).getY());
     }
 }

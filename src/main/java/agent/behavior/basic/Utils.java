@@ -140,10 +140,10 @@ public class Utils {
     }
 
 
-    public static void updatePreviousCoordinate(AgentState agentState, String s){
+    public static void updatePreviousDir(AgentState agentState, int dir){
         String pre = agentState.getMemoryFragment("previous");
         String data = pre.substring(pre.indexOf(";"));
-        data = s + data;
+        data = dir + data;
         updatePreviousMemoryFragment(agentState, data);
     }
     public static void updatePreviousMemoryFragment(AgentState agentState, String s){
@@ -151,8 +151,13 @@ public class Utils {
         agentState.addMemoryFragment("previous", s);
     }
 
+    public static int getPreviousDir(AgentState agentState){
+        String previous = agentState.getMemoryFragment("previous");
+        return Integer.valueOf(previous.substring(0, previous.indexOf(";")));
+    }
     public static void step(AgentState agentState, AgentAction agentAction, int x, int y){
-        updatePreviousCoordinate(agentState, agentState.getX() + "," + agentState.getY());
+        int prevDir = getDir(agentState.getX(), agentState.getY(), x, y);
+        updatePreviousDir(agentState, prevDir);
         if(!agentState.getMemoryFragment("goal").equals("") && agentState.getMemoryFragment("previous").endsWith(";")){
             Coordinate goal = getCoordinateFromGoal(agentState.getMemoryFragment("goal"));
             updatePreviousDistanceFragment(agentState, String.valueOf(Perception.manhattanDistance(goal.getX(), goal.getY(), agentState.getX(), agentState.getY())));

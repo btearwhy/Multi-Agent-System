@@ -8,8 +8,6 @@ package agent.behavior.basic.change;/**
 
 import agent.behavior.BehaviorChange;
 import agent.behavior.basic.Utils;
-import environment.Coordinate;
-import environment.Perception;
 
 /**
  * @author     ：mmzs
@@ -28,13 +26,13 @@ public class FromOperateToWander extends BehaviorChange {
         hasPacket = getAgentState().hasCarry();
         String goal = Utils.searchGoal(getAgentState());
         if(goal != null) hasGoal = true;
+        else hasGoal = false;
     }
 
 
     @Override
     public boolean isSatisfied(){
         if(!hasGoal && !hasPacket){
-            Coordinate cor = Utils.getCoordinateFromGoal(getAgentState().getMemoryFragment("goal"));
             Utils.updatePreviousDistanceFragment(getAgentState(), "0");
         }
         return !hasGoal && !hasPacket;

@@ -39,6 +39,7 @@ public class FromWanderToOperate extends BehaviorChange {
             this.packetOrGenerator = Utils.getTargetFromGoal(goal).startsWith("packet") || Utils.getTargetFromGoal(goal).startsWith("generator");
             this.inReach = Utils.isInReach(this.getAgentState(), Utils.getCoordinateFromGoal(goal));
         }
+        else hasGoal = false;
     }
 
 

@@ -20,7 +20,7 @@ import environment.Perception;
  */
 
 public class FromOperateToNavigate extends BehaviorChange {
-    private boolean hasGoal;
+    private boolean hasGoal = false;
 
     @Override
     public void updateChange(){
@@ -35,6 +35,7 @@ public class FromOperateToNavigate extends BehaviorChange {
             hasGoal = true;
             Utils.setGoal(getAgentState(), goal);
         }
+        else hasGoal = false;
     }
 
 

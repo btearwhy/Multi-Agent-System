@@ -48,13 +48,11 @@ public class Wander extends Behavior {
             Random ra = new Random();
             dir = ra.nextInt(8);
             dir = Utils.getClockwiseDirection(agentState, dir);
-            Utils.updatePreviousCoordinate(agentState, (agentState.getX() - 1) + "," + agentState.getY());
+            Utils.updatePreviousDir(agentState, dir);
             Utils.updatePreviousDistanceFragment(agentState, "1");
         }
         else{
-            String previous = agentState.getMemoryFragment("previous");
-            Coordinate preCor = Utils.getCoordinateFromString(previous.substring(0, previous.indexOf(";")));
-            int preDir = Utils.getDir(preCor.getX(), preCor.getY(), agentState.getX(), agentState.getY());
+            int preDir = Utils.getPreviousDir(agentState);
             Random rb = new Random();
             int ran = rb.nextInt(100);
             int t = 7;

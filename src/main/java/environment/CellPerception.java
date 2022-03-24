@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import environment.world.agent.AgentRep;
 import environment.world.crumb.CrumbRep;
+import environment.world.destination.Destination;
 import environment.world.destination.DestinationRep;
 import environment.world.energystation.EnergyStationRep;
 import environment.world.flag.FlagRep;
@@ -80,6 +81,16 @@ public class CellPerception {
         return null;
     }
 
+    /**
+     *
+     * Newly added
+     *
+     * Retrieve the Packet in this cell perception (if present).
+     * @return The Packet representation if present, Optional.empty() otherwise.
+     */
+    public Optional<PacketRep> getPacketRepresentation() {
+        return Optional.ofNullable(this.getRepOfType(PacketRep.class));
+    }
 
     /**
      * Check if this cell perception has a packet in it.
@@ -95,6 +106,17 @@ public class CellPerception {
      */
     public boolean containsWall() {
         return this.getRepOfType(WallRep.class) != null;
+    }
+
+    /**
+     *
+     * Newly added
+     *
+     * Retrieve the Destination in this cell perception (if present).
+     * @return The Destination representation if present, Optional.empty() otherwise.
+     */
+    public Optional<DestinationRep> getDestinationRepresentation() {
+        return Optional.ofNullable(this.getRepOfType(DestinationRep.class));
     }
 
     /**

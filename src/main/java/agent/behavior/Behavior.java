@@ -4,6 +4,7 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentImp;
 import agent.AgentState;
+import agent.behavior.basic.Utils;
 
 /**
  * This class represents a role for an agent. It contains the actions the agent
@@ -50,7 +51,6 @@ abstract public class Behavior {
         } else if (agent.inActionPhase()) {
             agent.resetCommittedAction();
             this.act(agent, agent);
-
             if (!agent.hasCommittedAction()) {
                 throw new RuntimeException(String.format("Agent with ID=%d did not perform any action in its current behavior. Make sure the agent performs exactly one action each turn (taking the skip action into account as well).", agent.getActiveItemID().getID()));
             }

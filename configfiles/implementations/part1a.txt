@@ -8,7 +8,7 @@ nbStates 1                          # The wander behavior is implemented in a si
 
 
 # Enumeration of the behavior agent states
-1 agent.behavior.myfirstagent.MyFirstAgent     # First and only agent state of class
+1 agent.behavior.part1a.PickDropWander     # First and only agent state of class
 nbArgs 0                            # 0 arguments required for the constructor
 
 

@@ -10,6 +10,7 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
+import com.google.gson.JsonObject;
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
@@ -36,12 +37,11 @@ public class Operate extends Behavior{
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
         Perception perception = agentState.getPerception();
-        String goal = agentState.getMemoryFragment("goal");
-        Coordinate goalCor = Utils.getCoordinateFromGoal(goal);
-        String target = Utils.getTargetFromGoal(goal);
-        Color color = Utils.getColorFromTargetString(target);
+        Coordinate goalCor = Utils.getCoordinateFromGoal(agentState);
+        String target = Utils.getTargetFromGoal(agentState);
+        Color color = Utils.getTargetColorFromGoal(agentState);
         CellPerception goalCell = perception.getCellPerceptionOnAbsPos(goalCor.getX(), goalCor.getY());
-        if(target.startsWith("packet") || target.startsWith("generator")){
+        if(target.equals("packet") || target.equals("generator")){
             if(goalCell.getRepOfType(PacketRep.class) != null && color.equals(goalCell.getRepOfType(PacketRep.class).getColor())){
                 agentAction.pickPacket(goalCor.getX(), goalCor.getY());
             }

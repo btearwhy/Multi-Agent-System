@@ -8,19 +8,23 @@ package agent.behavior.basic;/**
 
 import agent.AgentAction;
 import agent.AgentState;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
+import environment.Representation;
+import environment.world.agent.Agent;
 import environment.world.destination.DestinationRep;
 import environment.world.generator.PacketGeneratorRep;
 import environment.world.packet.PacketRep;
+import util.Pair;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author     ：mmzs
@@ -42,69 +46,133 @@ public class Utils {
         Perception perception = agentState.getPerception();
         List<CellPerception> allCells = perception.getAllCells();
         for(CellPerception cell : allCells){
-            String coordinate = cell.getX() + "," + cell.getY();
+            Coordinate coordinate = new Coordinate(cell.getX(), cell.getY());
             if(cell.getRepOfType(PacketRep.class) != null){
-                updateMemoryFragment(agentState, "packet|" + cell.getRepOfType(PacketRep.class).getColor().getRGB(), coordinate);
+                updateMemoryFragment(agentState, cell.getRepOfType(PacketRep.class), coordinate);
             }
             else{
-                removeMemoryAtCorOnPrefix(agentState, "packet", getCoordinateFromString(coordinate));
+                removeMemoryAtCor(agentState, "packet", coordinate);
             }
             if(cell.getRepOfType(PacketGeneratorRep.class) != null){
-                updateMemoryFragment(agentState, "generator|" + cell.getRepOfType(PacketGeneratorRep.class).getColor().getRGB(), coordinate);
+                updateMemoryFragment(agentState, cell.getRepOfType(PacketGeneratorRep.class), coordinate);
             }
             if(cell.getRepOfType(DestinationRep.class) != null){
-                updateMemoryFragment(agentState, "destination|" + cell.getRepOfType(DestinationRep.class).getColor().getRGB(), coordinate);
+                updateMemoryFragment(agentState, cell.getRepOfType(DestinationRep.class), coordinate);
             }
         }
     }
 
-    public static void removeMemoryAtCorOnPrefix(AgentState agentState, String prefix, Coordinate coordinate){
-        String cor = coordinate.getX() + "," + coordinate.getY();
-        Set<String> keys = new HashSet<>(agentState.getMemoryFragmentKeys());
-        for (String key:keys){
-            if(key.startsWith(prefix)){
-                String[] cors = agentState.getMemoryFragment(key).split(";");
-                List<String> newRes = new ArrayList<>();
-                for(String c : cors){
-                    if(!c.equals(cor))
-                        newRes.add(c);
-                }
-                agentState.removeMemoryFragment(key);
-                if(!newRes.isEmpty()){
-                    agentState.addMemoryFragment(key, String.join(";", newRes));
+    public static void removeMemoryAtCor(AgentState agentState, String key, Coordinate coordinate){
+        JsonObject obj = new Gson().fromJson(agentState.getMemoryFragment(key), JsonObject.class);
+        if(obj == null) return;
+        JsonArray packets = obj.get(key).getAsJsonArray();
+        for(int i = 0; i < packets.size(); i++){
+            JsonArray cors = packets.get(i).getAsJsonObject().get("coordinate").getAsJsonArray();
+//            JsonObject cor = new JsonObject();
+//            cor.addProperty("x", String.valueOf(coordinate.getX()));
+//            cor.addProperty("y", String.valueOf(coordinate.getY()));
+//            cors.remove(cor);
+            for(int j = 0; j < cors.size(); j++){
+                if(cors.get(j).getAsJsonObject().get("x").getAsInt() == coordinate.getX() && cors.get(j).getAsJsonObject().get("y").getAsInt() == coordinate.getY()){
+                    if(cors.size() == 1){
+                        packets.remove(i);
+                    }
+                    else {
+                        cors.remove(j);
+                    }
+                    agentState.removeMemoryFragment(key);
+                    agentState.addMemoryFragment(key, obj.toString());
+                    return;
                 }
             }
         }
     }
 
 
-    public static void updateMemoryFragment(AgentState agentState, String key, String data){
+    public static void updateMemoryFragment(AgentState agentState, Representation representation, Coordinate coordinate){
+        String key = "";
+        Color color = null;
+        if(representation instanceof PacketRep){
+            key = "packet";
+            color = ((PacketRep) representation).getColor();
+        }
+        else if(representation instanceof PacketGeneratorRep){
+            key = "generator";
+            color = ((PacketGeneratorRep) representation).getColor();
+        }
+        else if(representation instanceof DestinationRep){
+            key = "destination";
+            color = ((DestinationRep) representation).getColor();
+        }
         if(agentState.getMemoryFragment(key) != null){
-            if(!agentState.getMemoryFragment(key).contains(data)){
-                data = agentState.getMemoryFragment(key) + ";" + data;
-                agentState.removeMemoryFragment(key);
-                agentState.addMemoryFragment(key, data);
+            JsonObject data = new Gson().fromJson(agentState.getMemoryFragment(key), JsonObject.class);
+            JsonArray array = data.get(key).getAsJsonArray();
+            boolean mark = false;
+            for(int i = 0;i < array.size(); i++){
+                JsonArray corsArray = array.get(i).getAsJsonObject().getAsJsonArray("coordinate");
+                int colorJson = array.get(i).getAsJsonObject().get("color").getAsInt();
+                if(colorJson == color.getRGB()){
+                    mark = true;
+                    for(int j = 0; j < corsArray.size(); j++){
+                        JsonObject corObj = corsArray.get(j).getAsJsonObject();
+                        int x = corObj.get("x").getAsInt();
+                        int y = corObj.get("y").getAsInt();
+                        if(x == coordinate.getX() && y == coordinate.getY()){
+                            return;
+                        }
+                    }
+                    JsonObject newCorObj = new JsonObject();
+                    newCorObj.addProperty("x", String.valueOf(coordinate.getX()));
+                    newCorObj.addProperty("y", String.valueOf(coordinate.getY()));
+                    corsArray.add(newCorObj);
+                }
             }
+            if(!mark){
+                JsonArray corsArray = new JsonArray();
+                JsonObject newCorObj = new JsonObject();
+                newCorObj.addProperty("x", String.valueOf(coordinate.getX()));
+                newCorObj.addProperty("y", String.valueOf(coordinate.getY()));
+                corsArray.add(newCorObj);
+                JsonObject newObj = new JsonObject();
+                newObj.addProperty("color", color.getRGB());
+                newObj.add("coordinate", corsArray);
+                array.add(newObj);
+            }
+            agentState.removeMemoryFragment(key);
+            agentState.addMemoryFragment(key, data.toString());
         }
         else{
             if(agentState.getNbMemoryFragments() == agentState.getMaxNbMemoryFragments()){
-                if(!key.startsWith("packet"))
+                if(!key.equals("packet"))
                     forget(agentState);
             }
-            agentState.addMemoryFragment(key, data);
+            JsonObject basicObj = new JsonObject();
+            JsonArray basicArray = new JsonArray();
+            JsonObject itemObj = new JsonObject();
+            JsonArray corArray = new JsonArray();
+            JsonObject corObject = new JsonObject();
+            corObject.addProperty("x", String.valueOf(coordinate.getX()));
+            corObject.addProperty("y", String.valueOf(coordinate.getY()));
+            corArray.add(corObject);
+            itemObj.addProperty("color", color.getRGB());
+            itemObj.add("coordinate", corArray);
+            basicArray.add(itemObj);
+            basicObj.add(key, basicArray);
+            agentState.addMemoryFragment(key, basicObj.toString());
         }
     }
 
     public static void forget(AgentState agentState){
         String chosenOne = null;
-        int len = Integer.MAX_VALUE;
-        for (String key:agentState.getMemoryFragmentKeys()){
-            if (key.startsWith("packet") && agentState.getMemoryFragment(key).length() < len){
-                len = agentState.getMemoryFragment(key).length();
-                chosenOne = key;
-            }
-        }
-        if(chosenOne != null) agentState.removeMemoryFragment(chosenOne);
+        agentState.removeMemoryFragment("packet");
+//        int len = Integer.MAX_VALUE;
+//        for (String key:agentState.getMemoryFragmentKeys()){
+//            if (key.equals("packet") && agentState.getMemoryFragment(key).length() < len){
+//                len = agentState.getMemoryFragment(key).length();
+//                chosenOne = key;
+//            }
+//        }
+//        if(chosenOne != null) agentState.removeMemoryFragment(chosenOne);
     }
 
     public static int getDir(int x1, int y1, int x2, int y2){
@@ -132,103 +200,137 @@ public class Utils {
         return (dir + i) % 8;
     }
 
-    public static void updatePreviousDistanceFragment(AgentState agentState, String s){
-        String pre = agentState.getMemoryFragment("previous");
-        String data = pre.substring(0, pre.indexOf(";") + 1);
-        data += s;
-        updatePreviousMemoryFragment(agentState, data);
+    public static void updatePreviousDistance(AgentState agentState, String s){
+        JsonObject status = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
+        status.getAsJsonObject("previous").remove("distance");
+        status.getAsJsonObject("previous").addProperty("distance", s);
+        agentState.removeMemoryFragment("status");
+        agentState.addMemoryFragment("status", status.toString());
     }
 
 
     public static void updatePreviousDir(AgentState agentState, int dir){
-        String pre = agentState.getMemoryFragment("previous");
-        String data = pre.substring(pre.indexOf(";"));
-        data = dir + data;
-        updatePreviousMemoryFragment(agentState, data);
-    }
-    public static void updatePreviousMemoryFragment(AgentState agentState, String s){
-        agentState.removeMemoryFragment("previous");
-        agentState.addMemoryFragment("previous", s);
+        JsonObject status = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
+        status.getAsJsonObject("previous").remove("direction");
+        status.getAsJsonObject("previous").addProperty("direction", String.valueOf(dir));
+        agentState.removeMemoryFragment("status");
+        agentState.addMemoryFragment("status", status.toString());
     }
 
+
     public static int getPreviousDir(AgentState agentState){
-        String previous = agentState.getMemoryFragment("previous");
-        return Integer.valueOf(previous.substring(0, previous.indexOf(";")));
+        JsonObject previousObject = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
+        return Integer.valueOf(previousObject.getAsJsonObject("previous").get("direction").getAsString());
     }
     public static void step(AgentState agentState, AgentAction agentAction, int x, int y){
         int prevDir = getDir(agentState.getX(), agentState.getY(), x, y);
         updatePreviousDir(agentState, prevDir);
-        if(!agentState.getMemoryFragment("goal").equals("") && agentState.getMemoryFragment("previous").endsWith(";")){
-            Coordinate goal = getCoordinateFromGoal(agentState.getMemoryFragment("goal"));
-            updatePreviousDistanceFragment(agentState, String.valueOf(Perception.manhattanDistance(goal.getX(), goal.getY(), agentState.getX(), agentState.getY())));
-        }
         agentAction.step(x, y);
     }
 
-
-    public static String getTargetFromGoal(String goal){
-        return goal.substring(goal.indexOf(";") + 1);
+    public static int getPreviousDis(AgentState agentState){
+        JsonObject status = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
+        return status.getAsJsonObject("previous").get("distance").getAsInt();
     }
 
-    public static Coordinate getCoordinateFromGoal(String s){
-        String ss = s.substring(0, s.indexOf(";"));
-        return getCoordinateFromString(ss);
+    public static String getTargetFromGoal(AgentState agentState){
+        JsonObject goal = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class).getAsJsonObject("goal");
+        return goal.get("target").getAsString();
     }
 
-    public static Coordinate getCoordinateFromString(String s){
-        String[] coordinate = s.split(",");
-        return new Coordinate(Integer.valueOf(coordinate[0]), Integer.valueOf(coordinate[1]));
+    public static Color getTargetColorFromGoal(AgentState agentState){
+        JsonObject goal = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class).getAsJsonObject("goal");
+        return new Color(Integer.parseInt(goal.get("color").getAsString()));
     }
 
-    public static void setGoal(AgentState agentState, String content){
-        agentState.removeMemoryFragment("goal");
-        agentState.addMemoryFragment("goal", content);
+    public static Coordinate getCoordinateFromGoal(AgentState agentState){
+        JsonObject statusObject = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
+        JsonObject corObject = statusObject.getAsJsonObject("goal").getAsJsonObject("coordinate");
+        Coordinate cor = new Coordinate(Integer.valueOf(corObject.get("x").getAsString()), Integer.valueOf(corObject.get("y").getAsString()));
+        return cor;
+    }
+
+
+
+    public static void setGoal(AgentState agentState, JsonObject goalObject){
+        JsonObject statusObject = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
+        if(statusObject.has("goal")){
+            statusObject.remove("goal");
+        }
+        statusObject.add("goal", goalObject);
+        agentState.removeMemoryFragment("status");
+        agentState.addMemoryFragment("status", statusObject.toString());
     }
 
     public static boolean hasGoal(AgentState agentState){
-        return !agentState.getMemoryFragment("goal").equals(";");
+        return agentState.getMemoryFragment("status").contains("goal");
+    }
+
+    public static boolean hasPreviousDis(AgentState agentState){
+        JsonObject status = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
+        return status.has("previous") && status.getAsJsonObject("previous").has("distance");
     }
 
 
-
-    public static String searchGoal(AgentState agentState){
+    public static JsonObject searchGoal(AgentState agentState){
         return searchGoalInMemory(agentState);
 
     }
 
-    public static String searchNearestDestination(AgentState agentState, Color color){
-        String goal = null;
+    public static JsonObject searchNearestDestination(AgentState agentState, Color color){
+        JsonObject goal = null;
         int minDis = Integer.MAX_VALUE;
-        String target = "destination|" + color.getRGB();
+        String target = "destination";
         String destination = agentState.getMemoryFragment(target);
-        String[] cors = destination.split(";");
-        for(String cor:cors){
-            Coordinate c = getCoordinateFromString(cor);
-            int distance = Perception.distance(c.getX(), c.getY(), agentState.getX(), agentState.getY());
-            if(distance < minDis){
-                goal = cor + ";" + target;
-                minDis = distance;
+        JsonObject desObj = new Gson().fromJson(destination, JsonObject.class);
+        JsonArray desArray = desObj.getAsJsonArray("destination");
+        for (int i = 0; i < desArray.size(); i++){
+            JsonObject des = desArray.get(i).getAsJsonObject();
+            if(des.get("color").getAsInt() == color.getRGB()){
+                JsonArray cors = des.getAsJsonArray("coordinate");
+                for (int j = 0; j < cors.size(); j++){
+                    int distance = Perception.distance(cors.get(j).getAsJsonObject().get("x").getAsInt(), cors.get(j).getAsJsonObject().get("y").getAsInt(), agentState.getX(), agentState.getY());
+                    if(distance < minDis){
+                        goal = new JsonObject();
+                        goal.addProperty("target", "destination");
+                        goal.addProperty("color", color.getRGB());
+                        goal.add("coordinate", cors.get(j).getAsJsonObject());
+                        minDis = distance;
+                    }
+                }
             }
         }
         return goal;
     }
 
     @Nullable
-    public static String searchGoalInMemory(AgentState agentState){
-        Set<String> targets = agentState.getMemoryFragmentKeys();
-        String goal = null;
-        int minDis = Integer.MAX_VALUE;
-        for (String target:targets){
-            if(target.equals("goal") || target.equals("previous"));
-            else{
-                if((target.startsWith("packet")) && !agentState.getMemoryFragment(target).equals("")){
-                    Coordinate targetCor = getaTargetCorFromString(agentState.getMemoryFragment(target));
-                    String destination = "destination|" + getColorFromTargetString(target).getRGB();
-                    if(targets.contains(destination)){
-                        int distance = Perception.distance(agentState.getX(), agentState.getY(), targetCor.getX(), targetCor.getY());
-                        if(distance < minDis){
-                            goal = targetCor.getX() + "," + targetCor.getY() + ";" + target;
-                            minDis = distance;
+    public static JsonObject searchGoalInMemory(AgentState agentState){
+        JsonObject goal = null;
+        int minCost = Integer.MAX_VALUE;
+        String target = agentState.getMemoryFragment("packet");
+        String destination = agentState.getMemoryFragment("destination");
+        if(target == null || destination == null) return null;
+        JsonArray packetArray = new Gson().fromJson(target, JsonObject.class).getAsJsonArray("packet");
+        JsonArray destiArray = new Gson().fromJson(destination, JsonObject.class).getAsJsonArray("destination");
+        for (int i = 0; i < packetArray.size(); i++){
+            Color pacColor = getColorFromTarget(packetArray.get(i).getAsJsonObject());
+            for (int j = 0; j < destiArray.size(); j++){
+                Color destiColor = getColorFromTarget(destiArray.get(j).getAsJsonObject());
+                if(pacColor.equals(destiColor)){
+                    Pair<Coordinate, Coordinate> minimal = getMinimalDistancePair(packetArray.get(i).getAsJsonObject().get("coordinate").getAsJsonArray(),
+                            destiArray.get(j).getAsJsonObject().get("coordinate").getAsJsonArray());
+                    if(minimal != null){
+                        int cost = Perception.distance(minimal.first.getX(), minimal.first.getY(), agentState.getX(), agentState.getY()) +
+                                2 * Perception.distance(minimal.first.getX(), minimal.first.getY(), minimal.second.getX(), minimal.second.getY());
+                        if(cost < minCost){
+                            minCost = cost;
+                            JsonObject corObject = new JsonObject();
+                            corObject.addProperty("x", String.valueOf(minimal.first.getX()));
+                            corObject.addProperty("y", String.valueOf(minimal.first.getY()));
+                            goal = new JsonObject();
+                            goal.addProperty("target", "packet");
+                            goal.addProperty("color", pacColor.getRGB());
+                            goal.add("coordinate", corObject);
                         }
                     }
                 }
@@ -237,10 +339,23 @@ public class Utils {
         return goal;
     }
 
-    public static Coordinate getaTargetCorFromString(String cors){
-        String oldestOne = cors.split(";")[0];
-        String[] cor = oldestOne.split(",");
-        return new Coordinate(Integer.valueOf(cor[0]), Integer.valueOf(cor[1]));
+    public static Pair<Coordinate, Coordinate> getMinimalDistancePair(JsonArray from, JsonArray to){
+        Pair<Coordinate, Coordinate> res = null;
+        int min_dis = Integer.MAX_VALUE;
+        for (int i = 0; i < from.size(); i++){
+            for (int j = 0; j < to.size(); j++){
+                JsonObject fromObj = from.get(i).getAsJsonObject();
+                JsonObject toObj = to.get(j).getAsJsonObject();
+                Coordinate cor1 = new Coordinate(Integer.valueOf(fromObj.get("x").getAsString()), Integer.valueOf(fromObj.get("y").getAsString()));
+                Coordinate cor2 = new Coordinate(Integer.valueOf(toObj.get("x").getAsString()), Integer.valueOf(toObj.get("y").getAsString()));
+                int dis = Perception.distance(cor1.getX(), cor1.getY(), cor2.getX(), cor2.getY());
+                if(dis < min_dis){
+                    min_dis = dis;
+                    res = new Pair<>(cor1, cor2);
+                }
+            }
+        }
+        return res;
     }
 
     public static boolean isInReach(AgentState agentState, Coordinate coordinate){
@@ -248,8 +363,8 @@ public class Utils {
                 Perception.distance(agentState.getX(), agentState.getY(), coordinate.getX(), coordinate.getY()) < 2;
     }
 
-    public static Color getColorFromTargetString(String target){
-        return new Color(Integer.parseInt(target.substring(target.indexOf("|") + 1)));
+    public static Color getColorFromTarget(JsonObject target){
+        return new Color(Integer.parseInt(target.get("color").getAsString()));
     }
 
 

@@ -24,6 +24,9 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
@@ -40,16 +43,20 @@ public class Wander extends Behavior {
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
         int dir;
-        if(!agentState.getMemoryFragmentKeys().contains("goal") && !agentState.getMemoryFragmentKeys().contains("previous")){
-            agentState.addMemoryFragment("goal", "");
-            agentState.addMemoryFragment("previous", ";");
+        if(!agentState.getMemoryFragmentKeys().contains("status")){
+            JsonObject obj = new JsonObject();
+            agentState.addMemoryFragment("status", obj.toString());
         }
-        if(agentState.getMemoryFragment("previous").equals(";")){
+        JsonObject status = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
+        if(!status.has("previous")){
+            status.add("previous", new JsonObject());
+            agentState.removeMemoryFragment("status");
+            agentState.addMemoryFragment("status", status.toString());
             Random ra = new Random();
             dir = ra.nextInt(8);
             dir = Utils.getClockwiseDirection(agentState, dir);
             Utils.updatePreviousDir(agentState, dir);
-            Utils.updatePreviousDistanceFragment(agentState, "1");
+            Utils.updatePreviousDistance(agentState, "1");
         }
         else{
             int preDir = Utils.getPreviousDir(agentState);

@@ -8,6 +8,7 @@ package agent.behavior.basic.change;/**
 
 import agent.behavior.BehaviorChange;
 import agent.behavior.basic.Utils;
+import com.google.gson.JsonObject;
 import environment.Coordinate;
 import environment.Perception;
 
@@ -26,12 +27,12 @@ public class FromWanderToNavigate extends BehaviorChange {
 
     @Override
     public void updateChange(){
-        String goal = Utils.searchGoal(this.getAgentState());
+        JsonObject goal = Utils.searchGoal(this.getAgentState());
         if(goal != null){
             Utils.setGoal(getAgentState(), goal);
             this.hasGoal = true;
-            this.packetOrGenerator = Utils.getTargetFromGoal(goal).startsWith("packet") || Utils.getTargetFromGoal(goal).startsWith("generator");
-            this.inReach = Utils.isInReach(this.getAgentState(), Utils.getCoordinateFromGoal(goal));
+            this.packetOrGenerator = Utils.getTargetFromGoal(getAgentState()).equals("packet") || Utils.getTargetFromGoal(getAgentState()).equals("generator");
+            this.inReach = Utils.isInReach(this.getAgentState(), Utils.getCoordinateFromGoal(getAgentState()));
         }
         else hasGoal = false;
     }
@@ -40,8 +41,8 @@ public class FromWanderToNavigate extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(hasGoal && packetOrGenerator && !inReach){
-            Coordinate cor = Utils.getCoordinateFromGoal(getAgentState().getMemoryFragment("goal"));
-            Utils.updatePreviousDistanceFragment(getAgentState(), String.valueOf(Perception.manhattanDistance(getAgentState().getX(), getAgentState().getY(), cor.getX(), cor.getY())));
+            Coordinate cor = Utils.getCoordinateFromGoal(getAgentState());
+            Utils.updatePreviousDistance(getAgentState(), String.valueOf(Perception.manhattanDistance(getAgentState().getX(), getAgentState().getY(), cor.getX(), cor.getY())));
             return true;
         }
         return false;

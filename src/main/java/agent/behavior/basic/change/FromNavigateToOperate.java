@@ -25,7 +25,7 @@ public class FromNavigateToOperate extends BehaviorChange {
     @Override
     public void updateChange(){
         hasGoal = Utils.hasGoal(getAgentState());
-        Coordinate goal = Utils.getCoordinateFromGoal(getAgentState().getMemoryFragment("goal"));
+        Coordinate goal = Utils.getCoordinateFromGoal(getAgentState());
         inReach = Utils.isInReach(getAgentState(), goal);
     }
 
@@ -33,7 +33,7 @@ public class FromNavigateToOperate extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(hasGoal && inReach){
-            Utils.updatePreviousDistanceFragment(getAgentState(), "0");
+            Utils.updatePreviousDistance(getAgentState(), "0");
             return true;
         }
         return false;

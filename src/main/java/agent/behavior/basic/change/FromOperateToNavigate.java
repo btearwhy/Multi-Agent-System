@@ -8,6 +8,7 @@ package agent.behavior.basic.change;/**
 
 import agent.behavior.BehaviorChange;
 import agent.behavior.basic.Utils;
+import com.google.gson.JsonObject;
 import environment.Coordinate;
 import environment.Perception;
 
@@ -24,7 +25,7 @@ public class FromOperateToNavigate extends BehaviorChange {
 
     @Override
     public void updateChange(){
-        String goal = null;
+        JsonObject goal = null;
         if(getAgentState().hasCarry()){
             goal = Utils.searchNearestDestination(getAgentState(), getAgentState().getCarry().get().getColor());
         }
@@ -42,8 +43,8 @@ public class FromOperateToNavigate extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if (hasGoal){
-            Coordinate cor = Utils.getCoordinateFromGoal(getAgentState().getMemoryFragment("goal"));
-            Utils.updatePreviousDistanceFragment(getAgentState(), String.valueOf(Perception.manhattanDistance(getAgentState().getX(), getAgentState().getY(), cor.getX(), cor.getY())));
+            Coordinate cor = Utils.getCoordinateFromGoal(getAgentState());
+            Utils.updatePreviousDistance(getAgentState(), String.valueOf(Perception.manhattanDistance(getAgentState().getX(), getAgentState().getY(), cor.getX(), cor.getY())));
         }
         return hasGoal;
     }

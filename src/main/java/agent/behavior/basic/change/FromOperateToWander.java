@@ -8,6 +8,7 @@ package agent.behavior.basic.change;/**
 
 import agent.behavior.BehaviorChange;
 import agent.behavior.basic.Utils;
+import com.google.gson.JsonObject;
 
 /**
  * @author     ：mmzs
@@ -24,7 +25,7 @@ public class FromOperateToWander extends BehaviorChange {
     @Override
     public void updateChange(){
         hasPacket = getAgentState().hasCarry();
-        String goal = Utils.searchGoal(getAgentState());
+        JsonObject goal = Utils.searchGoal(getAgentState());
         if(goal != null) hasGoal = true;
         else hasGoal = false;
     }
@@ -33,7 +34,7 @@ public class FromOperateToWander extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(!hasGoal && !hasPacket){
-            Utils.updatePreviousDistanceFragment(getAgentState(), "0");
+            Utils.updatePreviousDistance(getAgentState(), "0");
         }
         return !hasGoal && !hasPacket;
     }

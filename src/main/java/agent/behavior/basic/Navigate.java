@@ -37,13 +37,11 @@ public class Navigate extends Behavior {
     public void act(AgentState agentState, AgentAction agentAction) {
         int x = agentState.getX();
         int y = agentState.getY();
-        Coordinate goal = Utils.getCoordinateFromGoal(agentState.getMemoryFragment("goal"));
+        Coordinate goal = Utils.getCoordinateFromGoal(agentState);
         int dir = Utils.getDir(x, y, goal.getX(), goal.getY());
-
-        String previous = agentState.getMemoryFragment("previous");
-        if(previous.endsWith(";")) Utils.updatePreviousDistanceFragment(agentState, String.valueOf(Perception.manhattanDistance(x, y, goal.getX(), goal.getY())));
-        if(Integer.valueOf(previous.substring(previous.indexOf(";") + 1)) >= Perception.manhattanDistance(x, y, goal.getX(), goal.getY())){
-            Utils.updatePreviousDistanceFragment(agentState, String.valueOf(Perception.manhattanDistance(x, y, goal.getX(), goal.getY())));
+        if(!Utils.hasPreviousDis(agentState)) Utils.updatePreviousDistance(agentState, String.valueOf(Perception.manhattanDistance(x, y, goal.getX(), goal.getY())));
+        if(Utils.getPreviousDis(agentState) >= Perception.manhattanDistance(x, y, goal.getX(), goal.getY())){
+            Utils.updatePreviousDistance(agentState, String.valueOf(Perception.manhattanDistance(x, y, goal.getX(), goal.getY())));
             collideHandle(agentState, agentAction, dir);
         }
         else{

@@ -9,6 +9,7 @@ package agent.behavior.basic.change;/**
 import agent.AgentState;
 import agent.behavior.BehaviorChange;
 import agent.behavior.basic.Utils;
+import com.google.gson.JsonObject;
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
@@ -32,12 +33,12 @@ public class FromWanderToOperate extends BehaviorChange {
 
     @Override
     public void updateChange(){
-        String goal = Utils.searchGoal(this.getAgentState());
+        JsonObject goal = Utils.searchGoal(this.getAgentState());
         if(goal != null){
             Utils.setGoal(getAgentState(), goal);
             this.hasGoal = true;
-            this.packetOrGenerator = Utils.getTargetFromGoal(goal).startsWith("packet") || Utils.getTargetFromGoal(goal).startsWith("generator");
-            this.inReach = Utils.isInReach(this.getAgentState(), Utils.getCoordinateFromGoal(goal));
+            this.packetOrGenerator = Utils.getTargetFromGoal(getAgentState()).startsWith("packet") || Utils.getTargetFromGoal(getAgentState()).startsWith("generator");
+            this.inReach = Utils.isInReach(this.getAgentState(), Utils.getCoordinateFromGoal(getAgentState()));
         }
         else hasGoal = false;
     }
@@ -46,7 +47,7 @@ public class FromWanderToOperate extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(hasGoal && packetOrGenerator && inReach){
-            Utils.updatePreviousDistanceFragment(getAgentState(), "");
+            Utils.updatePreviousDistance(getAgentState(), "");
             return true;
         }
         return false;

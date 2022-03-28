@@ -29,7 +29,7 @@ public class FromNavigateToWander extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(!hasGoal){
-            Utils.updatePreviousDistanceFragment(getAgentState(), "0");
+            Utils.updatePreviousDistance(getAgentState(), "0");
             return true;
         }
         return false;

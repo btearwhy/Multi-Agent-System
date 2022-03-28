@@ -1,4 +1,4 @@
-package agent.behavior.basic.change;/**
+package agent.behavior.part1b.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:56
  * @description：
@@ -7,7 +7,7 @@ package agent.behavior.basic.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.basic.Utils;
+import agent.behavior.part1b.Utils;
 import com.google.gson.JsonObject;
 import environment.Coordinate;
 import environment.Perception;

@@ -1,4 +1,4 @@
-package agent.behavior.basic;/**
+package agent.behavior.part1b;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 03:00
  * @description：Some utils methods
@@ -15,7 +15,6 @@ import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
 import environment.Representation;
-import environment.world.agent.Agent;
 import environment.world.destination.DestinationRep;
 import environment.world.generator.PacketGeneratorRep;
 import environment.world.packet.PacketRep;

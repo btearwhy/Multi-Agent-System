@@ -4,7 +4,6 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentImp;
 import agent.AgentState;
-import agent.behavior.basic.Utils;
 
 /**
  * This class represents a role for an agent. It contains the actions the agent

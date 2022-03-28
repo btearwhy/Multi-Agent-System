@@ -5,11 +5,11 @@ description "Randomly wandering around"
 # The amount of the behavior states the agent has
 # ------------------------------------------------
 nbStates 3                          # The wander behavior is implemented in a single state
-1 agent.behavior.basic.Wander       # First behavior
+1 agent.behavior.part1b.Wander       # First behavior
 nbArgs 0                            # Constructor with no args
-2 agent.behavior.basic.Navigate     # Second behavior
+2 agent.behavior.part1b.Navigate     # Second behavior
 nbArgs 0                            # // (no arguments)
-3 agent.behavior.basic.Operate      # Second behavior
+3 agent.behavior.part1b.Operate      # Second behavior
 nbArgs 0                            # // (no arguments)
 
 
@@ -21,37 +21,37 @@ nbArgs 0                            # // (no arguments)
 nbChanges 6                                             # This implementation does not have any behavior changes
                                                         # (no different agent behavior state to change to)
                                                         # First change, from behavior with ID 1 to behavior with ID 2
-agent.behavior.basic.change.FromWanderToNavigate
+agent.behavior.part1b.change.FromWanderToNavigate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 1                                                # ID of starting behavior
 target 2                                                # ID of resulting behavior
 
-agent.behavior.basic.change.FromWanderToOperate
+agent.behavior.part1b.change.FromWanderToOperate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 1                                                # ID of starting behavior
 target 3                                                # ID of resulting behavior
 
-agent.behavior.basic.change.FromOperateToNavigate
+agent.behavior.part1b.change.FromOperateToNavigate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 3                                                # ID of starting behavior
 target 2                                                # ID of resulting behavior
 
-agent.behavior.basic.change.FromOperateToWander
+agent.behavior.part1b.change.FromOperateToWander
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 3                                                # ID of starting behavior
 target 1                                                # ID of resulting behavior
 
-agent.behavior.basic.change.FromNavigateToWander
+agent.behavior.part1b.change.FromNavigateToWander
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 2                                                # ID of starting behavior
 target 1                                                # ID of resulting behavior
 
-agent.behavior.basic.change.FromNavigateToOperate
+agent.behavior.part1b.change.FromNavigateToOperate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 2                                                # ID of starting behavior

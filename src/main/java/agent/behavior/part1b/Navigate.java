@@ -1,4 +1,4 @@
-package agent.behavior.basic;/**
+package agent.behavior.part1b;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:15
  * @description：An agent has a goal and move towards the goal until the goal is in reach
@@ -10,12 +10,9 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
-import environment.world.packet.PacketRep;
 
-import java.awt.*;
 import java.util.Random;
 
 /**

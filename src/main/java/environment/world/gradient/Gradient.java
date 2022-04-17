@@ -3,6 +3,8 @@ package environment.world.gradient;
 import environment.Item;
 import gui.video.Drawer;
 
+import java.util.Collection;
+
 public class Gradient extends Item<GradientRep> {
 
     private final int value;
@@ -39,5 +41,21 @@ public class Gradient extends Item<GradientRep> {
     @Override
     public void draw(Drawer drawer) {
         drawer.drawGradient(this);
+    }
+
+    public boolean isEqual (Gradient g){
+        if (this.getX() == g.getX() && this.getY() == g.getY() && this.value == g.getValue()){
+            return true;
+        }
+        return  false;
+    }
+
+    public static boolean containGradient(Collection<Gradient> gradients, Gradient target){
+        for (Gradient g : gradients){
+            if (g.isEqual(target)){
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,0 +1,35 @@
+description "basic agent with battery"
+
+
+# ------------------------------------------------
+# The amount of the behavior states the agent has
+# ------------------------------------------------
+nbStates 2
+
+
+# Enumeration of the behavior agent states
+1 agent.behavior.charge.PickAndDrop     # First and only agent state of class
+nbArgs 0                            # 0 arguments required for the constructor
+2 agent.behavior.charge.Charge     # First and only agent state of class
+nbArgs 0                            # 0 arguments required for the constructor
+
+
+
+# ---------------------------------------------------------------
+# The amount of behavior changes for the agent
+#  (only necessary when more than 1 agent behavior is specified)
+# ---------------------------------------------------------------
+nbChanges 2                         # This implementation does not have any behavior changes
+                                    # (no different agent behavior state to change to)
+
+agent.behavior.charge.change.FromExecutionToCharge
+nbArgs 0                                                # The constructor of ConditionOne takes 0 args
+priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
+source 1                                                # ID of starting behavior
+target 2                                                # ID of resulting behavior
+
+agent.behavior.charge.change.FromChargeToExecution
+nbArgs 0                                                # The constructor of ConditionOne takes 0 args
+priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
+source 2                                                # ID of starting behavior
+target 1                                                # ID of resulting behavior

@@ -1,5 +1,6 @@
 package environment.world.gradient;
 
+import environment.Coordinate;
 import environment.Item;
 import gui.video.Drawer;
 
@@ -43,19 +44,12 @@ public class Gradient extends Item<GradientRep> {
         drawer.drawGradient(this);
     }
 
-    public boolean isEqual (Gradient g){
-        if (this.getX() == g.getX() && this.getY() == g.getY() && this.value == g.getValue()){
-            return true;
-        }
-        return  false;
+    @Override
+    public boolean equals(Object other) {
+        if (! (other instanceof Gradient casted))
+            return false;
+
+        return this.getX() == casted.getX() && this.getY() == casted.getY() && this.value == casted.getValue();
     }
 
-    public static boolean containGradient(Collection<Gradient> gradients, Gradient target){
-        for (Gradient g : gradients){
-            if (g.isEqual(target)){
-                return true;
-            }
-        }
-        return false;
-    }
 }

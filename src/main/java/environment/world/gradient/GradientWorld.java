@@ -89,8 +89,7 @@ public class GradientWorld extends World<Gradient> {
                         int g_y = g.getY() + j;
 
                         if (inBounds(g_x,g_y) && !no_sign_place.contains(new Coordinate(g_x,g_y))){
-                            boolean flag = !no_sign_place.contains(new Coordinate(g_x,g_y));
-                            if ( getItem(g_x,g_y) == null || gradient_value < getItem(g_x,g_y).getValue()){
+                            if (getItem(g_x,g_y) == null || gradient_value < getItem(g_x,g_y).getValue()){
                                 Gradient add_target = new Gradient(g_x,g_y,gradient_value);
                                 if (!next_layer.contains(add_target)){
                                     next_layer.add(add_target);

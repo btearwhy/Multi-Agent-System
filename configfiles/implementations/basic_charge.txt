@@ -8,9 +8,9 @@ nbStates 2
 
 
 # Enumeration of the behavior agent states
-1 agent.behavior.charge.PickAndDrop     # First and only agent state of class
+1 agent.behavior.charge.PickAndDrop     # First agent state of class
 nbArgs 0                            # 0 arguments required for the constructor
-2 agent.behavior.charge.Charge     # First and only agent state of class
+2 agent.behavior.charge.Charge
 nbArgs 0                            # 0 arguments required for the constructor
 
 

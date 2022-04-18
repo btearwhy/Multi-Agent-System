@@ -10,6 +10,9 @@ public class FromExecutionToCharge extends BehaviorChange {
 
     @Override
     public boolean isSatisfied() {
+        if (getAgentState().getBatteryState()<450) {
+            return true;
+        }
         return false;
     }
 }

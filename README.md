@@ -46,6 +46,10 @@ Lastly, if you want to adhere to the coding style of the project, you can run th
 
 `mvn checkstyle:check`
 
+### Solutions for project part I
+Run "Application.main()" and enter the GUI. 
+Select "part1a" for the simple agent.
+Select "part1b" for the agent with memory and optimization strategies.
 
 ## Final notes
 

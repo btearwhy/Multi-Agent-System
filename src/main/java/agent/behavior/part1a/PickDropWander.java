@@ -1,4 +1,4 @@
-package agent.behavior.myfirstagent;
+package agent.behavior.part1a;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,7 @@ import agent.AgentState;
 import agent.behavior.Behavior;
 import environment.Coordinate;
 
-public class MyFirstAgent extends Behavior {
+public class PickDropWander extends Behavior {
 
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {

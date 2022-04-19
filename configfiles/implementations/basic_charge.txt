@@ -4,12 +4,14 @@ description "Executing using memory"
 # ------------------------------------------------
 # The amount of the behavior states the agent has
 # ------------------------------------------------
-nbStates 3                          # The wander behavior is implemented in a single state
+nbStates 4                          # The wander behavior is implemented in a single state
 1 agent.behavior.part1b.Wander       # First behavior
 nbArgs 0                            # Constructor with no args
 2 agent.behavior.part1b.Navigate     # Second behavior
 nbArgs 0                            # // (no arguments)
-3 agent.behavior.part1b.Operate      # Second behavior
+3 agent.behavior.part1b.Operate      # Third behavior
+nbArgs 0                            # // (no arguments)
+4 agent.behavior.part1b.Charge      # Fourth behavior
 nbArgs 0                            # // (no arguments)
 
 
@@ -18,8 +20,7 @@ nbArgs 0                            # // (no arguments)
 # The amount of behavior changes for the agent
 #  (only necessary when more than 1 agent behavior is specified)
 # ---------------------------------------------------------------
-nbChanges 6                                             # This implementation does not have any behavior changes
-                                                        # (no different agent behavior state to change to)
+nbChanges 10
                                                         # First change, from behavior with ID 1 to behavior with ID 2
 agent.behavior.part1b.change.FromWanderToNavigate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
@@ -57,6 +58,29 @@ priority 0                                              # Higher value −> high
 source 2                                                # ID of starting behavior
 target 3                                                # ID of resulting behavior
 
+agent.behavior.part1b.change.GoToCharge
+nbArgs 0                                                # The constructor of ConditionOne takes 0 args
+priority 1                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
+source 1                                                # ID of starting behavior
+target 4                                                # ID of resulting behavior
+
+agent.behavior.part1b.change.GoToCharge
+nbArgs 0                                                # The constructor of ConditionOne takes 0 args
+priority 1                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
+source 2                                                # ID of starting behavior
+target 4                                                # ID of resulting behavior
+
+agent.behavior.part1b.change.GoToCharge
+nbArgs 0                                                # The constructor of ConditionOne takes 0 args
+priority 1                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
+source 3                                                # ID of starting behavior
+target 4                                                # ID of resulting behavior
+
+agent.behavior.part1b.change.FromChargeToWander
+nbArgs 0                                                # The constructor of ConditionOne takes 0 args
+priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
+source 4                                                # ID of starting behavior
+target 1                                                # ID of resulting behavior
 
 
 

@@ -47,7 +47,7 @@ public class Pheromone extends Item<PheromoneRep> implements ClockListener {
 
 
     private final Logger logger = Logger.getLogger(Pheromone.class.getName());
-    
+
 
     /**
      * Initializes a new Pheromone instance with a specified lifetime.
@@ -60,6 +60,9 @@ public class Pheromone extends Item<PheromoneRep> implements ClockListener {
      */
     public Pheromone(Environment environ, int x, int y, int time) {
         super(x, y);
+        if (time > Pheromone.MAX_LIFETIME) {
+            time = Pheromone.MAX_LIFETIME;
+        }
         lifetime = time;
         env = environ;
         env.getClock().addListener(this); //register this pheromone to listen to the clock

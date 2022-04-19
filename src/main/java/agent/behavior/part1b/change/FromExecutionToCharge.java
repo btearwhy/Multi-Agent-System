@@ -1,8 +1,8 @@
-package agent.behavior.charge.change;
+package agent.behavior.part1b.change;
 
 import agent.behavior.BehaviorChange;
 
-public class FromChargeToExecution extends BehaviorChange {
+public class FromExecutionToCharge extends BehaviorChange {
     @Override
     public void updateChange() {
 
@@ -10,7 +10,7 @@ public class FromChargeToExecution extends BehaviorChange {
 
     @Override
     public boolean isSatisfied() {
-        if (getAgentState().getBatteryState()>750) {
+        if (getAgentState().getBatteryState()<450) {
             return true;
         }
         return false;

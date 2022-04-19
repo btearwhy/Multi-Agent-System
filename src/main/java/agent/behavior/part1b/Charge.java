@@ -1,4 +1,4 @@
-package agent.behavior.charge;
+package agent.behavior.part1b;
 
 import agent.AgentAction;
 import agent.AgentCommunication;

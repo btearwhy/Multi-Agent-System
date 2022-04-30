@@ -412,9 +412,9 @@ public class ApplicationRunner {
             env.getPacketWorld().placeItems(packets);
             env.getDestinationWorld().placeItems(destinations);
             env.getWallWorld().placeItems(walls);
-            env.getEnergyStationWorld().placeItems(batteries);
             env.getPacketGeneratorWorld().placeItems(packetGenerators);
             env.getConveyorWorld().placeItems(conveyors);
+            env.getEnergyStationWorld().placeItems(batteries);
             return env;
         } catch (FileNotFoundException e) {
             ApplicationRunner.logger.severe(String.format("Environment config file not found: %s\n%s", configFile, e.getMessage()));

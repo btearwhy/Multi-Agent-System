@@ -1,7 +1,10 @@
 package environment.world.gradient;
 
+import environment.Coordinate;
 import environment.Item;
 import gui.video.Drawer;
+
+import java.util.Collection;
 
 public class Gradient extends Item<GradientRep> {
 
@@ -40,4 +43,13 @@ public class Gradient extends Item<GradientRep> {
     public void draw(Drawer drawer) {
         drawer.drawGradient(this);
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (! (other instanceof Gradient casted))
+            return false;
+
+        return this.getX() == casted.getX() && this.getY() == casted.getY() && this.value == casted.getValue();
+    }
+
 }

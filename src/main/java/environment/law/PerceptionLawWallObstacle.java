@@ -21,7 +21,7 @@ public class PerceptionLawWallObstacle implements PerceptionLaw {
      * All Representations that are situated behind a WallRep relative to the
      * perceiving agent should be generalised as 'Representations', thus removing
      * any specific information about them.
-     *
+     *     
      * Only works for the WallWorld show in the presentation of this thesis.
      * This algorithm is purely made for this demonstration.
      * To get a realistic effect a much (much) more complicated algorithm
@@ -34,7 +34,7 @@ public class PerceptionLawWallObstacle implements PerceptionLaw {
      */
     public Perception enforce(Perception perception) {
         Perception newPerception = new Perception(perception.getWidth(), perception.getHeight(),
-                perception.getOffsetX(), perception.getOffsetY());
+                                            perception.getOffsetX(), perception.getOffsetY());
         int aX = perception.getSelfX();
         int aY = perception.getSelfY();
         for (int tX = 0; tX < perception.getWidth(); tX++) {
@@ -77,7 +77,7 @@ public class PerceptionLawWallObstacle implements PerceptionLaw {
             if (0 <= x0 && x0 < perception.getWidth()
                     && 0 <= y0 && y0 < perception.getHeight()
                     && (x0 != x1 || y0 != y1)
-                    && perception.getCellAt(x0, y0).getRepOfType(WallRep.class) != null
+                    && perception.getCellAt(x0, y0).getRepOfType(WallRep.class) != null 
                     && !perception.getCellAt(x0, y0).getRepOfType(WallRep.class).isSeeThrough()) {
                 return true;
             }

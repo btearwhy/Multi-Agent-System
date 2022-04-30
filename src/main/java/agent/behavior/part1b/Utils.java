@@ -1,4 +1,4 @@
-package agent.behavior.basic;/**
+package agent.behavior.part1b;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 03:00
  * @description：Some utils methods
@@ -15,7 +15,6 @@ import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
 import environment.Representation;
-import environment.world.agent.Agent;
 import environment.world.destination.DestinationRep;
 import environment.world.generator.PacketGeneratorRep;
 import environment.world.packet.PacketRep;
@@ -68,10 +67,6 @@ public class Utils {
         JsonArray packets = obj.get(key).getAsJsonArray();
         for(int i = 0; i < packets.size(); i++){
             JsonArray cors = packets.get(i).getAsJsonObject().get("coordinate").getAsJsonArray();
-//            JsonObject cor = new JsonObject();
-//            cor.addProperty("x", String.valueOf(coordinate.getX()));
-//            cor.addProperty("y", String.valueOf(coordinate.getY()));
-//            cors.remove(cor);
             for(int j = 0; j < cors.size(); j++){
                 if(cors.get(j).getAsJsonObject().get("x").getAsInt() == coordinate.getX() && cors.get(j).getAsJsonObject().get("y").getAsInt() == coordinate.getY()){
                     if(cors.size() == 1){
@@ -165,14 +160,6 @@ public class Utils {
     public static void forget(AgentState agentState){
         String chosenOne = null;
         agentState.removeMemoryFragment("packet");
-//        int len = Integer.MAX_VALUE;
-//        for (String key:agentState.getMemoryFragmentKeys()){
-//            if (key.equals("packet") && agentState.getMemoryFragment(key).length() < len){
-//                len = agentState.getMemoryFragment(key).length();
-//                chosenOne = key;
-//            }
-//        }
-//        if(chosenOne != null) agentState.removeMemoryFragment(chosenOne);
     }
 
     public static int getDir(int x1, int y1, int x2, int y2){
@@ -366,61 +353,5 @@ public class Utils {
     public static Color getColorFromTarget(JsonObject target){
         return new Color(Integer.parseInt(target.get("color").getAsString()));
     }
-
-
-
-//    public static void memorizeForcely(AgentState agentState, String key, Coordinate coordinate){
-//
-//    }
-//
-//    public static String searchDesInMemAndPacketInEnv(AgentState agentState){
-//        Set<String> targets = agentState.getMemoryFragmentKeys();
-//        String goal = null;
-//        int minDis = Integer.MAX_VALUE;
-//        for (String target:targets){
-//            if(target.equals("goal") || target.equals("previous"));
-//            else{
-//                if(target.startsWith("destination")){
-//                    Color desColor = getColorFromTargetString(target);
-//
-//                }
-//            }
-//        }
-//        return goal;
-//    }
-//
-//    @Nullable
-//    public static String searchGoalInPerception(AgentState agentState){
-//        int minDis = Integer.MAX_VALUE;
-//        String goal = null;
-//        List<CellPerception> cells = agentState.getPerception().getAllCells();
-//        for (CellPerception cell:cells){
-//            Color color = null;
-//            if(cell.getRepOfType(PacketGeneratorRep.class) != null){
-//                color = cell.getRepOfType(PacketGeneratorRep.class).getColor();
-//            }
-//            else if(cell.getRepOfType(PacketRep.class) != null){
-//                color = cell.getRepOfType(PacketRep.class).getColor();
-//            }
-//            if (color != null){
-//                CellPerception finalDes = null;
-//                for(CellPerception des:cells){
-//                    DestinationRep destinationRep = des.getRepOfType(DestinationRep.class);
-//                    if(destinationRep != null && destinationRep.getColor().equals(color)){
-//                        int distance = Perception.distance(agentState.getX(), agentState.getY(), cell.getX(), cell.getY());
-//                        if(minDis > distance){
-//                            minDis = distance;
-//                            goal = cell.getX() + "," + cell.getY() + ";packet|" + color.getRGB();
-//                            finalDes = des;
-//                        }
-//                    }
-//                }
-//                if(finalDes != null){
-//                    memorizeForcely(agentState, "destination|" + finalDes.getRepOfType(DestinationRep.class).getColor().getRGB(), new Coordinate(finalDes.getX(), finalDes.getY()));
-//                }
-//            }
-//        }
-//        return goal;
-//    }
 }
 

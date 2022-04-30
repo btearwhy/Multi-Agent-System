@@ -1,4 +1,4 @@
-package agent.behavior.basic.change;/**
+package agent.behavior.part1b.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 02:43
  * @description：An agent finds a goal
@@ -6,17 +6,9 @@ package agent.behavior.basic.change;/**
  * @version: $
  */
 
-import agent.AgentState;
 import agent.behavior.BehaviorChange;
-import agent.behavior.basic.Utils;
+import agent.behavior.part1b.Utils;
 import com.google.gson.JsonObject;
-import environment.CellPerception;
-import environment.Coordinate;
-import environment.Perception;
-import environment.world.packet.PacketRep;
-
-import java.awt.*;
-import java.util.List;
 
 /**
  * @author     ：mmzs

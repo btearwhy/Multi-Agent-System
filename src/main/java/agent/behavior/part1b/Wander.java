@@ -1,4 +1,4 @@
-package agent.behavior.basic;/**
+package agent.behavior.part1b;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 02:39
  * @description：When an agent doesn't have a goal, it just wanders to search a possible goal
@@ -14,10 +14,6 @@ package agent.behavior.basic;/**
  * @version: $
  */
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 import agent.AgentAction;
@@ -25,12 +21,7 @@ import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import environment.CellPerception;
-import environment.Coordinate;
-import environment.Perception;
-import environment.world.packet.PacketRep;
 
 public class Wander extends Behavior {
 

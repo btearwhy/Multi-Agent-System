@@ -1,8 +1,6 @@
 package agent.dstarlite;
 
 import environment.Coordinate;
-import org.checkerframework.checker.units.qual.C;
-import util.Pair;
 
 import java.util.*;
 

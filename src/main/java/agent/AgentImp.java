@@ -10,18 +10,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
+
+import agent.behavior.part2.MapMemory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import agent.behavior.Behavior;
 import agent.behavior.BehaviorState;
-import environment.ActiveImp;
-import environment.ActiveItemID;
-import environment.CellPerception;
-import environment.EnergyValues;
+import environment.*;
 import environment.Mail;
-import environment.MailBuffer;
-import environment.Perception;
 import environment.world.agent.Agent;
 import environment.world.agent.AgentRep;
 import environment.world.destination.DestinationRep;
@@ -81,6 +78,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
     private final Logger logger = Logger.getLogger(AgentImp.class.getName());
 
+    private MapMemory mapMemory;
 
 
     /**
@@ -108,6 +106,25 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     }
 
 
+    @Override
+    public void createMapMemory(int row, int col){
+        mapMemory = new MapMemory(row, col);
+    }
+
+    @Override
+    public void updateMapMemory(List<CellPerception> cellPerceptions){
+        mapMemory.updateMapMemory(cellPerceptions);
+    }
+
+    @Override
+    public MapMemory getMapMemory(){
+        return mapMemory;
+    }
+
+    @Override
+    void recalculate(Coordinate start, List<CellPerception> cellPerceptions){
+        mapMemory.recalculate(start, cellPerceptions);
+    }
 
     // ===============================
     // | Agent Communication Methods |

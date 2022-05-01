@@ -64,6 +64,13 @@ public class CellPerception {
         this.reps.clear();
     }
 
+    public  List<Representation> getReps(){
+        return reps;
+    }
+
+    public void setReps(List<Representation> reps){
+        this.reps = reps;
+    }
     /**
      * Returns the Representation of a given type in this CellPerception.
      * If no such Representation is found, null is returned.

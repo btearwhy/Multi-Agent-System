@@ -1,6 +1,7 @@
 package agent.dstarlite;
 
 import environment.Coordinate;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 
@@ -21,6 +22,9 @@ public class DStarLite implements java.io.Serializable{
         k_m = 0;
         rhs = new HashMap<Coordinate, Double>();
         g = new HashMap<Coordinate, Double>();
+        s_start = new Coordinate(-1,-1);
+        s_last = new Coordinate(-1,-1);
+        s_goal = new Coordinate(-1,-1);
         obstacles = new HashSet<>();
         eight_neighbors = new Coordinate[]{
                 new Coordinate(1,0),
@@ -144,7 +148,7 @@ public class DStarLite implements java.io.Serializable{
         return (double) h;
     }
 
-    public void init(int start_x, int start_y, int goal_x, int goal_y) {
+    private void initialize(int start_x, int start_y, int goal_x, int goal_y) {
         queueU.clear();
         k_m = 0;
         s_start = new Coordinate(start_x, start_y);
@@ -243,12 +247,31 @@ public class DStarLite implements java.io.Serializable{
         return new Coordinate(min_move.getX(), min_move.getY());
     }
 
+    public Coordinate getNextMove(int x, int y) {
+        return getNextMove(new Coordinate(x, y));
+    }
+
     /**
      * Update s_start if the agent moves successfully to a new coordinate. {34"} {35"}
      * @param s_start the new coordinate
      */
     public void updateStart(Coordinate s_start) {
         this.s_start = s_start;
+    }
+
+    public void updateStart(int x, int y) {
+        updateStart(new Coordinate(x, y));
+    }
+
+    public void updateGoal(Coordinate s_goal) {
+        if (!this.s_goal.equals(s_goal)) {
+            initialize(s_start.getX(), s_start.getY(), s_goal.getX(), s_goal.getY());
+            this.s_goal = s_goal;
+        }
+    }
+
+    public void updateGoal(int x, int y) {
+        updateGoal(new Coordinate(x, y));
     }
 
     /**
@@ -343,7 +366,7 @@ public class DStarLite implements java.io.Serializable{
 
     public static void main(String[] args) {
         DStarLite dStarLite = new DStarLite();
-        dStarLite.init(1,1,3,3);
+        dStarLite.initialize(1,1,3,3);
         ArrayList<Coordinate> obstacles = new ArrayList<>();
         dStarLite.computeShortestPath();
 

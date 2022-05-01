@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import agent.dstarlite.DStarLite;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -81,6 +82,11 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
     private final Logger logger = Logger.getLogger(AgentImp.class.getName());
 
+    /**
+     * D* lite planner for navigation of the agent
+     */
+    private DStarLite dStarLite;
+
 
 
     /**
@@ -105,6 +111,8 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.committedAction = false;
 
         this.eventBus.register(this);
+
+        dStarLite = new DStarLite();
     }
 
 
@@ -696,6 +704,11 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     @Override
     public void setCurrentBehaviorState(BehaviorState bs) {
         lnkBehaviorState = bs;
+    }
+
+    @Override
+    public DStarLite getDStarLite() {
+        return this.dStarLite;
     }
 
 

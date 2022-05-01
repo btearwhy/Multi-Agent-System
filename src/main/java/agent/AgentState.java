@@ -6,6 +6,7 @@ import java.util.Set;
 
 import agent.behavior.Behavior;
 import agent.behavior.BehaviorState;
+import agent.dstarlite.DStarLite;
 import environment.CellPerception;
 import environment.Perception;
 import environment.world.packet.Packet;
@@ -155,4 +156,6 @@ public interface AgentState {
      * @param state The behavior state to switch to.
      */
     void setCurrentBehaviorState(BehaviorState state);
+
+    DStarLite getDStarLite();
 }

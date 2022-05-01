@@ -151,6 +151,8 @@ public class DStarLite implements java.io.Serializable{
     private void initialize(int start_x, int start_y, int goal_x, int goal_y) {
         queueU.clear();
         k_m = 0;
+//        rhs.clear();
+//        g.clear();
         s_start = new Coordinate(start_x, start_y);
         s_last = new Coordinate(start_x, start_y);
         s_goal = new Coordinate(goal_x, goal_y);
@@ -160,62 +162,70 @@ public class DStarLite implements java.io.Serializable{
     }
 
     private void updateVertex(Coordinate u) {
-        boolean containU = queueU.contains(u);
-        int compare = Double.compare(getG(u), getRHS(u));
-        if (compare != 0 && containU) {
-            queueU.update(u, calculateKey(u));
+//        boolean containU = queueU.contains(u);
+//        int compare = Double.compare(getG(u), getRHS(u));
+//        if (compare != 0 && containU) {
+//            queueU.update(u, calculateKey(u));
+//        }
+//        else if (compare != 0 && !containU) {
+//            queueU.insert(u, calculateKey(u));
+//        }
+//        else if (compare == 0 && containU) {
+//            queueU.remove(u);
+//        }
+        if (!u.equals(s_goal)) {
+            // get min_{s_prime} cost(s, s_prime) + getG(s_prime)
+            double min_val = Double.POSITIVE_INFINITY;
+            for (Coordinate s_prime:getSucc(u)) {
+                var cost = cost(u, s_prime);
+                var g_s_prime = getG(s_prime);
+                double val = cost(u, s_prime) + getG(s_prime);
+                if (val < min_val) {
+                    min_val = val;
+                }
+            }
+            rhs.put(u, min_val);
         }
-        else if (compare != 0 && !containU) {
-            queueU.insert(u, calculateKey(u));
-        }
-        else if (compare == 0 && containU) {
+        if (queueU.contains(u)) {
             queueU.remove(u);
+        }
+        if (Double.compare(getG(u), getRHS(u)) != 0) {
+            queueU.insert(u, calculateKey(u));
         }
     }
 
     private void computeShortestPath() {
         while (!queueU.isEmpty() &&
-                (queueU.topKey().compareTo(calculateKey(s_start)) < 0 || getRHS(s_start) > getG(s_start))) {
-            Coordinate u = queueU.top(); // {11"} u=U.Top()
-            PriorityKey k_old = queueU.topKey();// {12"} k_old = U.TopKey()
-            PriorityKey k_new = calculateKey(u); // {13"}
-            if (k_old.compareTo(k_new) < 0) { // {14"}
-                queueU.update(u, k_new); // {15"} U.Update()
+                (queueU.topKey().compareTo(calculateKey(s_start)) < 0
+                        || Double.compare(getRHS(s_start), getG(s_start)) != 0)) {
+            // debug
+            var k_start = calculateKey(s_start);
+            var r_start = getRHS(s_start);
+            var g_start = getG(s_start);
+
+            PriorityKey k_old = queueU.topKey();
+            Coordinate u = queueU.pop();
+
+            var key_u = calculateKey(u);
+            var g_u = getG(u);
+            var g_r = getRHS(u);
+            if (k_old.compareTo(calculateKey(u)) < 0) {
+                queueU.insert(u, calculateKey(u));
             }
-            else if (getG(u) > getRHS(u)) { // {16"}
+            else if (Double.compare(getG(u), getRHS(u)) > 0) {
                 g.put(u, getRHS(u));
-                queueU.remove(u);
                 for (Coordinate s:getPred(u)) {
-                    if (!s.equals(s_goal)) {
-                        rhs.put(s, Math.min(getRHS(s), cost(s,u) + getG(u)));
-                    }
                     updateVertex(s);
                 }
             }
             else {
-                double g_old = getG(u);
                 g.put(u, Double.POSITIVE_INFINITY);
-                ArrayList<Coordinate> list = getSucc(u);
-                list.add(u);
-                for (Coordinate s:list) {
-                    if (Double.compare(getRHS(s), (cost(s, u) + g_old)) == 0) {
-                        if (!s.equals(s_goal)) {
-                            // get min_{s_prime} cost(s, s_prime) + getG(s_prime)
-                            double min_val = Double.POSITIVE_INFINITY;
-                            for (Coordinate s_prime:getSucc(s)) {
-                                double val = cost(s, s_prime) + getG(s_prime);
-                                if (val < min_val) {
-                                    min_val = val;
-                                }
-                            }
-                            rhs.put(s, min_val);
-                        }
-                    }
+                for (Coordinate s:getPred(u)) {
                     updateVertex(s);
                 }
+                updateVertex(u);
             }
         }
-        System.out.println();
     }
 
     /**
@@ -225,14 +235,9 @@ public class DStarLite implements java.io.Serializable{
      */
     public Coordinate getNextMove(Coordinate current) {
         double min_val = Double.POSITIVE_INFINITY;
-        Coordinate min_move = new Coordinate(0,0);
+        Coordinate min_move = new Coordinate(-1,-1);
 
         if (current.equals(s_goal)) {
-            return min_move;
-        }
-
-        if (!(getG(s_start) < Double.POSITIVE_INFINITY)) {
-            System.out.println("There is no known path to goal.");
             return min_move;
         }
 
@@ -244,6 +249,12 @@ public class DStarLite implements java.io.Serializable{
                 min_move = s_prime;
             }
         }
+
+        if (!(min_val < Double.POSITIVE_INFINITY)) {
+            System.out.println("There is no known path to goal.");
+            return min_move;
+        }
+
         return new Coordinate(min_move.getX(), min_move.getY());
     }
 
@@ -326,29 +337,31 @@ public class DStarLite implements java.io.Serializable{
     }
 
     /**
-     * {40"}-{17"}
+     * {40"}-{47"}
      * @param observed_map the observed map with key-value pair (Coordinate-hasObstacle).
      */
     private void updateEdge(HashMap<Coordinate, Boolean> observed_map) {
         // store old_obstacles
         old_obstacles = new HashSet<>(obstacles);
-        // get new obstacles
+        // get modified obstacles
         for (Coordinate u:observed_map.keySet()) {
+            boolean flag = observed_map.get(u);
             if (observed_map.get(u) && !obstacles.contains(u)) {
                 obstacles.add(u);
             }
             else if (!observed_map.get(u) && obstacles.contains(u)) {
                 obstacles.remove(u);
             }
-            else break;
+            else continue; // not modified
 
             for (Coordinate n:eight_neighbors) {
                 Coordinate v = u.add(n);
-                updateEdgeHelper(u, v);
-                updateVertex(u);
-                updateEdgeHelper(v, u);
+//                updateEdgeHelper(u, v);
+//                updateVertex(u);
+//                updateEdgeHelper(v, u);
                 updateVertex(v);
             }
+            updateVertex(u);
         }
     }
 

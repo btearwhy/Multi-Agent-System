@@ -4,11 +4,14 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
+
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
 
 import javax.swing.*;
+import environment.Coordinate;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +25,7 @@ public class Charge extends Behavior {
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
         var perception = agentState.getPerception();
+
         var neighbours = perception.getNeighbours();
 
         // put down the packet
@@ -78,6 +82,7 @@ public class Charge extends Behavior {
                 if (n.containsGradient() &&
                         n.getGradientRepresentation().get().getValue() == min_grad){
                     min_neighbours.add(n);
+
                 }
             }
         }
@@ -109,12 +114,19 @@ public class Charge extends Behavior {
         int x = cell.getX();
         int y = cell.getY();
 
+        // take the move with lowest value
+        if (move != null) {
+            agentAction.step(move.getX(), move.getY());
+            return;
+        }
+
         List<Coordinate> moves = new ArrayList<>(List.of(
                 new Coordinate(1, 1), new Coordinate(-1, -1),
                 new Coordinate(1, 0), new Coordinate(-1, 0),
                 new Coordinate(0, 1), new Coordinate(0, -1),
                 new Coordinate(1, -1), new Coordinate(-1, 1)
         ));
+
 
         int count = 0;
         for (Coordinate m : moves){
@@ -125,5 +137,6 @@ public class Charge extends Behavior {
         }
 
         return count;
+
     }
 }

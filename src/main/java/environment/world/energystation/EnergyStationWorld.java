@@ -6,6 +6,7 @@ import java.util.Objects;
 import com.google.common.eventbus.EventBus;
 
 import environment.World;
+import environment.world.gradient.GradientWorld;
 
 /**
  * A class for an EnergyStationWorld, being a layer of the total world that contains
@@ -61,9 +62,7 @@ public class EnergyStationWorld extends World<EnergyStation> {
         putItem(energyStation);
         getEnvironment().addActiveItem(energyStation);
 
-        // TODO: use the line below (adjust method if desired), 
-        //       if you want to use gradients
-        // getEnvironment().getWorld(GradientWorld.class)
-        //     .addGradientsWithStartLocation(...);
+        getEnvironment().getWorld(GradientWorld.class)
+                .addGradientsWithStartLocation(energyStation.getX(),energyStation.getY());
     }
 }

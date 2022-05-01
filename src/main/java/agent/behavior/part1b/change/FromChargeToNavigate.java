@@ -2,7 +2,7 @@ package agent.behavior.part1b.change;
 
 import agent.behavior.BehaviorChange;
 
-public class FromWanderToCharge extends BehaviorChange {
+public class FromChargeToNavigate extends BehaviorChange {
     @Override
     public void updateChange() {
 
@@ -10,9 +10,7 @@ public class FromWanderToCharge extends BehaviorChange {
 
     @Override
     public boolean isSatisfied() {
-
-        if (getAgentState().getBatteryState() < 200) {
-
+        if (getAgentState().hasCarry() && getAgentState().getBatteryState()>980) {
             return true;
         }
         return false;

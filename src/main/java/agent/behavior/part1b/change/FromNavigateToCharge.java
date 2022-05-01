@@ -10,7 +10,9 @@ public class FromNavigateToCharge extends BehaviorChange {
 
     @Override
     public boolean isSatisfied() {
+
         if (getAgentState().getBatteryState() < 400) {
+
             return true;
         }
         return false;

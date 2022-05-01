@@ -114,12 +114,6 @@ public class Charge extends Behavior {
         int x = cell.getX();
         int y = cell.getY();
 
-        // take the move with lowest value
-        if (move != null) {
-            agentAction.step(move.getX(), move.getY());
-            return;
-        }
-
         List<Coordinate> moves = new ArrayList<>(List.of(
                 new Coordinate(1, 1), new Coordinate(-1, -1),
                 new Coordinate(1, 0), new Coordinate(-1, 0),

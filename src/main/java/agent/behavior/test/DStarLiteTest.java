@@ -24,6 +24,7 @@ public class DStarLiteTest extends Behavior {
         agentState.getDStarLite().updateStart(agentState.getX(), agentState.getY());
         agentState.getDStarLite().updateGoal(25, 25);
         HashMap<Coordinate, Boolean> observed_map = new HashMap<>();
+        // TODO
 
         agentState.getDStarLite().run(observed_map);
         Coordinate next = agentState.getDStarLite().getNextMove(agentState.getX(), agentState.getY());

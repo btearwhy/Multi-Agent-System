@@ -7,7 +7,7 @@ package agent.behavior.part2.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part1b.Utils;
+import agent.behavior.part2.Utils;
 
 /**
  * @author     ：mmzs
@@ -29,7 +29,6 @@ public class FromNavigateToWander extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(!hasGoal){
-            Utils.updatePreviousDistance(getAgentState(), "0");
             return true;
         }
         return false;

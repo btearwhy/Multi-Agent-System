@@ -7,7 +7,7 @@ package agent.behavior.part2.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part1b.Utils;
+import agent.behavior.part2.Utils;
 import com.google.gson.JsonObject;
 import environment.Coordinate;
 import environment.Perception;
@@ -41,8 +41,6 @@ public class FromWanderToNavigate extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(hasGoal && packetOrGenerator && !inReach){
-            Coordinate cor = Utils.getCoordinateFromGoal(getAgentState());
-            Utils.updatePreviousDistance(getAgentState(), String.valueOf(Perception.manhattanDistance(getAgentState().getX(), getAgentState().getY(), cor.getX(), cor.getY())));
             return true;
         }
         return false;

@@ -11,14 +11,20 @@ import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
 import agent.behavior.part2.CellMemory;
+import agent.behavior.part2.MapMemory;
 import agent.behavior.part2.Utils;
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
+import environment.Representation;
+import environment.world.destination.DestinationRep;
+import environment.world.packet.PacketRep;
 import environment.world.wall.SolidWallRep;
+import environment.world.wall.WallRep;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -66,6 +72,8 @@ public class Navigate extends Behavior {
             }
         }
         agentState.recalculate(new Coordinate(agentState.getX(), agentState.getY()), agentState.getPerception().getAllCells());
+
+        }
 
     }
 

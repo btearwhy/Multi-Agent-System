@@ -9,6 +9,12 @@ package agent.behavior.part2;/**
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
+import environment.Representation;
+import environment.world.destination.Destination;
+import environment.world.destination.DestinationRep;
+import environment.world.packet.Packet;
+import environment.world.packet.PacketRep;
+import environment.world.wall.WallRep;
 import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
@@ -22,19 +28,21 @@ import java.util.*;
  */
 
 public class MapMemory {
-    int row;
-    int col;
     Map<Coordinate, CellMemory> map;
+
+
     PriorityQueue<CellMemory> priorityQueue = new PriorityQueue<>();
     CellMemory sLast;
     CellMemory sStart;
     CellMemory sGoal;
     int km;
 
-    public MapMemory(int row, int col){
-        this.row = row;
-        this.col = col;
+    public MapMemory(){
         map = new HashMap<>();
+    }
+
+    public List<CellMemory> getAllCellsMemory(){
+        return new ArrayList<>(map.values());
     }
 
     public void updateMapMemory(List<CellPerception> cellPerceptions){
@@ -59,15 +67,33 @@ public class MapMemory {
         sStart = map.get(start);
         km += heuristic(sLast, sStart);
         sLast = sStart;
-        List<CellMemory> changesToObstacles = new ArrayList<>();
-        List<CellMemory> changesToFree = new ArrayList<>();
+        List<Boolean> walkable = new ArrayList<>();
         for(CellPerception c:cellPerceptions){
             Coordinate cor = new Coordinate(c.getX(), c.getY());
-            if(map.containsKey(cor) && !map.get(cor).isWalkable() && (c.isWalkable() || c.containsAgent())){
-                //障碍消失
-                for (CellMemory u:getNeighborsAndSelf(c)){
-                    for (CellMemory v : getNeighbors(u)){
-
+            if(!map.containsKey(cor)) map.put(cor, new CellMemory(cor.getX(), cor.getY()));
+             walkable.add(map.get(cor).isWalkable());
+        }
+        updateMapMemory(cellPerceptions);
+        for(int i = 0; i < cellPerceptions.size(); i++){
+            CellPerception c = cellPerceptions.get(i);
+            Coordinate cor = new Coordinate(c.getX(), c.getY());
+            if(walkable.get(i) && !c.isWalkable() && !c.containsAgent()){
+                List<CellMemory> neighbors = getNeighbors(map.get(cor));
+                for (CellMemory n:neighbors){
+                    if(n.getRhs() == 1 + map.get(cor).getG()){
+                        map.get(cor).setRhs(CellMemory.MAXVALUE);
+                        map.get(cor).setG(CellMemory.MAXVALUE);
+                        if(!n.equals(sGoal)){
+                            n.setRhs(getSmallestRhs(n));
+                        }
+                    }
+                }
+            }
+            else if(!walkable.get(i) && (c.isWalkable() || c.containsAgent())){
+                List<CellMemory> neighbors = getNeighborsAndSelf(map.get(cor));
+                for (CellMemory n:neighbors){
+                    if(!n.equals(sGoal)){
+                        n.setRhs(getSmallestRhs(n));
                     }
                 }
             }
@@ -78,6 +104,24 @@ public class MapMemory {
         sLast = sStart;
         initialize();
         compute();
+//        int i = 0;
+//        List<CellMemory> cells = getAllCellsMemory();
+//        Collections.sort(cells, new Comparator<CellMemory>() {
+//            @Override
+//            public int compare(CellMemory o1, CellMemory o2) {
+//                int o = o1.getY() - o2.getY();
+//                if(o != 0) return o;
+//                return o1.getX() - o2.getX();
+//            }
+//        });
+//        for (CellMemory c:cells){
+//            System.out.print((c.getRhs() == CellMemory.MAXVALUE ? -1 : c.getRhs()) + "|");
+//            System.out.print((c.getG() == CellMemory.MAXVALUE ? -1 : c.getG()) + "\t");
+//            if(i++ % 12 == 11) {
+//                System.out.print('\n');
+//            }
+//        }
+
         if(sStart.getG() == CellMemory.MAXVALUE) return false;
         return true;
     }
@@ -85,7 +129,7 @@ public class MapMemory {
 
     public int getDirection(Coordinate cur, Coordinate goal){
         CellMemory cell = getSmallestGCell(cur);
-        if(cell == null){
+        if(sGoal != null && !goal.equals(sGoal.getCoordinate()) || cell == null){
             sStart = map.get(cur);
             sGoal = map.get(goal);
             if(!computeShortestPath()){
@@ -124,8 +168,12 @@ public class MapMemory {
     }
 
     void compute(){
-        while(priorityQueue.peek().getKey().compareTo(sStart.getKey()) < 0 || sStart.getRhs() > sStart.getG()){
+        //System.out.println("sStart " + sStart.getX() + " |" + sStart.getY());
+        //System.out.println("sGoal " + sGoal.getX() + " |" + sGoal.getY());
+        while(!priorityQueue.isEmpty() && priorityQueue.peek().getKey().compareTo(calculateKey(sStart)) < 0 || sStart.getRhs() > sStart.getG()){
             CellMemory u = priorityQueue.peek();
+            System.out.println("检查" + u.getX()  + " | " + u.getY());
+            System.out.println("之前start:" + sStart.getX() + "|" + sStart.getY() + "\t:" + sStart.getRhs() + "｜" + sStart.getG());
             Key kOld = u.getKey();
             Key kNew = calculateKey(u);
             if(kOld.compareTo(kNew) < 0){
@@ -151,7 +199,14 @@ public class MapMemory {
                     updateVertex(n);
                 }
             }
+            for (CellMemory cs : priorityQueue){
+                System.out.print(cs.getCoordinate().toString() + cs.getKey());
+                System.out.print("\t");
+            }
+
         }
+        if(!priorityQueue.isEmpty())
+            sStart.setG(sStart.getRhs());
     }
 
     List<CellMemory> getNeighbors(CellPerception cellMemory){
@@ -161,7 +216,7 @@ public class MapMemory {
             if(!map.containsKey(des)){
                 res.add(new CellMemory(des.getX(), des.getY()));
             }
-            else if(!map.get(des).isBorder()){
+            else if(!map.get(des).isBorder() && map.get(des).isWalkable()){
                 res.add(map.get(des));
             }
         }
@@ -171,6 +226,7 @@ public class MapMemory {
     List<CellMemory> getNeighborsAndSelf(CellPerception cellMemory){
         List<CellMemory> res = getNeighbors(cellMemory);
         Coordinate cor = new Coordinate(cellMemory.getX(), cellMemory.getY());
+        if(!map.containsKey(cor)) map.put(cor, new CellMemory(cellMemory));
         res.add(map.get(cor));
         return res;
     }
@@ -212,8 +268,14 @@ public class MapMemory {
     }
 
     int cost(CellMemory c1, CellMemory c2){
-        if(c1.isWalkable() && c2.isWalkable()) return 1;
+        boolean exception1 = c1.equals(sGoal) || c1.equals(sStart);
+        boolean exception2 = c2.equals(sGoal) || c2.equals(sStart);
+        if(exception1 || exception2 || c1.isWalkable() && c2.isWalkable()) return 1;
         else return CellMemory.MAXVALUE;
+    }
+
+    public Map<Coordinate, CellMemory> getMap() {
+        return map;
     }
 
 }

@@ -22,7 +22,7 @@ import util.Pair;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -88,8 +88,8 @@ public class Utils {
     }
 
     public static Coordinate getCoordinateFromGoal(AgentState agentState){
-        JsonObject statusObject = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
-        JsonObject corObject = statusObject.getAsJsonObject("goal").getAsJsonObject("coordinate");
+        JsonObject goalObject = new Gson().fromJson(agentState.getMemoryFragment("goal"), JsonObject.class);
+        JsonObject corObject = goalObject.getAsJsonObject("coordinate");
         Coordinate cor = new Coordinate(Integer.valueOf(corObject.get("x").getAsString()), Integer.valueOf(corObject.get("y").getAsString()));
         return cor;
     }
@@ -97,22 +97,12 @@ public class Utils {
 
 
     public static void setGoal(AgentState agentState, JsonObject goalObject){
-        JsonObject statusObject = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
-        if(statusObject.has("goal")){
-            statusObject.remove("goal");
-        }
-        statusObject.add("goal", goalObject);
-        agentState.removeMemoryFragment("status");
-        agentState.addMemoryFragment("status", statusObject.toString());
+        agentState.removeMemoryFragment("goal");
+        agentState.addMemoryFragment("goal", goalObject.toString());
     }
 
     public static boolean hasGoal(AgentState agentState){
-        return agentState.getMemoryFragment("status").contains("goal");
-    }
-
-    public static boolean hasPreviousDis(AgentState agentState){
-        JsonObject status = new Gson().fromJson(agentState.getMemoryFragment("status"), JsonObject.class);
-        return status.has("previous") && status.getAsJsonObject("previous").has("distance");
+        return agentState.getMemoryFragment("goal") != null;
     }
 
 
@@ -122,12 +112,90 @@ public class Utils {
     }
 
     public static JsonObject searchNearestDestination(AgentState agentState, Color color){
-
+        JsonObject goal = null;
+        List<CellMemory> destination = new ArrayList<>();
+        List<CellMemory> cells = agentState.getAllCellsMemory();
+        for (CellMemory c:cells){
+            DestinationRep d = c.getRepOfType(DestinationRep.class);
+            if(d != null && d.getColor().equals(color)){
+                destination.add(c);
+            }
+        }
+        if(destination.isEmpty()) return null;
+        CellMemory m = Collections.min(destination, new Comparator<CellMemory>() {
+            @Override
+            public int compare(CellMemory o1, CellMemory o2) {
+                return Perception.distance(agentState.getX(), agentState.getY(), o1.getX(), o1.getY())
+                        - Perception.distance(agentState.getX(), agentState.getY(), o2.getX(), o2.getY());
+            }
+        });
+        goal = new JsonObject();
+        goal.addProperty("target", "destination");
+        goal.addProperty("color", color.getRGB());
+        JsonObject corObject = new JsonObject();
+        corObject.addProperty("x", String.valueOf(m.getX()));
+        corObject.addProperty("y", String.valueOf(m.getY()));
+        goal.add("coordinate", corObject);
+        return goal;
     }
 
     @Nullable
     public static JsonObject searchGoalInMemory(AgentState agentState){
+        JsonObject goal = null;
+        List<CellMemory> cells = agentState.getAllCellsMemory();
+        Map<Color, Boolean> destination = new HashMap<>();
+        List<CellMemory> packet = new ArrayList<>();
+        for (CellMemory cell:cells){
+            PacketRep pr = cell.getRepOfType(PacketRep.class);
+            DestinationRep dr = cell.getRepOfType(DestinationRep.class);
+            if(pr != null){
+                packet.add(cell);
+            }
+            else if(dr != null){
+                destination.put(dr.getColor(), true);
+            }
+        }
+        Collections.sort(packet, new Comparator<CellMemory>() {
+            @Override
+            public int compare(CellMemory o1, CellMemory o2) {
+                return Perception.distance(agentState.getX(), agentState.getY(), o1.getX(), o1.getY())
+                        - Perception.distance(agentState.getX(), agentState.getY(), o2.getX(), o2.getY());
+            }
+        });
 
+
+        if(agentState.getColor().isEmpty()){
+            for(CellMemory c:packet){
+                Color color = c.getRepOfType(PacketRep.class).getColor();
+                if(destination.containsKey(color)){
+                    JsonObject corObject = new JsonObject();
+                    corObject.addProperty("x", String.valueOf(c.getX()));
+                    corObject.addProperty("y", String.valueOf(c.getY()));
+                    goal = new JsonObject();
+                    goal.addProperty("target", "packet");
+                    goal.addProperty("color", color.getRGB());
+                    goal.add("coordinate", corObject);
+                    break;
+                }
+            }
+        }
+        else{
+            Color agentColor = agentState.getColor().get();
+            for(CellMemory c:packet){
+                Color color = c.getRepOfType(PacketRep.class).getColor();
+                if(agentColor.equals(color) && destination.containsKey(color)){
+                    JsonObject corObject = new JsonObject();
+                    corObject.addProperty("x", String.valueOf(c.getX()));
+                    corObject.addProperty("y", String.valueOf(c.getY()));
+                    goal = new JsonObject();
+                    goal.addProperty("target", "packet");
+                    goal.addProperty("color", color.getRGB());
+                    goal.add("coordinate", corObject);
+                    break;
+                }
+            }
+        }
+        return goal;
     }
 
 

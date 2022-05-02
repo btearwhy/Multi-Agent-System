@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 
+import agent.behavior.part2.CellMemory;
 import agent.behavior.part2.MapMemory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -98,18 +99,13 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         //synchronize=false;
         this.outgoingMails = new MailBuffer();
         memory = new HashMap<>();
-
+        mapMemory = new MapMemory();
 
         this.committedAction = false;
 
         this.eventBus.register(this);
     }
 
-
-    @Override
-    public void createMapMemory(int row, int col){
-        mapMemory = new MapMemory(row, col);
-    }
 
     @Override
     public void updateMapMemory(List<CellPerception> cellPerceptions){
@@ -122,8 +118,13 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     }
 
     @Override
-    void recalculate(Coordinate start, List<CellPerception> cellPerceptions){
+    public void recalculate(Coordinate start, List<CellPerception> cellPerceptions){
         mapMemory.recalculate(start, cellPerceptions);
+    }
+
+    @Override
+    public List<CellMemory> getAllCellsMemory(){
+        return mapMemory.getAllCellsMemory();
     }
 
     // ===============================

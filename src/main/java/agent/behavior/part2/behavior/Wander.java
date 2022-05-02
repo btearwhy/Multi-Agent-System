@@ -18,9 +18,16 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
+import agent.behavior.part2.CellMemory;
 import agent.behavior.part2.Utils;
 import com.google.gson.JsonObject;
+import environment.CellPerception;
+import environment.world.destination.DestinationRep;
+import environment.world.packet.PacketRep;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 public class Wander extends Behavior {
@@ -34,9 +41,7 @@ public class Wander extends Behavior {
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
         int dir;
-        if(agentState.getPerceptionLastCell().getX() == -1){
-            JsonObject obj = new JsonObject();
-            agentState.addMemoryFragment("goal", obj.toString());
+        if(agentState.getPerceptionLastCell() == null){
             Random ra = new Random();
             dir = ra.nextInt(8);
             dir = Utils.getClockwiseDirectionIfBlocked(agentState, dir);
@@ -58,5 +63,47 @@ public class Wander extends Behavior {
 
         agentAction.step(agentState.getX() + Utils.moves.get(dir).getX(), agentState.getY() + Utils.moves.get(dir).getY());
         agentState.updateMapMemory(agentState.getPerception().getAllCells());
+
+
+//        int j = 0;
+//        for (CellPerception c:agentState.getPerception().getAllCells()){
+//            if(c.getNbReps() == 0){
+//                System.out.print('#');
+//            }
+//            if(c.getRepOfType(PacketRep.class) != null){
+//                System.out.print('1');
+//            }
+//            if(c.getRepOfType(DestinationRep.class) != null){
+//                System.out.print('2');
+//            }
+//            if(j++ % 12 == 11) {
+//                System.out.print('\n');
+//            }
+//        }
+//        System.out.println("/////////////");
+//        int i = 0;
+//        List<CellMemory> cells = agentState.getAllCellsMemory();
+//        Collections.sort(cells, new Comparator<CellMemory>() {
+//            @Override
+//            public int compare(CellMemory o1, CellMemory o2) {
+//                int o = o1.getY() - o2.getY();
+//                if(o != 0) return o;
+//                return o1.getX() - o2.getX();
+//            }
+//        });
+//        for (CellMemory c:cells){
+//            if(c.getNbReps() == 0){
+//                System.out.print('#');
+//            }
+//            if(c.getRepOfType(PacketRep.class) != null){
+//                System.out.print('1');
+//            }
+//            if(c.getRepOfType(DestinationRep.class) != null){
+//                System.out.print('2');
+//            }
+//            if(i++ % 12 == 11) {
+//                System.out.print('\n');
+//            }
+//        }
     }
 }

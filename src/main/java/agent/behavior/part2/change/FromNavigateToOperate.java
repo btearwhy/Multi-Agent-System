@@ -7,7 +7,7 @@ package agent.behavior.part2.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part1b.Utils;
+import agent.behavior.part2.Utils;
 import environment.Coordinate;
 
 /**
@@ -33,7 +33,6 @@ public class FromNavigateToOperate extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(hasGoal && inReach){
-            Utils.updatePreviousDistance(getAgentState(), "0");
             return true;
         }
         return false;

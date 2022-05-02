@@ -7,10 +7,12 @@ package agent.behavior.part2;/**
  */
 
 import environment.CellPerception;
+import environment.Coordinate;
 import environment.Representation;
 import environment.world.agent.AgentRep;
 import util.Pair;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -22,7 +24,7 @@ import java.util.List;
  * @version: $
  */
 
-public class CellMemory extends CellPerception implements Comparator<CellMemory> {
+public class CellMemory extends CellPerception implements Comparable<CellMemory> {
     public static final int MAXVALUE = Integer.MAX_VALUE / 2 - 1;
     private int rhs = MAXVALUE;
     private int g = MAXVALUE;
@@ -42,13 +44,21 @@ public class CellMemory extends CellPerception implements Comparator<CellMemory>
         super(cellPerception.getX(), cellPerception.getY());
         List<Representation> reps = cellPerception.getReps();
         reps.removeIf(e->e instanceof AgentRep);
-        this.setReps(reps);
+        for (Representation rep:reps){
+            this.addRep(rep);
+        }
+
+    }
+
+    public Coordinate getCoordinate(){
+        return new Coordinate(this.getX(), this.getY());
     }
 
     public CellMemory(int x, int y, boolean border) {
         super(x, y);
         this.border = border;
     }
+
 
     public void setRhs(int rhs) {
         this.rhs = rhs;
@@ -89,8 +99,8 @@ public class CellMemory extends CellPerception implements Comparator<CellMemory>
 
 
     @Override
-    public int compare(CellMemory c1, CellMemory c2){
-        return c1.getKey().compareTo(c2.getKey());
+    public int compareTo(CellMemory c){
+        return this.getKey().compareTo(c.getKey());
     }
 
     @Override
@@ -131,6 +141,11 @@ class Key implements Comparable<Key>{
         this.key2 = key2;
     }
 
+
+    @Override
+    public String toString(){
+        return key1 + ";" + key2;
+    }
 
 }
 

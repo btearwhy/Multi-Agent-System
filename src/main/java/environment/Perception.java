@@ -111,6 +111,11 @@ public class Perception {
         return width * height;
     }
 
+
+    /**
+     * Get all the cells within the range that are not null
+     * @return A list of perceived cells
+     */
     public List<CellPerception> getAllCells(){
         List<CellPerception> cellPerceptions = new ArrayList<>();
         for (int i = 0; i < cells.length; i++){

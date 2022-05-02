@@ -9,6 +9,7 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
+import agent.dstarlite.DStarLite;
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
@@ -26,19 +27,9 @@ public class DStarLiteTest extends Behavior {
     public void act(AgentState agentState, AgentAction agentAction) {
         Perception perception = agentState.getPerception();
         agentState.getDStarLite().updateStart(agentState.getX(), agentState.getY());
-        agentState.getDStarLite().updateGoal(20, 21);
-        HashMap<Coordinate, Boolean> observed_map = new HashMap<>();
-        for (CellPerception cell:perception.getAllCells()) {
-            if (cell.isWalkable() ||
-                    ((cell.getX() == agentState.getX()) && (cell.getY() == agentState.getY()))) {
-                observed_map.put(new Coordinate(cell.getX(), cell.getY()), false); // no obstacle
-            }
-            else {
-                observed_map.put(new Coordinate(cell.getX(), cell.getY()), true); // obstacle
-            }
-        }
+        agentState.getDStarLite().updateGoal(0, 0);
 
-        agentState.getDStarLite().run(observed_map);
+        agentState.getDStarLite().run(DStarLite.getObservedMap(agentState));
         Coordinate next = agentState.getDStarLite().getNextMove(agentState.getX(), agentState.getY());
 
         if (perception.getCellPerceptionOnAbsPos(next.getX(), next.getY()) != null &&

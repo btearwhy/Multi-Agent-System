@@ -1,6 +1,9 @@
 package agent.dstarlite;
 
+import agent.AgentState;
+import environment.CellPerception;
 import environment.Coordinate;
+import environment.Perception;
 import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
@@ -15,7 +18,15 @@ public class DStarLite implements java.io.Serializable{
     private Coordinate s_goal;
     HashSet<Coordinate> old_obstacles;
     private HashSet<Coordinate> obstacles;
-    private final Coordinate[] eight_neighbors;
+    private static final Coordinate[] eight_neighbors = new Coordinate[]{
+            new Coordinate(1,0),
+            new Coordinate(1,1),
+            new Coordinate(0,1),
+            new Coordinate(-1,1),
+            new Coordinate(-1,0),
+            new Coordinate(-1,-1),
+            new Coordinate(0,-1),
+            new Coordinate(1,-1)};;
 
     public DStarLite() {
         queueU = new PriorityQueueU();
@@ -26,15 +37,6 @@ public class DStarLite implements java.io.Serializable{
         s_last = new Coordinate(-1,-1);
         s_goal = new Coordinate(-1,-1);
         obstacles = new HashSet<>();
-        eight_neighbors = new Coordinate[]{
-                new Coordinate(1,0),
-                new Coordinate(1,1),
-                new Coordinate(0,1),
-                new Coordinate(-1,1),
-                new Coordinate(-1,0),
-                new Coordinate(-1,-1),
-                new Coordinate(0,-1),
-                new Coordinate(1,-1)};
     }
 
     /**
@@ -151,8 +153,8 @@ public class DStarLite implements java.io.Serializable{
     private void initialize(int start_x, int start_y, int goal_x, int goal_y) {
         queueU.clear();
         k_m = 0;
-//        rhs.clear();
-//        g.clear();
+        rhs.clear();
+        g.clear();
         s_start = new Coordinate(start_x, start_y);
         s_last = new Coordinate(start_x, start_y);
         s_goal = new Coordinate(goal_x, goal_y);
@@ -375,6 +377,33 @@ public class DStarLite implements java.io.Serializable{
             updateEdge(observed_map);
             computeShortestPath();
         }
+    }
+
+    public static HashMap<Coordinate, Boolean> getObservedMap(AgentState agentState) {
+        Perception perception = agentState.getPerception();
+        HashMap<Coordinate, Boolean> observed_map = new HashMap<>();
+
+        for (CellPerception cell: perception.getAllCells()) {
+            if (cell.isWalkable() ||
+                    ((cell.getX() == agentState.getX()) && (cell.getY() == agentState.getY()))) {
+                observed_map.put(new Coordinate(cell.getX(), cell.getY()), false); // no obstacle
+            }
+            else {
+                observed_map.put(new Coordinate(cell.getX(), cell.getY()), true); // obstacle
+            }
+        }
+
+        // set neighbors outside the map as obstacles
+        for (Coordinate n:eight_neighbors) {
+            int n_x = agentState.getX() + n.getX();
+            int n_y = agentState.getY() + n.getY();
+            CellPerception cell = perception.getCellPerceptionOnAbsPos(n_x, n_y);
+            if (cell == null) {
+                observed_map.put(new Coordinate(n_x, n_y), true);
+            }
+        }
+
+        return observed_map;
     }
 
     public static void main(String[] args) {

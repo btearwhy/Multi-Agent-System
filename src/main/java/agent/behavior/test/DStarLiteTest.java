@@ -36,6 +36,7 @@ public class DStarLiteTest extends Behavior {
                 perception.getCellPerceptionOnAbsPos(next.getX(), next.getY()).isWalkable() &&
                 (next.getX() >= 0 && next.getY() >= 0)) {
             agentAction.step(next.getX(), next.getY());
+            return;
         }
 
         // No viable moves, skip turn

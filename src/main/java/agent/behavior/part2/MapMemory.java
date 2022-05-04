@@ -107,7 +107,7 @@ public class MapMemory {
             Coordinate cor = new Coordinate(cellPerception.getX(), cellPerception.getY());
             map.put(cor, new CellMemory(cellPerception));
 
-            if(!cellPerception.isWalkable() /*&& !cellPerception.containsAgent()*/){
+            if(!cellPerception.isWalkable() && !(cellPerception.getX() == cur.getX() && cellPerception.getY() == cur.getY())/*&& !cellPerception.containsAgent()*/){
                 obstacles.put(cor, true);
             }
             else{

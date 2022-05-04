@@ -22,26 +22,25 @@ import agent.behavior.part2.CellMemory;
 import agent.behavior.part2.Utils;
 import com.google.gson.JsonObject;
 import environment.CellPerception;
+import environment.Mail;
+import environment.world.agent.AgentRep;
 import environment.world.destination.DestinationRep;
 import environment.world.packet.PacketRep;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Wander extends Behavior {
 
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
         // No communication
+
     }
 
 
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
         agentState.updateMapMemory();
-
         int dir;
         if(agentState.getPerceptionLastCell() == null){
             Random ra = new Random();

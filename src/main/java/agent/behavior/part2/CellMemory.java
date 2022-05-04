@@ -32,7 +32,7 @@ public class CellMemory extends CellPerception{
     public CellMemory(CellPerception cellPerception){
         super(cellPerception.getX(), cellPerception.getY());
         List<Representation> reps = cellPerception.getReps();
-        reps.removeIf(e->e instanceof AgentRep);
+        //reps.removeIf(e->e instanceof AgentRep);
         for (Representation rep:reps){
             this.addRep(rep);
         }

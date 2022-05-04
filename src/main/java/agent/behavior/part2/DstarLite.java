@@ -40,10 +40,13 @@ public class DstarLite {
         gMap = new HashMap<>();
     }
 
+    public void startOver(Coordinate start, Coordinate goal){
+        initialize(start, goal);
+        computeShortestPath();
+    }
     public Coordinate getNextMove(Coordinate start, Coordinate goal){
         if(!goal.equals(this.goal)){
-            initialize(start, goal);
-            computeShortestPath();
+            startOver(start, goal);
         }
 
         int g = Integer.MAX_VALUE;
@@ -189,7 +192,7 @@ public class DstarLite {
 
                         priorityQueue.remove(o.getKey());
                         for (Coordinate u:getNeighbors(o.getKey())){
-                            if(add(cost(u, o.getKey()), getG(o.getKey())) == getRhs(u)){
+                            if(add(1, getG(o.getKey())) == getRhs(u)){
                                 this.obstacles.put(o.getKey(), true);
                                 if(!u.equals(goal)) {
                                     rhsMap.put(u, getSmallestRhs(u));
@@ -197,6 +200,7 @@ public class DstarLite {
                                 updateVertex(u);
                             }
                         }
+
                         this.obstacles.put(o.getKey(), true);
                     }
                 }

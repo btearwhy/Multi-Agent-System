@@ -47,7 +47,7 @@ public class Pheromone extends Item<PheromoneRep> implements ClockListener {
 
 
     private final Logger logger = Logger.getLogger(Pheromone.class.getName());
-    
+
 
     /**
      * Initializes a new Pheromone instance with a specified lifetime.

@@ -40,7 +40,6 @@ abstract public class Behavior {
      *  (cfr. abstract methods {@link #communicate(AgentState, AgentCommunication)} and {@link #act(AgentState, AgentAction)})
      */
     public final void handle(AgentImp agent) {
-        
         if (this.hasHandled()) {
             return;
         }

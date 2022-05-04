@@ -175,7 +175,7 @@ public class CollisionMatrix {
         return true;
     }
 
-    
+
     public static boolean conveyorCanStandOn(Environment env, int x, int y) {
         // Only packets can stand on a conveyor belt
         for (World<?> w : env.getWorlds()) {

@@ -1,13 +1,17 @@
 package agent;
 
 import java.awt.Color;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import agent.behavior.Behavior;
 import agent.behavior.BehaviorState;
-import agent.dstarlite.DStarLite;
+import agent.behavior.part2.CellMemory;
+import agent.behavior.part2.DstarLite;
+import agent.behavior.part2.MapMemory;
 import environment.CellPerception;
+import environment.Coordinate;
 import environment.Perception;
 import environment.world.packet.Packet;
 
@@ -150,12 +154,19 @@ public interface AgentState {
     int getMaxNbMemoryFragments();
 
 
-
     /**
      * Set the behavior state of this agent. This method should, generally speaking, not be used by developers.
      * @param state The behavior state to switch to.
      */
     void setCurrentBehaviorState(BehaviorState state);
 
-    DStarLite getDStarLite();
+    void updateMapMemory();
+
+    void clearGoal();
+
+    List<CellMemory> getAllCellsMemory();
+
+    MapMemory getMapMemory();
+
+    DstarLite getDstarLite();
 }

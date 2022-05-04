@@ -64,7 +64,7 @@ public class CellPerception {
         this.reps.clear();
     }
 
-    public  List<Representation> getReps(){
+    public List<Representation> getReps(){
         return reps;
     }
 

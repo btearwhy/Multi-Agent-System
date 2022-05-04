@@ -1,17 +1,12 @@
 package agent;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 
 import agent.behavior.part2.CellMemory;
+import agent.behavior.part2.DstarLite;
 import agent.behavior.part2.MapMemory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -69,6 +64,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
     private boolean committedAction;
 
+    private DstarLite dstarLite;
 
     /**
      * The memory of an agent has the form of a key mapped to a memory fragment (represented as String)
@@ -104,22 +100,25 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.committedAction = false;
 
         this.eventBus.register(this);
+
+        dstarLite = new DstarLite();
     }
 
 
     @Override
-    public void updateMapMemory(List<CellPerception> cellPerceptions){
-        mapMemory.updateMapMemory(cellPerceptions);
+    public void updateMapMemory(){
+        List<CellPerception> cellPerceptions = getPerception().getAllCells();
+        mapMemory.updateMapMemory(cellPerceptions, new Coordinate(getX(), getY()), getPerception().getWidth(), getPerception().getHeight());
+    }
+
+    @Override
+    public void clearGoal(){
+        mapMemory.clearGoal();
     }
 
     @Override
     public MapMemory getMapMemory(){
         return mapMemory;
-    }
-
-    @Override
-    public void recalculate(Coordinate start, List<CellPerception> cellPerceptions){
-        mapMemory.recalculate(start, cellPerceptions);
     }
 
     @Override
@@ -967,4 +966,11 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     public boolean hasCommittedAction() {
         return this.committedAction;
     }
+
+    @Override
+    public DstarLite getDstarLite(){
+        return this.dstarLite;
+    }
+
+
 }

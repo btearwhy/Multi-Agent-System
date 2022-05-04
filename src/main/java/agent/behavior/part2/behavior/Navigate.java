@@ -11,6 +11,7 @@ import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
 import agent.behavior.part2.CellMemory;
+import agent.behavior.part2.DstarLite;
 import agent.behavior.part2.MapMemory;
 import agent.behavior.part2.Utils;
 import environment.CellPerception;
@@ -44,35 +45,22 @@ public class Navigate extends Behavior {
 
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
-        int x = agentState.getX();
-        int y = agentState.getY();
-        Coordinate cur = new Coordinate(x, y);
+        agentState.updateMapMemory();
+        Coordinate cur = new Coordinate(agentState.getX(), agentState.getY());
         Coordinate goal = Utils.getCoordinateFromGoal(agentState);
-        int dir = agentState.getMapMemory().getDirection(cur, goal);
-        if(dir == -1) agentAction.skip();
+        Coordinate next = agentState.getMapMemory().getNextMove(cur, goal);
+        //Coordinate next = agentState.getDstarLite().getNextMove(cur, goal);
+
+        if(next.equals(new Coordinate(-1, -1))) agentAction.skip();
         else{
-            CellPerception next = agentState.getPerception().getCellPerceptionOnAbsPos(x + Utils.moves.get(dir).getX(), y + Utils.moves.get(dir).getY());
-            while(next == null){
-                List<CellPerception> cellPerception = new ArrayList<>();
-                CellMemory cellMemory = new CellMemory(x + Utils.moves.get(dir).getX(), y + Utils.moves.get(dir).getY(), true);
-                cellPerception.add(cellMemory);
-                agentState.recalculate(new Coordinate(agentState.getX(), agentState.getY()), agentState.getPerception().getAllCells());
-                dir = agentState.getMapMemory().getDirection(cur, goal);
-                if(dir == -1){
-                    agentAction.skip();
-                    return;
-                }
-                next = agentState.getPerception().getCellPerceptionOnAbsPos(x + Utils.moves.get(dir).getX(), y + Utils.moves.get(dir).getY());
-            }
-            if(next.containsAgent()){
-                collideHandle(agentState, agentAction, dir);
+            if(agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()).containsAgent()){
+                collideHandle(agentState, agentAction, Utils.getDir(agentState.getX(),agentState.getY(), next.getX(), next.getY()));
             }
             else{
-                agentAction.step(x + Utils.moves.get(dir).getX(), y + Utils.moves.get(dir).getY());
-            }
-        }
-        agentState.recalculate(new Coordinate(agentState.getX(), agentState.getY()), agentState.getPerception().getAllCells());
 
+                agentAction.step(next.getX(), next.getY());
+
+            }
         }
 
     }

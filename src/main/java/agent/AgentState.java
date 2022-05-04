@@ -8,6 +8,7 @@ import java.util.Set;
 import agent.behavior.Behavior;
 import agent.behavior.BehaviorState;
 import agent.behavior.part2.CellMemory;
+import agent.behavior.part2.DstarLite;
 import agent.behavior.part2.MapMemory;
 import environment.CellPerception;
 import environment.Coordinate;
@@ -159,11 +160,13 @@ public interface AgentState {
      */
     void setCurrentBehaviorState(BehaviorState state);
 
-    void updateMapMemory(List<CellPerception> cellPerceptions);
+    void updateMapMemory();
 
-    void recalculate(Coordinate start, List<CellPerception> cellPerceptions);
+    void clearGoal();
 
     List<CellMemory> getAllCellsMemory();
 
     MapMemory getMapMemory();
+
+    DstarLite getDstarLite();
 }

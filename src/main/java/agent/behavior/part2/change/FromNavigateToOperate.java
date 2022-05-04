@@ -6,8 +6,11 @@ package agent.behavior.part2.change;/**
  * @version: $
  */
 
+import agent.AgentState;
 import agent.behavior.BehaviorChange;
 import agent.behavior.part2.Utils;
+import agent.behavior.part2.behavior.Navigate;
+import environment.CellPerception;
 import environment.Coordinate;
 
 /**
@@ -33,6 +36,7 @@ public class FromNavigateToOperate extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(hasGoal && inReach){
+            getAgentState().clearGoal();
             return true;
         }
         return false;

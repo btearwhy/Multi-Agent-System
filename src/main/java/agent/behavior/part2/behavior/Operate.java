@@ -35,6 +35,7 @@ public class Operate extends Behavior{
 
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
+        agentState.updateMapMemory();
         Perception perception = agentState.getPerception();
         Coordinate goalCor = Utils.getCoordinateFromGoal(agentState);
         String target = Utils.getTargetFromGoal(agentState);
@@ -52,6 +53,5 @@ public class Operate extends Behavior{
             agentAction.putPacket(goalCor.getX(), goalCor.getY());
         }
         else agentAction.skip();
-        agentState.updateMapMemory(agentState.getPerception().getAllCells());
     }
 }

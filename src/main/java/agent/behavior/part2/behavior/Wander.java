@@ -40,6 +40,8 @@ public class Wander extends Behavior {
 
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
+        agentState.updateMapMemory();
+
         int dir;
         if(agentState.getPerceptionLastCell() == null){
             Random ra = new Random();
@@ -62,7 +64,6 @@ public class Wander extends Behavior {
         }
 
         agentAction.step(agentState.getX() + Utils.moves.get(dir).getX(), agentState.getY() + Utils.moves.get(dir).getY());
-        agentState.updateMapMemory(agentState.getPerception().getAllCells());
 
 
 //        int j = 0;

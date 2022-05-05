@@ -39,46 +39,7 @@ public class Navigate extends Behavior {
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
         // No communication
     }
-//    public static void maptest(AgentState agentState){
-//        System.out.println(agentState.getName());
-//        Map<Coordinate, CellMemory> map = agentState.getMapMemory().getMap();
-//        DstarLite d = agentState.getMapMemory().getDstarLite();
-//        for(int i = 0; i < 16; i++){
-//            for(int j = 0; j < 16; j++){
-//                String s = "";
-//                if(agentState.getX() == j && agentState.getY() == i){
-//                    s = "$";
-//                }
-//                Coordinate corr = new Coordinate(j, i);
-//                if(map.containsKey(corr)){
-//                    List<Representation> r = map.get(corr).getReps();
-//                    if(r.size() == 0)
-//                        s = "无" + s;
-//                    else if(r.get(0) instanceof PacketRep)
-//                        s = "包" + s;
-//                    else if(r.get(0) instanceof DestinationRep)
-//                        s = "目" + s;
-//                    else if(r.get(0) instanceof WallRep)
-//                        s = "墙" + s;
-//                    else if(r.get(0) instanceof AgentRep)
-//                        s = "人" + s;
-//                    else s = r.toString();
-//                    s = (d.getRhs(corr) == Integer.MAX_VALUE ? "X" : d.getRhs(corr)) + "|"
-//                            + (d.getG(corr) == Integer.MAX_VALUE ? "X" : d.getG(corr)) + "|"
-//                            + s;
-//                    System.out.print(String.format("%-10s", s));
-//                }
-//                else{
-//                    s = (d.getRhs(corr) == Integer.MAX_VALUE ? "X" : d.getRhs(corr)) + "|"
-//                            + (d.getG(corr) == Integer.MAX_VALUE ? "X" : d.getG(corr)) + "|"
-//                            + "未" +s;
-//                    System.out.print(String.format("%-10s", s));
-//                }
-//            }
-//            System.out.print("\n");
-//        }
-//        System.out.print("\n");
-//    }
+
 
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
@@ -90,20 +51,14 @@ public class Navigate extends Behavior {
         //Coordinate next = agentState.getDstarLite().getNextMove(cur, goal);
 
         if(next.equals(new Coordinate(-1, -1))) {
-            if(agentState.getMemoryFragment("stay") == null){
-                agentState.addMemoryFragment("stay", String.valueOf(0));
-            }
-            int times = Integer.parseInt(agentState.getMemoryFragment("stay"));
-            if(times == 10){
+            if(Utils.trapped(agentState)){
                 agentState.getMapMemory().getDstarLite().startOver(cur, goal);
                 Coordinate n = agentState.getMapMemory().getNextMove(cur, goal);
                 agentAction.step(n.getX(), n.getY());
-                agentState.removeMemoryFragment("stay");
-                return;
             }
-            times++;
-            agentState.addMemoryFragment("stay", String.valueOf(times));
-            agentAction.skip();
+            else{
+                agentAction.skip();
+            }
         }
         else{
             agentState.removeMemoryFragment("stay");

@@ -15,6 +15,7 @@ import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
 import environment.Representation;
+import environment.world.agent.Agent;
 import environment.world.destination.DestinationRep;
 import environment.world.generator.PacketGeneratorRep;
 import environment.world.packet.PacketRep;
@@ -41,6 +42,7 @@ public class Utils {
             new Coordinate(-1, 0), new Coordinate(-1, 1)
     ));
 
+    public static final int trapTimes = 5;
 
 
     public static int getDir(int x1, int y1, int x2, int y2){
@@ -198,6 +200,18 @@ public class Utils {
         return goal;
     }
 
+    public static boolean trapped(AgentState agentState){
+        if(agentState.getMemoryFragment("stay") == null){
+            agentState.addMemoryFragment("stay", String.valueOf(0));
+        }
+        int times = Integer.parseInt(agentState.getMemoryFragment("stay"));
+        agentState.addMemoryFragment("stay", String.valueOf(++times));
+        if(times == trapTimes) {
+            agentState.removeMemoryFragment("stay");
+            return true;
+        }
+        return false;
+    }
 
     public static boolean isInReach(AgentState agentState, Coordinate coordinate){
         return agentState.getPerception().getCellPerceptionOnAbsPos(coordinate.getX(), coordinate.getY()) != null &&

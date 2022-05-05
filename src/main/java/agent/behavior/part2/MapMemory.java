@@ -102,16 +102,21 @@ public class MapMemory {
     }
     public void updateMapMemory(List<CellPerception> cellPerceptions, Coordinate cur, int width, int height){
         updateBorder(cellPerceptions, cur, width, height);
-        Map<Coordinate, Boolean> obstacles = new HashMap<>();
+        Map<Coordinate, Obstacle> obstacles = new HashMap<>();
         for (CellPerception cellPerception:cellPerceptions){
             Coordinate cor = new Coordinate(cellPerception.getX(), cellPerception.getY());
             map.put(cor, new CellMemory(cellPerception));
 
             if(!cellPerception.isWalkable() && !(cellPerception.getX() == cur.getX() && cellPerception.getY() == cur.getY())/*&& !cellPerception.containsAgent()*/){
-                obstacles.put(cor, true);
+                if (cellPerception.containsAgent())
+                    obstacles.put(cor, Obstacle.AGENT);
+                else if(cellPerception.containsPacket() && !cellPerception.containsGenerator())
+                    obstacles.put(cor, Obstacle.PACKET);
+                else
+                    obstacles.put(cor, Obstacle.FIXED);
             }
             else{
-                obstacles.put(cor, false);
+                obstacles.put(cor, Obstacle.NULL);
             }
         }
 

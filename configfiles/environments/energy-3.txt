@@ -340,7 +340,7 @@ Integer 0
 Integer 8
 String "green"
 Integer 15
-Integer 200
+Integer 20
 environment.world.generator.PacketGenerator
 nbArgs 6
 Integer 7
@@ -348,7 +348,7 @@ Integer 15
 Integer 9
 String "red"
 Integer 20
-Integer 100
+Integer 10
 environment.world.generator.PacketGenerator
 nbArgs 6
 Integer 8
@@ -356,7 +356,7 @@ Integer 15
 Integer 10
 String "blue"
 Integer 20
-Integer 100
+Integer 10
 environment.world.generator.PacketGenerator
 nbArgs 6
 Integer 15
@@ -364,6 +364,6 @@ Integer 15
 Integer 11
 String "green"
 Integer 10
-Integer 200
+Integer 20
 
 nbConveyors 0

@@ -6,10 +6,11 @@ import agent.AgentState;
 import agent.behavior.Behavior;
 import environment.CellPerception;
 import environment.Coordinate;
+import environment.Mail;
 import environment.Perception;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 
 public class Charge extends Behavior {
@@ -24,20 +25,36 @@ public class Charge extends Behavior {
 
         var neighbours = perception.getNeighbours();
 
+        var last_perception = agentState.getPerceptionLastCell();
         // put down the packet
         if (agentState.hasCarry()){
-            var last_perception = agentState.getPerceptionLastCell();
             agentAction.putPacket(last_perception.getX(), last_perception.getY());
             return;
         }
 
-        // energy station is occupied, wait for charging
+        // find the target Energy station
+        int energy_distance = Integer.MAX_VALUE;
+        CellPerception target = null;
         for (CellPerception cell : perception.getAllCells()){
             if (cell != null && cell.containsEnergyStation()){
-                CellPerception charge_place = perception.getCellPerceptionOnAbsPos(cell.getX(),cell.getY()-1);
-                if (charge_place != null && charge_place.containsAgent()){
+                if (Perception.distance(perception.getCellPerceptionOnRelPos(0,0), cell) < energy_distance){
+                    energy_distance = Perception.distance(perception.getCellPerceptionOnRelPos(0,0),cell);
+                    target = cell;
+                }
+            }
+        }
+
+        // whether to wait
+        if(target != null){
+            for (int i = 1; i < 4; i++){
+                CellPerception walk_place = perception.getCellPerceptionOnAbsPos(target.getX(),target.getY()-i);
+                if (walk_place != null && walk_place.containsAgent() &&
+                        walk_place.getAgentRepresentation().get().getName() != agentState.getName()){
+
                     agentAction.skip();
                     return;
+
+
                 }
             }
         }
@@ -46,7 +63,6 @@ public class Charge extends Behavior {
         if (perception.getCellPerceptionOnRelPos(0, 0).containsGradient()
                 && perception.getCellPerceptionOnRelPos(0, 0).getGradientRepresentation().get().getValue() == 0) {
             agentAction.skip();
-            System.out.println("Charging");
             return;
         }
 
@@ -61,14 +77,6 @@ public class Charge extends Behavior {
                     min_grad = n.getGradientRepresentation().get().getValue();
                 }
             }
-
-            // charging station is occupied
-            //if (n != null && n.containsAgent() && n.containsGradient()
-            //&& n.getGradientRepresentation().get().getValue() <
-            //current_cell.getGradientRepresentation().get().getValue()){
-            //agentAction.skip();
-            //System.out.println("Wait for charging");
-            //}
         }
 
         // extract all neighbors' coordinates with min gradient value
@@ -87,7 +95,6 @@ public class Charge extends Behavior {
         CellPerception target_cell = null;
         if (min_neighbours.size() == 0){
             agentAction.skip();
-            System.out.println("No way");
             return;
         }
         else{
@@ -102,7 +109,6 @@ public class Charge extends Behavior {
         }
 
         agentAction.step(target_cell.getX(),target_cell.getY());
-        System.out.println("To station");
         return;
     }
 

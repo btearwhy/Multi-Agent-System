@@ -10,7 +10,7 @@ public class FromWanderToCharge extends BehaviorChange {
 
     @Override
     public boolean isSatisfied() {
-        if (!getAgentState().hasCarry() && getAgentState().getBatteryState()<200) {
+        if (getAgentState().getBatteryState()<400) {
             return true;
         }
         return false;

@@ -69,7 +69,8 @@ public class Navigate extends Behavior {
         else{
             agentState.removeMemoryFragment("stay");
             agentState.addMemoryFragment("stay", "0");
-            if(agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()).containsAgent()){
+            if(agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()) != null &&
+                    agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()).containsAgent()){
                 collideHandle(agentState, agentAction, Utils.getDir(agentState.getX(),agentState.getY(), next.getX(), next.getY()));
             }
             else{

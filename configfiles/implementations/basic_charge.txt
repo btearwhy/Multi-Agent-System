@@ -46,6 +46,12 @@ priority 0                                              # Higher value −> high
 source 3                                                # ID of starting behavior
 target 1                                                # ID of resulting behavior
 
+agent.behavior.part2.change.FromOperateToCharge
+nbArgs 0                                                # The constructor of ConditionOne takes 0 args
+priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
+source 3                                                # ID of starting behavior
+target 4                                                # ID of resulting behavior
+
 agent.behavior.part2.change.FromNavigateToWander
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)

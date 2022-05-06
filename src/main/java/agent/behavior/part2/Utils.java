@@ -6,19 +6,15 @@ package agent.behavior.part2;/**
  * @version: $
  */
 
-import agent.AgentAction;
 import agent.AgentState;
+import agent.memory.CellMemory;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
-import environment.Representation;
 import environment.world.destination.DestinationRep;
-import environment.world.generator.PacketGeneratorRep;
 import environment.world.packet.PacketRep;
-import util.Pair;
 
 import javax.annotation.Nullable;
 import java.awt.*;

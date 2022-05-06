@@ -1,4 +1,4 @@
-package agent.behavior.part2;/**
+package agent.memory;/**
  * @author ：mmzs
  * @date ：Created in 2022/4/30 16:06
  * @description：
@@ -9,11 +9,7 @@ package agent.behavior.part2;/**
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Representation;
-import environment.world.agent.AgentRep;
-import util.Pair;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**

@@ -33,7 +33,7 @@ public class FromNavigateToWander extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(!hasGoal){
-            getAgentState().clearGoal();
+            getAgentState().getDStarLite().clearGoal();
             return true;
         }
         return false;

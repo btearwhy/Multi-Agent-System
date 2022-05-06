@@ -18,14 +18,7 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.part2.CellMemory;
 import agent.behavior.part2.Utils;
-import com.google.gson.JsonObject;
-import environment.CellPerception;
-import environment.Mail;
-import environment.world.agent.AgentRep;
-import environment.world.destination.DestinationRep;
-import environment.world.packet.PacketRep;
 
 import java.util.*;
 

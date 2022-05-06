@@ -14,7 +14,7 @@ public class FromNavigateToCharge extends BehaviorChange {
     @Override
     public boolean isSatisfied() {
         if (getAgentState().getBatteryState()<400) {
-            getAgentState().clearGoal();
+            getAgentState().getDStarLite().clearGoal();
             return true;
         }
         return false;

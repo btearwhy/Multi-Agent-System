@@ -1,4 +1,4 @@
-package agent.behavior.part2;/**
+package agent.memory;/**
  * @author ：mmzs
  * @date ：Created in 2022/4/30 14:29
  * @description：
@@ -8,14 +8,6 @@ package agent.behavior.part2;/**
 
 import environment.CellPerception;
 import environment.Coordinate;
-import environment.Perception;
-import environment.Representation;
-import environment.world.destination.Destination;
-import environment.world.destination.DestinationRep;
-import environment.world.packet.Packet;
-import environment.world.packet.PacketRep;
-import environment.world.wall.WallRep;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 
@@ -32,19 +24,9 @@ public class MapMemory {
     int height = Integer.MAX_VALUE;
 
     Map<Coordinate, CellMemory> map;
-    DstarLite dstarLite;
-
-    public DstarLite getDstarLite() {
-        return dstarLite;
-    }
-
-    public void setDstarLite(DstarLite dstarLite) {
-        this.dstarLite = dstarLite;
-    }
 
     public MapMemory(){
         map = new HashMap<>();
-        dstarLite = new DstarLite();
     }
 
     public List<CellMemory> getAllCellsMemory(){
@@ -100,6 +82,7 @@ public class MapMemory {
             }
         }
     }
+
     public void updateMapMemory(List<CellPerception> cellPerceptions, Coordinate cur, int width, int height){
         updateBorder(cellPerceptions, cur, width, height);
         Map<Coordinate, Boolean> obstacles = new HashMap<>();
@@ -114,20 +97,10 @@ public class MapMemory {
                 obstacles.put(cor, false);
             }
         }
-
-        dstarLite.recalculate(obstacles, this.width, this.height);
-    }
-
-    public void clearGoal(){
-        dstarLite.clearGoal();
     }
 
     public Map<Coordinate, CellMemory> getMap() {
         return map;
-    }
-
-    public Coordinate getNextMove(Coordinate start, Coordinate goal){
-        return dstarLite.getNextMove(start, goal);
     }
 
     public int getWidth() {

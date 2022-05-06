@@ -10,20 +10,10 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.part2.CellMemory;
-import agent.behavior.part2.DstarLite;
-import agent.behavior.part2.MapMemory;
 import agent.behavior.part2.Utils;
+import agent.dstarlite.DStarLite;
 import environment.*;
-import environment.world.agent.AgentRep;
-import environment.world.destination.DestinationRep;
-import environment.world.packet.PacketRep;
-import environment.world.wall.SolidWallRep;
-import environment.world.wall.WallRep;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -47,8 +37,10 @@ public class Navigate extends Behavior {
 
         Coordinate cur = new Coordinate(agentState.getX(), agentState.getY());
         Coordinate goal = Utils.getCoordinateFromGoal(agentState);
-        Coordinate next = agentState.getMapMemory().getNextMove(cur, goal);
-        //Coordinate next = agentState.getDstarLite().getNextMove(cur, goal);
+        agentState.getDStarLite().updateStart(cur);
+        agentState.getDStarLite().updateGoal(goal);
+        agentState.getDStarLite().run(DStarLite.getObservedMap(agentState));
+        Coordinate next = agentState.getDStarLite().getNextMove(cur);
 
         if(next.equals(new Coordinate(-1, -1))) {
             if(agentState.getMemoryFragment("stay") == null){
@@ -56,8 +48,10 @@ public class Navigate extends Behavior {
             }
             int times = Integer.parseInt(agentState.getMemoryFragment("stay"));
             if(times == 10){
-                agentState.getMapMemory().getDstarLite().startOver(cur, goal);
-                Coordinate n = agentState.getMapMemory().getNextMove(cur, goal);
+                agentState.getDStarLite().clearGoal();
+                agentState.getDStarLite().updateStart(cur);
+                agentState.getDStarLite().updateGoal(goal);
+                Coordinate n = agentState.getDStarLite().getNextMove(cur);
                 agentAction.step(n.getX(), n.getY());
                 agentState.removeMemoryFragment("stay");
                 return;

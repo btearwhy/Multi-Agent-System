@@ -1,10 +1,10 @@
 package agent.dstarlite;
 
 import agent.AgentState;
+import agent.behavior.part2.Utils;
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 
@@ -18,6 +18,7 @@ public class DStarLite implements java.io.Serializable{
     private Coordinate s_goal;
     HashSet<Coordinate> old_obstacles;
     private HashSet<Coordinate> obstacles;
+    private final int maxIterations = 1000;
     private static final Coordinate[] eight_neighbors = new Coordinate[]{
             new Coordinate(1,0),
             new Coordinate(1,1),
@@ -197,13 +198,19 @@ public class DStarLite implements java.io.Serializable{
     }
 
     private void computeShortestPath() {
-        while (!queueU.isEmpty() &&
+        int iterations = 0;
+        while (//iterations++<maxIterations &&
+                !queueU.isEmpty() &&
                 (queueU.topKey().compareTo(calculateKey(s_start)) < 0
                         || Double.compare(getRHS(s_start), getG(s_start)) != 0)) {
             // debug
             var k_start = calculateKey(s_start);
             var r_start = getRHS(s_start);
             var g_start = getG(s_start);
+            iterations++;
+            if (iterations > maxIterations) {
+                return;
+            }
 
             PriorityKey k_old = queueU.topKey();
             Coordinate u = queueU.pop();
@@ -277,10 +284,14 @@ public class DStarLite implements java.io.Serializable{
     }
 
     public void updateGoal(Coordinate s_goal) {
-        if (!this.s_goal.equals(s_goal)) {
+        if (this.s_goal==null || !this.s_goal.equals(s_goal)) {
             initialize(s_start.getX(), s_start.getY(), s_goal.getX(), s_goal.getY());
             this.s_goal = s_goal;
         }
+    }
+
+    public void clearGoal() {
+        this.s_goal = null;
     }
 
     public void updateGoal(int x, int y) {
@@ -392,6 +403,10 @@ public class DStarLite implements java.io.Serializable{
                 observed_map.put(new Coordinate(cell.getX(), cell.getY()), true); // obstacle
             }
         }
+
+        // set goal as a reachable cell
+        Coordinate goal = Utils.getCoordinateFromGoal(agentState);
+        observed_map.put(new Coordinate(goal.getX(), goal.getY()), false);
 
         // set neighbors outside the map as obstacles
         for (Coordinate n:eight_neighbors) {

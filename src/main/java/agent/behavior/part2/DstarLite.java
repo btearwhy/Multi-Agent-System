@@ -242,7 +242,7 @@ public class DstarLite {
     }
 
     void computeShortestPath(){
-        while(!priorityQueue.isEmpty() && priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) < getRhs(start)){
+        while(!priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) < getRhs(start))){
 
             Coordinate u = priorityQueue.peek().getCoordinate();
             PriorityKey kOld = priorityQueue.peek().getPriorityKey();

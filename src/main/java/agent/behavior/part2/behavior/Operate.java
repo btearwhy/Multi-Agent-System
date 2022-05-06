@@ -53,6 +53,5 @@ public class Operate extends Behavior{
             agentAction.putPacket(goalCor.getX(), goalCor.getY());
         }
         else agentAction.skip();
-        Utils.updateAgentNum(agentState);
     }
 }

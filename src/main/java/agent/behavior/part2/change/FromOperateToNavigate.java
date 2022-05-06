@@ -9,6 +9,7 @@ package agent.behavior.part2.change;/**
 import agent.behavior.BehaviorChange;
 import agent.behavior.part2.Utils;
 import com.google.gson.JsonObject;
+import environment.Coordinate;
 
 /**
  * @author     ：mmzs
@@ -40,6 +41,10 @@ public class FromOperateToNavigate extends BehaviorChange {
 
     @Override
     public boolean isSatisfied(){
+        if(hasGoal){
+            Coordinate goal = Utils.getCoordinateFromGoal(getAgentState());
+            getAgentState().getMapMemory().getDstarLite().startOver(new Coordinate(getAgentState().getX(), getAgentState().getY()), goal);
+        }
         return hasGoal;
     }
 }

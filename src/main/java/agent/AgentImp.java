@@ -65,7 +65,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     private boolean committedAction;
 
     private DstarLite dstarLite;
-
+    
     /**
      * The memory of an agent has the form of a key mapped to a memory fragment (represented as String)
      * e.g.  "target" -> "3, 4"
@@ -102,6 +102,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.eventBus.register(this);
 
         dstarLite = new DstarLite();
+
     }
 
 
@@ -966,6 +967,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     public boolean hasCommittedAction() {
         return this.committedAction;
     }
+
 
     @Override
     public DstarLite getDstarLite(){

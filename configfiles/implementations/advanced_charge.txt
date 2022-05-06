@@ -13,7 +13,7 @@ nbArgs 0                            # // (no arguments)
 nbArgs 0                            # // (no arguments)
 4 agent.behavior.part2.behavior.Charge      # Fourth behavior
 nbArgs 1
-Integer 1
+Integer 3
 
 
 # ---------------------------------------------------------------

@@ -4,16 +4,27 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import environment.CellPerception;
-import environment.Coordinate;
-import environment.Mail;
-import environment.Perception;
+import environment.*;
+import util.Generator;
+import util.MyColor;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Charge extends Behavior {
+    private int jam_avoid_number;
+
+    public Charge(int jam_avoid_number_number) {
+        this.jam_avoid_number = jam_avoid_number_number;
+    }
+
+    public int getJamNumber(){
+        return this.jam_avoid_number;
+    }
+
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
 
@@ -57,7 +68,7 @@ public class Charge extends Behavior {
 
         // whether to wait
         if(target != null){
-            for (int i = 1; i < 4; i++){ // change 4 to 2 environment energy-1 and energy-2
+            for (int i = 1; i <= jam_avoid_number; i++){
                 CellPerception walk_place = perception.getCellPerceptionOnAbsPos(target.getX(),target.getY()-i);
                 if (walk_place != null && walk_place.containsAgent() &&
                         walk_place.getAgentRepresentation().get().getName() != agentState.getName()){
@@ -76,8 +87,6 @@ public class Charge extends Behavior {
             agentAction.skip();
             return;
         }
-
-        CellPerception current_cell = perception.getCellPerceptionOnRelPos(0,0);
 
         int min_grad = Integer.MAX_VALUE;
         // find the min gradient value
@@ -146,4 +155,5 @@ public class Charge extends Behavior {
         return count;
 
     }
+
 }

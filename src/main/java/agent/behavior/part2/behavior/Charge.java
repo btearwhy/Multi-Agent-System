@@ -57,7 +57,7 @@ public class Charge extends Behavior {
 
         // whether to wait
         if(target != null){
-            for (int i = 1; i < 4; i++){
+            for (int i = 1; i < 4; i++){ // change 4 to 2 environment energy-1 and energy-2
                 CellPerception walk_place = perception.getCellPerceptionOnAbsPos(target.getX(),target.getY()-i);
                 if (walk_place != null && walk_place.containsAgent() &&
                         walk_place.getAgentRepresentation().get().getName() != agentState.getName()){

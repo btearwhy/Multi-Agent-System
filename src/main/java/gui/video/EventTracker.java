@@ -126,14 +126,14 @@ public class EventTracker {
         meta.put("Implementation", applicationRunner.getImplementation());
 
         JSONObject moves = new JSONObject();
-        moves.put("Key", new JSONArray(new String[] {"Cycle", "AgentName", "FromX", "FromY", "ToX", "ToY"}));
+        moves.put("PriorityKey", new JSONArray(new String[] {"Cycle", "AgentName", "FromX", "FromY", "ToX", "ToY"}));
         moves.put("Data", new JSONArray(historyMoves.stream()
                 .map(AgentMove::toJSONArray)
                 .collect(Collectors.toList())));
 
 
         JSONObject packetPickup = new JSONObject();
-        packetPickup.put("Key", new JSONArray(new String[] {"Cycle", "AgentName", "PacketX", "PacketY"}));
+        packetPickup.put("PriorityKey", new JSONArray(new String[] {"Cycle", "AgentName", "PacketX", "PacketY"}));
         packetPickup.put("Data", new JSONArray(historyPackets.stream()
                 .filter(p -> p.mode == PacketAction.Mode.Pickup)
                 .map(PacketAction::toJSONArray)
@@ -141,7 +141,7 @@ public class EventTracker {
 
 
         JSONObject packetDelivery = new JSONObject();
-        packetDelivery.put("Key", new JSONArray(new String[] {"Cycle", "AgentName", "DestinationX", "DestinationY"}));
+        packetDelivery.put("PriorityKey", new JSONArray(new String[] {"Cycle", "AgentName", "DestinationX", "DestinationY"}));
         packetDelivery.put("Data", new JSONArray(historyPackets.stream()
                 .filter(p -> p.mode == PacketAction.Mode.Delivery)
                 .map(PacketAction::toJSONArray)
@@ -149,7 +149,7 @@ public class EventTracker {
 
 
         JSONObject packetDrop = new JSONObject();
-        packetDrop.put("Key", new JSONArray(new String[] {"Cycle", "AgentName", "DropX", "DropY"}));
+        packetDrop.put("PriorityKey", new JSONArray(new String[] {"Cycle", "AgentName", "DropX", "DropY"}));
         packetDrop.put("Data", new JSONArray(historyPackets.stream()
                 .filter(p -> p.mode == PacketAction.Mode.Drop)
                 .map(PacketAction::toJSONArray)
@@ -157,7 +157,7 @@ public class EventTracker {
 
 
         JSONObject energyUpdate = new JSONObject();
-        energyUpdate.put("Key", new JSONArray(new String[] {"Cycle", "AgentName", "Operator", "Percentage"}));
+        energyUpdate.put("PriorityKey", new JSONArray(new String[] {"Cycle", "AgentName", "Operator", "Percentage"}));
         energyUpdate.put("Data", new JSONArray(historyEnergy.stream()
                 .map(EnergyUpdate::toJSONArray)
                 .collect(Collectors.toList())));

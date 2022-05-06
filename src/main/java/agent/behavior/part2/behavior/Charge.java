@@ -1,36 +1,21 @@
-package agent.behavior.part1b;
+package agent.behavior.part2.behavior;
 
 import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-
 import environment.CellPerception;
 import environment.Coordinate;
-import environment.Perception;
 import environment.Mail;
-
-import javax.swing.*;
-import environment.Coordinate;
+import environment.Perception;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class Charge extends Behavior {
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
-        // broadcast battery state
-        String battery = String.valueOf(agentState.getBatteryState());
-        String name = agentState.getName();
-        agentCommunication.broadcastMessage(name+battery);
-
-        // receive message
-        Collection<Mail> messages = agentCommunication.getMessages();
-        for (Mail m : messages){
-            System.out.println(m.toString());
-        }
 
     }
 
@@ -40,11 +25,22 @@ public class Charge extends Behavior {
 
         var neighbours = perception.getNeighbours();
 
+        var last_perception = agentState.getPerceptionLastCell();
         // put down the packet
         if (agentState.hasCarry()){
-            var last_perception = agentState.getPerceptionLastCell();
-            agentAction.putPacket(last_perception.getX(), last_perception.getY());
-            return;
+            if (last_perception != null){
+                agentAction.putPacket(last_perception.getX(), last_perception.getY());
+                return;
+            }
+            else{
+                for (var n : neighbours){
+                    if (n != null && n.isWalkable()){
+                        agentAction.putPacket(n.getX(),n.getY());
+                        return;
+                    }
+                }
+            }
+
         }
 
         // find the target Energy station
@@ -61,12 +57,15 @@ public class Charge extends Behavior {
 
         // whether to wait
         if(target != null){
-            for (int i = 1; i < 4; i++){
+            for (int i = 1; i < 4; i++){ // change 4 to 2 environment energy-1 and energy-2
                 CellPerception walk_place = perception.getCellPerceptionOnAbsPos(target.getX(),target.getY()-i);
                 if (walk_place != null && walk_place.containsAgent() &&
                         walk_place.getAgentRepresentation().get().getName() != agentState.getName()){
+
                     agentAction.skip();
                     return;
+
+
                 }
             }
         }

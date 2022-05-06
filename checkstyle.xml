@@ -26,9 +26,9 @@
             <property name="allowEmptyTypes" value="true"/>
             <property name="allowEmptyLoops" value="true"/>
             <property name="allowEmptyCatches" value="true"/>
-            <message key="ws.notFollowed"
+            <message priorityKey="ws.notFollowed"
                      value="WhitespaceAround: ''{0}'' is not followed by whitespace."/>
-            <message key="ws.notPreceded"
+            <message priorityKey="ws.notPreceded"
                      value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
         </module>
 
@@ -40,23 +40,23 @@
         <module name="SuppressionCommentFilter"/>
         <module name="PackageName">
             <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
-            <message key="name.invalidPattern"
+            <message priorityKey="name.invalidPattern"
                      value="Package name ''{0}'' must match pattern ''{1}''."/>
         </module>
 
         <module name="TypeName">
-            <message key="name.invalidPattern"
+            <message priorityKey="name.invalidPattern"
                      value="Type name ''{0}'' must match pattern ''{1}''."/>
         </module>
 
         <module name="GenericWhitespace">
-            <message key="ws.followed"
+            <message priorityKey="ws.followed"
                      value="GenericWhitespace ''{0}'' is followed by whitespace."/>
-            <message key="ws.preceded"
+            <message priorityKey="ws.preceded"
                      value="GenericWhitespace ''{0}'' is preceded with whitespace."/>
-            <message key="ws.illegalFollow"
+            <message priorityKey="ws.illegalFollow"
                      value="GenericWhitespace ''{0}'' should followed by whitespace."/>
-            <message key="ws.notPreceded"
+            <message priorityKey="ws.notPreceded"
                      value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
         </module>
     </module>

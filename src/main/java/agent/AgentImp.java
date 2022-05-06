@@ -1,27 +1,20 @@
 package agent;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
+
+import agent.behavior.part2.CellMemory;
+import agent.behavior.part2.DstarLite;
+import agent.behavior.part2.MapMemory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import agent.behavior.Behavior;
 import agent.behavior.BehaviorState;
-import environment.ActiveImp;
-import environment.ActiveItemID;
-import environment.CellPerception;
-import environment.EnergyValues;
+import environment.*;
 import environment.Mail;
-import environment.MailBuffer;
-import environment.Perception;
 import environment.world.agent.Agent;
 import environment.world.agent.AgentRep;
 import environment.world.destination.DestinationRep;
@@ -68,9 +61,10 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     private final MailBuffer outgoingMails;
 
     private final EventBus eventBus;
-    
+
     private boolean committedAction;
 
+    private DstarLite dstarLite;
 
     /**
      * The memory of an agent has the form of a key mapped to a memory fragment (represented as String)
@@ -81,6 +75,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
     private final Logger logger = Logger.getLogger(AgentImp.class.getName());
 
+    private MapMemory mapMemory;
 
 
     /**
@@ -100,14 +95,36 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         //synchronize=false;
         this.outgoingMails = new MailBuffer();
         memory = new HashMap<>();
-
+        mapMemory = new MapMemory();
 
         this.committedAction = false;
 
         this.eventBus.register(this);
+
+        dstarLite = new DstarLite();
     }
 
 
+    @Override
+    public void updateMapMemory(){
+        List<CellPerception> cellPerceptions = getPerception().getAllCells();
+        mapMemory.updateMapMemory(cellPerceptions, new Coordinate(getX(), getY()), getPerception().getWidth(), getPerception().getHeight());
+    }
+
+    @Override
+    public void clearGoal(){
+        mapMemory.clearGoal();
+    }
+
+    @Override
+    public MapMemory getMapMemory(){
+        return mapMemory;
+    }
+
+    @Override
+    public List<CellMemory> getAllCellsMemory(){
+        return mapMemory.getAllCellsMemory();
+    }
 
     // ===============================
     // | Agent Communication Methods |
@@ -194,7 +211,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         messages.clear();
     }
 
-    
+
 
 
     // ========================
@@ -209,7 +226,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.logger.fine(String.format("agent %d proposes to do a skip.", this.getActiveItemID().getID()));
 
         this.concludeWithCondition(this.hasSufficientEnergyDefault(),
-            this.generateActionOutcome(new InfSkip(getEnvironment(), getActiveItemID())));
+                this.generateActionOutcome(new InfSkip(getEnvironment(), getActiveItemID())));
     }
 
     /**
@@ -223,7 +240,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.logger.fine(String.format("agent %d proposes to do a step.", getActiveItemID().getID()));
 
         this.concludeWithCondition(this.hasSufficientEnergy(this.hasCarry() ? EnergyValues.BATTERY_DECAY_STEP_WITH_CARRY : EnergyValues.BATTERY_DECAY_STEP),
-            this.generateActionOutcome(new InfStep(getEnvironment(), x, y, getActiveItemID())));
+                this.generateActionOutcome(new InfStep(getEnvironment(), x, y, getActiveItemID())));
     }
 
     /**
@@ -239,7 +256,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.logger.fine(String.format("agent %d proposes to do put a packet.", getActiveItemID().getID()));
 
         this.concludeWithCondition(this.hasSufficientEnergyDefault(),
-            this.generateActionOutcome(new InfPutPacket(getEnvironment(), x, y, getActiveItemID())));
+                this.generateActionOutcome(new InfPutPacket(getEnvironment(), x, y, getActiveItemID())));
     }
 
     /**
@@ -308,7 +325,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.logger.fine(String.format("agent %d proposes to put a pheromone.", getActiveItemID().getID()));
 
         this.concludeWithCondition(this.hasSufficientEnergyDefault(),
-            this.generateActionOutcome(new InfPutPheromone(getEnvironment(), x, y, getActiveItemID(), lifetime)));
+                this.generateActionOutcome(new InfPutPheromone(getEnvironment(), x, y, getActiveItemID(), lifetime)));
     }
 
     /**
@@ -324,7 +341,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.logger.fine(String.format("agent %d proposes to put a directed pheromone.", getActiveItemID().getID()));
 
         this.concludeWithCondition(this.hasSufficientEnergyDefault(),
-            this.generateActionOutcome(new InfPutDirPheromone(getEnvironment(), x, y, getActiveItemID(), lifetime, target)));
+                this.generateActionOutcome(new InfPutDirPheromone(getEnvironment(), x, y, getActiveItemID(), lifetime, target)));
     }
 
     /**
@@ -338,7 +355,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.logger.fine(String.format("agent %d proposes to put a pheromone.", getActiveItemID().getID()));
 
         this.concludeWithCondition(this.hasSufficientEnergyDefault(),
-            this.generateActionOutcome(new InfRemovePheromone(getEnvironment(), x, y, getActiveItemID())));
+                this.generateActionOutcome(new InfRemovePheromone(getEnvironment(), x, y, getActiveItemID())));
     }
 
     /**
@@ -353,7 +370,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.logger.fine(String.format("agent %d proposes to put a flag.", getActiveItemID().getID()));
 
         this.concludeWithCondition(this.hasSufficientEnergyDefault(),
-            this.generateActionOutcome(new InfPutFlag(getEnvironment(), x, y, getActiveItemID(), color)));
+                this.generateActionOutcome(new InfPutFlag(getEnvironment(), x, y, getActiveItemID(), color)));
     }
 
     /**
@@ -379,11 +396,11 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.logger.fine(String.format("agent %d proposes to put a crumb.", getActiveItemID().getID()));
 
         this.concludeWithCondition(this.hasSufficientEnergyDefault(),
-            this.generateActionOutcome(new InfPutCrumb(getEnvironment(), x, y, getActiveItemID(), number)));
+                this.generateActionOutcome(new InfPutCrumb(getEnvironment(), x, y, getActiveItemID(), number)));
     }
 
     /**
-     * Pick up a specified number of crumbs in the environment from the given coordinate. 
+     * Pick up a specified number of crumbs in the environment from the given coordinate.
      *
      * @param x       The x coordinate of the target area.
      * @param y       The y coordinate of the target area.
@@ -394,7 +411,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         this.logger.fine(String.format("agent %d proposes to put a crumb.", getActiveItemID().getID()));
 
         this.concludeWithCondition(this.hasSufficientEnergyDefault(),
-            this.generateActionOutcome(new InfPickCrumb(getEnvironment(), x, y, getActiveItemID(), number)));
+                this.generateActionOutcome(new InfPickCrumb(getEnvironment(), x, y, getActiveItemID(), number)));
     }
 
 
@@ -410,7 +427,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         }
 
         this.concludeWithCondition(this.hasSufficientEnergyDefault(),
-            this.generateActionOutcome(new InfPickPacket(getEnvironment(), packet.getX(), packet.getY(), getActiveItemID(), packetColor)));
+                this.generateActionOutcome(new InfPickPacket(getEnvironment(), packet.getX(), packet.getY(), getActiveItemID(), packetColor)));
     }
 
     private void pickGeneratorPacket(PacketGenerator generator) {
@@ -419,11 +436,11 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
         if (agentColor.isPresent() && agentColor.get() != generatorColor) {
             throw new RuntimeException(String.format("Agent %d cannot pick packet with color %s (agent restricted to color %s).",
-                getActiveItemID().getID(), MyColor.getName(generatorColor), MyColor.getName(agentColor.get())));
+                    getActiveItemID().getID(), MyColor.getName(generatorColor), MyColor.getName(agentColor.get())));
         }
 
         this.concludeWithCondition(this.hasSufficientEnergyDefault(),
-            this.generateActionOutcome(new InfPickGeneratorPacket(getEnvironment(), generator.getX(), generator.getY(), getActiveItemID(), generatorColor)));
+                this.generateActionOutcome(new InfPickGeneratorPacket(getEnvironment(), generator.getX(), generator.getY(), getActiveItemID(), generatorColor)));
     }
 
 
@@ -444,7 +461,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
     private void concludeWithCondition(boolean condition, Outcome onSuccess) {
         var onFail = this.generateActionOutcome(getAgent().getBatteryState() > 0 ?
-                new InfSkip(getEnvironment(), getActiveItemID()) : new InfNOP(this.getEnvironment()));
+                new InfSkip(getEnvironment(), getActiveItemID()) : new InfNOP(this.getEnvironment(), this.getActiveItemID()));
 
         this.concludePhaseWith(condition ? onSuccess : onFail);
         this.committedAction = true;
@@ -467,7 +484,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     public Optional<Packet> getCarry() {
         return this.getAgent().getCarry();
     }
-    
+
 
     /**
      * Check if the agent is carrying something.
@@ -531,9 +548,9 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     public Behavior getCurrentBehavior() {
         return lnkBehaviorState.getBehavior();
     }
-    
 
-    
+
+
 
 
     /**
@@ -552,7 +569,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     public CellPerception getPerceptionLastCell() {
         int lastX = this.getAgent().getLastX();
         int lastY = this.getAgent().getLastY();
-        
+
         return this.getPerception().getCellPerceptionOnAbsPos(lastX, lastY);
     }
 
@@ -764,7 +781,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         Mail mail;
         for (int i = 0; i < outcome.getMailBuffer().getMails().length; i++) {
             mail = outcome.getMailBuffer().getMails()[i];
-        this.logger.fine(String.format("\t%s with the following message: %s", mail.getTo(), mail.getMessage()));
+            this.logger.fine(String.format("\t%s with the following message: %s", mail.getTo(), mail.getMessage()));
         }
 
         getMailBuffer().clear();
@@ -783,8 +800,8 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         Mail mail;
         for (int i = 0; i < outcome.getMailBuffer().getMails().length; i++) {
             mail = outcome.getMailBuffer().getMails()[i];
-            this.logger.fine(String.format("\t%s sends to %s the following message: %s", 
-                mail.getFrom(), mail.getTo(), mail.getMessage()));
+            this.logger.fine(String.format("\t%s sends to %s the following message: %s",
+                    mail.getFrom(), mail.getTo(), mail.getMessage()));
         }
         getMailBuffer().clear();
         concludePhaseWith(outcome);
@@ -836,7 +853,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     private Agent getAgent() {
         return getEnvironment().getAgentWorld().getAgent(getActiveItemID());
     }
-    
+
     /**
      * Return the buffer for **outgoing** mails of this AgentImp.
      */
@@ -949,4 +966,11 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     public boolean hasCommittedAction() {
         return this.committedAction;
     }
+
+    @Override
+    public DstarLite getDstarLite(){
+        return this.dstarLite;
+    }
+
+
 }

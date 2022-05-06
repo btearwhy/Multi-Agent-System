@@ -1,15 +1,15 @@
-description "part1A"
+description "My first agent"
 
 
 # ------------------------------------------------
 # The amount of the behavior states the agent has
 # ------------------------------------------------
-nbStates 1                          # The part1A behavior is implemented in a single state
+nbStates 1                          # The wander behavior is implemented in a single state
 
 
 # Enumeration of the behavior agent states
-1 agent.behavior.part1A.Part1A     # First and only agent state of class "agent.behavior.part1A.Part1A"
-nbArgs 0                            # 0 arguments required for the constructor of "agent.behavior.part1A.Part1A"
+1 agent.behavior.part1a.PickDropWander     # First and only agent state of class
+nbArgs 0                            # 0 arguments required for the constructor
 
 
 

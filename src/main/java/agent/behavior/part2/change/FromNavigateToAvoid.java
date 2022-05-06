@@ -4,7 +4,17 @@ import agent.behavior.BehaviorChange;
 import agent.behavior.part2.Utils;
 import environment.Coordinate;
 
-public class FromChargeToNavigate extends BehaviorChange {
+/**
+ * @author ：mmzs
+ * @date ：Created in 2022/5/5 21:27
+ * @description：
+ * @modified By：
+ * @version: $
+ */
+
+
+
+public class FromNavigateToAvoid extends BehaviorChange {
     @Override
     public void updateChange() {
 
@@ -12,11 +22,12 @@ public class FromChargeToNavigate extends BehaviorChange {
 
     @Override
     public boolean isSatisfied() {
-        if (getAgentState().hasCarry() && getAgentState().getBatteryState()>980) {
-            Coordinate goal = Utils.getCoordinateFromGoal(getAgentState());
+        String cor = getAgentState().getMemoryFragment("avoid");
+        if (cor != null){
+            Coordinate goal = new Coordinate(Integer.parseInt(cor.split(",")[0]), Integer.parseInt(cor.split(",")[1]));
             getAgentState().getMapMemory().getDstarLite().startOver(new Coordinate(getAgentState().getX(), getAgentState().getY()), goal);
             return true;
         }
-        return false;
+        else return false;
     }
 }

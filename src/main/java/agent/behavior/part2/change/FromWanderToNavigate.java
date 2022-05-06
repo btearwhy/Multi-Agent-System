@@ -41,6 +41,9 @@ public class FromWanderToNavigate extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(hasGoal && packetOrGenerator && !inReach){
+            Coordinate goal = Utils.getCoordinateFromGoal(getAgentState());
+            getAgentState().getMapMemory().getDstarLite().startOver(new Coordinate(getAgentState().getX(), getAgentState().getY()), goal);
+
             return true;
         }
         return false;

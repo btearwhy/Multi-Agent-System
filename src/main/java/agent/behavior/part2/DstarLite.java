@@ -41,6 +41,39 @@ public class DstarLite {
         gMap = new HashMap<>();
     }
 
+    public List<Coordinate> getTrajectory(Coordinate start){
+        List<Coordinate> trajectory = new ArrayList<>();
+        Coordinate r = start;
+        while(!this.goal.equals(r)){
+            trajectory.add(r);
+            r = getSmallestGCor(r);
+        }
+        return trajectory;
+    }
+
+    public int getSmallestG(Coordinate start){
+        int g = Integer.MAX_VALUE;
+        List<Coordinate> neighbors = getValidNeighbors(start);
+        for (Coordinate neighbor:neighbors){
+            if(getG(neighbor) < g){
+                g = getG(neighbor);
+            }
+        }
+        return g;
+    }
+    public Coordinate getSmallestGCor(Coordinate start){
+        int g = Integer.MAX_VALUE;
+        Coordinate cor = new Coordinate(-1, -1);
+        List<Coordinate> neighbors = getValidNeighbors(start);
+        for (Coordinate neighbor:neighbors){
+            if(getG(neighbor) < g){
+                g = getG(neighbor);
+                cor = neighbor;
+            }
+        }
+        return cor;
+    }
+
     public void startOver(Coordinate start, Coordinate goal){
         initialize(start, goal);
         computeShortestPath();
@@ -50,16 +83,9 @@ public class DstarLite {
             startOver(start, goal);
         }
 
-        int g = Integer.MAX_VALUE;
-        Coordinate cor = new Coordinate(-1, -1);
-
-        List<Coordinate> neighbors = getValidNeighbors(start);
-        for (Coordinate neighbor:neighbors){
-            if(getG(neighbor) < g){
-                g = getG(neighbor);
-                cor = neighbor;
-                this.start = neighbor;
-            }
+        Coordinate cor = getSmallestGCor(start);
+        if(cor.getX() != -1 && cor.getY() != -1){
+            this.start = cor;
         }
         return cor;
     }
@@ -231,7 +257,7 @@ public class DstarLite {
         List<Coordinate> neighbors = new ArrayList<>();
         for (Coordinate dir:Utils.moves){
             Coordinate des = c.add(dir);
-            if(validCell(des))
+            if(validCell(des) || des.equals(this.goal))
                 neighbors.add(des);
         }
         return neighbors;

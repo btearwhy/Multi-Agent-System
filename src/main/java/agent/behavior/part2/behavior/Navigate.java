@@ -21,10 +21,7 @@ import environment.world.packet.PacketRep;
 import environment.world.wall.SolidWallRep;
 import environment.world.wall.WallRep;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author     ：mmzs
@@ -37,9 +34,79 @@ import java.util.Random;
 public class Navigate extends Behavior {
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
-        // No communication
-
         agentState.updateMapMemory();
+
+        //生成轨迹
+//        Coordinate cur = new Coordinate(agentState.getX(), agentState.getY());
+//        List<Coordinate> trajectory = agentState.getMapMemory().getTrajectory(cur);
+//        Iterator<Coordinate> it = trajectory.iterator();
+//        Coordinate first = it.next();
+//        String message = "navigate";
+//        message += "|" + first.getX() + "," + first.getY();
+//        while(it.hasNext()){
+//            Coordinate c = it.next();
+//            message += ";" + c.getX() + "," + c.getY();
+//        }
+//        //Handle Messages
+//        Map<String, String> statusMap = new HashMap<>();
+//        Map<String, List<Coordinate>> otherTrajectories = new HashMap<>();
+//        for (Mail mail:agentCommunication.getMessages()){
+//            String msg = mail.getMessage().split("|")[1];
+//            String status = mail.getMessage().split("|")[0];
+//            String sender = mail.getFrom();
+//            statusMap.put(sender, status);
+//            List<Coordinate> trajs = new ArrayList<>();
+//            for (String cor : msg.split(";")){
+//                String[] c = cor.split(",");
+//                trajs.add(new Coordinate(Integer.parseInt(c[0]), Integer.parseInt(c[1])));
+//            }
+//            otherTrajectories.put(sender, trajs);
+//        }
+//        List<String> agentsConflict = new ArrayList<>();
+//        for (Map.Entry<String, List<Coordinate>> entry:otherTrajectories.entrySet()){
+//            List<Coordinate> otherTrajectory = entry.getValue();
+//            for(int i = 0; i < trajectory.size() && i + 1< otherTrajectory.size(); i++){
+//                if(trajectory.get(i).equals(otherTrajectory.get(i + 1)) || (i >= 1 && trajectory.get(i).equals(otherTrajectory.get(i - 1)))){
+//                    agentsConflict.add(entry.getKey());
+//                }
+//            }
+//        }
+//
+//
+//        if(!agentsConflict.isEmpty()){
+//            String nameOnPro = null;
+//            for (Map.Entry<String, String> entry:statusMap.entrySet()){
+//                if(entry.getValue().equals("avoid")){
+//                    nameOnPro = entry.getKey();
+//                }
+//            }
+//            if(nameOnPro == null){
+//                agentsConflict.add(agentState.getName());
+//                Collections.sort(agentsConflict);
+//                nameOnPro = agentsConflict.get(0);
+//            }
+//            if(!nameOnPro.equals(agentState.getName())){
+//                List<Coordinate> privilegeTraj = otherTrajectories.get(nameOnPro);
+//                Coordinate desti = privilegeTraj.get(privilegeTraj.size() - 1);
+//                agentState.addMemoryFragment("avoid", desti.getX() + "," + desti.getY());
+//            }
+//        }
+//        agentCommunication.clearMessages();
+
+        //send Messages
+
+
+//        Perception perception = agentState.getPerception();
+//        List<AgentRep> agents = new ArrayList<>();
+//        for (CellPerception c:perception.getAllCells()){
+//            if(c.getAgentRepresentation().isPresent() && !(c.getX() == agentState.getX() && c.getY() == agentState.getY())){
+//                agents.add(c.getAgentRepresentation().get());
+//            }
+//        }
+//        for (AgentRep agent:agents){
+//            agentCommunication.sendMessage(agent, message);
+//        }
+
 
     }
     public static void maptest(AgentState agentState){
@@ -106,15 +173,15 @@ public class Navigate extends Behavior {
             }
         }
         else{
-            System.out.println("之前");
-            maptest(agentState);
+//            System.out.println("之前");
+//            maptest(agentState);
             CellPerception m = agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY());
             if(m != null && m.isWalkable())
                 agentAction.step(next.getX(), next.getY());
             else agentAction.skip();
-            System.out.println("之后");
-            maptest(agentState);
-            System.out.println();
+//            System.out.println("之后");
+//            maptest(agentState);
+//            System.out.println();
         }
     }
 

@@ -47,6 +47,9 @@ public class MapMemory {
         dstarLite = new DstarLite();
     }
 
+    public List<Coordinate> getTrajectory(Coordinate start){
+        return dstarLite.getTrajectory(start);
+    }
     public List<CellMemory> getAllCellsMemory(){
         return new ArrayList<>(map.values());
     }

@@ -28,8 +28,19 @@ public class Charge extends Behavior {
         var last_perception = agentState.getPerceptionLastCell();
         // put down the packet
         if (agentState.hasCarry()){
-            agentAction.putPacket(last_perception.getX(), last_perception.getY());
-            return;
+            if (last_perception != null){
+                agentAction.putPacket(last_perception.getX(), last_perception.getY());
+                return;
+            }
+            else{
+                for (var n : neighbours){
+                    if (n != null && n.isWalkable()){
+                        agentAction.putPacket(n.getX(),n.getY());
+                        return;
+                    }
+                }
+            }
+
         }
 
         // find the target Energy station

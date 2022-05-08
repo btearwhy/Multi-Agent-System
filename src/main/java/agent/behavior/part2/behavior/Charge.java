@@ -63,86 +63,101 @@ public class Charge extends Behavior {
             return;
         }
 
-        CellPerception current_cell = perception.getCellPerceptionOnRelPos(0,0);
+
+//        int min_grad = Integer.MAX_VALUE;
+//
+//        // find the min gradient value
+//        for (var n : neighbours) {
+//            if (n != null && n.isWalkable()) {
+//                if ( n.containsGradient() &&
+//                        n.getGradientRepresentation().get().getValue() < min_grad){
+//                    min_grad = n.getGradientRepresentation().get().getValue();
+////                    min_cell = n;
+//                }
+//            }
+//            // charging station is occupied
+//            //if (n != null && n.containsAgent() && n.containsGradient()
+//            //&& n.getGradientRepresentation().get().getValue() <
+//            //current_cell.getGradientRepresentation().get().getValue()){
+//            //agentAction.skip();
+//            //System.out.println("Wait for charging");
+//            //}
+//        }
+
+
+
+         //extract all neighbors' coordinates with min gradient value
+//        List<CellPerception> min_neighbours = new ArrayList<CellPerception>();
+//        for (var n : neighbours) {
+//            if (n != null && n.isWalkable()){
+//                if (n.containsGradient() &&
+//                        n.getGradientRepresentation().get().getValue() == min_grad){
+//                    min_neighbours.add(n);
+//
+//                }
+//            }
+//        }
+//
+//        // find the step with the max number of neighbors
+//        CellPerception target_cell = null;
+//        if (min_neighbours.size() == 0){
+//            agentAction.skip();
+//            System.out.println("No way");
+//            return;
+//        }
+//        else{
+//            int max_num_neighbors = 0;
+//            for (CellPerception cell : min_neighbours){
+//                int current_num_neighbors = count_walkable_neighbors(perception, cell);
+//                if (current_num_neighbors >= max_num_neighbors){
+//                    max_num_neighbors = current_num_neighbors;
+//                    target_cell = cell;
+//                }
+//            }
+//        }
+//
+//        agentAction.step(target_cell.getX(),target_cell.getY());
+
+
+
 
         int min_grad = Integer.MAX_VALUE;
 
-//        CellPerception min_cell = null;
+        CellPerception min_cell = null;
         // find the min gradient value
         for (var n : neighbours) {
             if (n != null && n.isWalkable()) {
                 if ( n.containsGradient() &&
                         n.getGradientRepresentation().get().getValue() < min_grad){
                     min_grad = n.getGradientRepresentation().get().getValue();
-//                    min_cell = n;
-                }
-            }
-            // charging station is occupied
-            //if (n != null && n.containsAgent() && n.containsGradient()
-            //&& n.getGradientRepresentation().get().getValue() <
-            //current_cell.getGradientRepresentation().get().getValue()){
-            //agentAction.skip();
-            //System.out.println("Wait for charging");
-            //}
-        }
-
-//        Coordinate cur  = new Coordinate(agentState.getX(), agentState.getY());
-//        Coordinate goal = new Coordinate(min_cell.getX(), min_cell.getY());
-//        if(min_cell == null || (min_grad == 0 && min_cell.containsAgent())) {
-//            agentAction.skip();
-//            System.out.println(agentState.getName() + "skip1");
-//        }
-//        else{
-//            Coordinate next = agentState.getMapMemory().getNextMove(cur, goal);
-//            if(next.getX() == -1 && next.getY() == -1) {
-//                if(Utils.trapped(agentState)){
-//                    agentState.getMapMemory().getDstarLite().startOver(cur, goal);
-//                    Coordinate n = agentState.getMapMemory().getNextMove(cur, goal);
-//                    agentAction.step(n.getX(), n.getY());
-//                }
-//                else{
-//                    agentAction.skip();
-//                }
-//                System.out.println(agentState.getName() + "skip2");
-//            }
-//            else {
-//                //System.out.println(agentState.getName() + "goto" + station);
-//                agentAction.step(next.getX(), next.getY());
-//            }
-//        }
-
-
-         //extract all neighbors' coordinates with min gradient value
-        List<CellPerception> min_neighbours = new ArrayList<CellPerception>();
-        for (var n : neighbours) {
-            if (n != null && n.isWalkable()){
-                if (n.containsGradient() &&
-                        n.getGradientRepresentation().get().getValue() == min_grad){
-                    min_neighbours.add(n);
-
+                    min_cell = n;
                 }
             }
         }
 
-        // find the step with the max number of neighbors
-        CellPerception target_cell = null;
-        if (min_neighbours.size() == 0){
+
+        if(min_cell == null || (min_grad == 0 && min_cell.containsAgent())) {
             agentAction.skip();
-            System.out.println("No way");
-            return;
         }
         else{
-            int max_num_neighbors = 0;
-            for (CellPerception cell : min_neighbours){
-                int current_num_neighbors = count_walkable_neighbors(perception, cell);
-                if (current_num_neighbors >= max_num_neighbors){
-                    max_num_neighbors = current_num_neighbors;
-                    target_cell = cell;
+            Coordinate cur  = new Coordinate(agentState.getX(), agentState.getY());
+            Coordinate goal = new Coordinate(min_cell.getX(), min_cell.getY());
+            Coordinate next = agentState.getMapMemory().getNextMove(cur, goal);
+            if(next.getX() == -1 && next.getY() == -1) {
+                if(Utils.trapped(agentState)){
+                    agentState.getMapMemory().getDstarLite().startOver(cur, goal);
+                    Coordinate n = agentState.getMapMemory().getNextMove(cur, goal);
+                    agentAction.step(n.getX(), n.getY());
                 }
+                else{
+                    agentAction.skip();
+                }
+            }
+            else {
+                agentAction.step(next.getX(), next.getY());
             }
         }
 
-        agentAction.step(target_cell.getX(),target_cell.getY());
         return;
     }
 

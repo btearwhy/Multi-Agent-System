@@ -139,6 +139,7 @@ public class Navigate extends Behavior {
                 agentAction.step(next.getX(), next.getY());
             else agentAction.skip();
         }
+        Utils.updateAgentNum(agentState);
     }
 
     private void collideHandle(AgentState agentState, AgentAction agentAction, int intendedDir){

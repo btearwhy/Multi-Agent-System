@@ -4,6 +4,7 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
+import agent.behavior.part2.Utils;
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
@@ -81,5 +82,6 @@ public class Avoid extends Behavior {
                 agentAction.step(next.getX(), next.getY());
             }
         }
+        Utils.updateAgentNum(agentState);
     }
 }

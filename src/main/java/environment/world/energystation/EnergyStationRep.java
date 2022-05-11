@@ -2,10 +2,12 @@ package environment.world.energystation;
 
 import environment.Representation;
 
+import java.io.Serializable;
+
 /**
  * A class for representations of EnergyStations.
  */
-public class EnergyStationRep extends Representation {
+public class EnergyStationRep extends Representation implements Serializable {
 
     /**
      * Initializes a new EnergyStationRep object

@@ -13,7 +13,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import environment.CellPerception;
-import environment.Coordinate;
+import agent.behavior.part2.Cor;
 import environment.Perception;
 import environment.Representation;
 import environment.ActiveItemID;
@@ -41,11 +41,11 @@ import java.util.List;
  */
 
 public class Utils {
-    public static final List<Coordinate> moves = new ArrayList<>(List.of(
-            new Coordinate(0, 1), new Coordinate(1, 1),
-            new Coordinate(1, 0), new Coordinate(1, -1),
-            new Coordinate(0, -1), new Coordinate(-1, -1),
-            new Coordinate(-1, 0), new Coordinate(-1, 1)
+    public static final List<Cor> moves = new ArrayList<>(List.of(
+            new Cor(0, 1), new Cor(1, 1),
+            new Cor(1, 0), new Cor(1, -1),
+            new Cor(0, -1), new Cor(-1, -1),
+            new Cor(-1, 0), new Cor(-1, 1)
     ));
 
     public static final int trapTimes = 5;
@@ -95,10 +95,10 @@ public class Utils {
         return new Color(Integer.parseInt(goal.get("color").getAsString()));
     }
 
-    public static Coordinate getCoordinateFromGoal(AgentState agentState){
+    public static Cor getCoordinateFromGoal(AgentState agentState){
         JsonObject goalObject = new Gson().fromJson(agentState.getMemoryFragment("goal"), JsonObject.class);
         JsonObject corObject = goalObject.getAsJsonObject("coordinate");
-        Coordinate cor = new Coordinate(Integer.valueOf(corObject.get("x").getAsString()), Integer.valueOf(corObject.get("y").getAsString()));
+        Cor cor = new Cor(Integer.parseInt(corObject.get("x").getAsString()), Integer.parseInt(corObject.get("y").getAsString()));
         return cor;
     }
 
@@ -117,6 +117,15 @@ public class Utils {
     public static JsonObject searchGoal(AgentState agentState){
         return searchGoalInMemory(agentState);
 
+    }
+
+    public static void updateTime(AgentState agentState){
+        if(agentState.getMemoryFragment("time") == null){
+            agentState.addMemoryFragment("time", String.valueOf(0));
+        }
+        else{
+            agentState.addMemoryFragment("time", String.valueOf(Integer.parseInt(agentState.getMemoryFragment("time")) + 1));
+        }
     }
 
     public static JsonObject searchNearestDestination(AgentState agentState, Color color){
@@ -219,12 +228,13 @@ public class Utils {
         return false;
     }
 
-    public static boolean isInReach(AgentState agentState, Coordinate coordinate){
+    public static boolean isInReach(AgentState agentState, Cor coordinate){
         return agentState.getPerception().getCellPerceptionOnAbsPos(coordinate.getX(), coordinate.getY()) != null &&
                 Perception.distance(agentState.getX(), agentState.getY(), coordinate.getX(), coordinate.getY()) < 2;
     }
 
     public static double chargeThreshold(AgentState agentState) {
+
         double agentNum = (double)calAgentInMemory(agentState);
         double batteryCapacity = (double)EnergyValues.BATTERY_SAFE_MAX;
         double unitConsumption =  (double)EnergyValues.BATTERY_DECAY_SKIP;
@@ -349,16 +359,16 @@ public class Utils {
         int x = cell.getX();
         int y = cell.getY();
 
-        List<Coordinate> moves = new ArrayList<>(List.of(
-                new Coordinate(1, 1), new Coordinate(-1, -1),
-                new Coordinate(1, 0), new Coordinate(-1, 0),
-                new Coordinate(0, 1), new Coordinate(0, -1),
-                new Coordinate(1, -1), new Coordinate(-1, 1)
+        List<Cor> moves = new ArrayList<>(List.of(
+                new Cor(1, 1), new Cor(-1, -1),
+                new Cor(1, 0), new Cor(-1, 0),
+                new Cor(0, 1), new Cor(0, -1),
+                new Cor(1, -1), new Cor(-1, 1)
         ));
 
 
         int count = 0;
-        for (Coordinate m : moves){
+        for (Cor m : moves){
             CellPerception neighbor_cell = perception.getCellPerceptionOnAbsPos(x+m.getX(),y+m.getY());
             if ( neighbor_cell != null && neighbor_cell.isWalkable()){
                 count ++;

@@ -25,20 +25,25 @@ public class FromWanderToOperate extends BehaviorChange {
 
     @Override
     public void updateChange(){
-        JsonObject goal = Utils.searchGoal(this.getAgentState());
-        if(goal != null){
-            Utils.setGoal(getAgentState(), goal);
-            this.hasGoal = true;
-            this.packetOrGenerator = Utils.getTargetFromGoal(getAgentState()).startsWith("packet") || Utils.getTargetFromGoal(getAgentState()).startsWith("generator");
+        if(Utils.hasGoal(getAgentState())){
             this.inReach = Utils.isInReach(this.getAgentState(), Utils.getCoordinateFromGoal(getAgentState()));
+            hasGoal = true;
         }
-        else hasGoal = false;
+        else{
+            JsonObject goal = Utils.searchGoal(this.getAgentState());
+            if(goal != null){
+                Utils.setGoal(getAgentState(), goal);
+                this.hasGoal = true;
+                this.inReach = Utils.isInReach(this.getAgentState(), Utils.getCoordinateFromGoal(getAgentState()));
+            }
+            else hasGoal = false;
+        }
     }
 
 
     @Override
     public boolean isSatisfied(){
-        if(hasGoal && packetOrGenerator && inReach){
+        if(hasGoal && inReach){
             return true;
         }
         return false;

@@ -1,6 +1,8 @@
 package environment;
 
-public class ActiveItemID implements Comparable<ActiveItemID> {
+import java.io.Serializable;
+
+public class ActiveItemID implements Comparable<ActiveItemID>, Serializable {
     
     private final int id;
     private final ActionPriority actionPriority;
@@ -26,7 +28,7 @@ public class ActiveItemID implements Comparable<ActiveItemID> {
     }
 
 
-    public enum ActionPriority {
+    public enum ActionPriority implements Serializable {
         // Priorities listed from higher priority (value 0) to lower priority (1)
         
         AGENT(0),

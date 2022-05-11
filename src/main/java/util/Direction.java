@@ -1,12 +1,13 @@
 package util;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Helper class to convert directions from int to an own String
  * representation and vice versa.
  */
-public enum Direction {
+public enum Direction implements Serializable {
 
     NORTH(0, -1, Direction.NORTH_ID), 
     EAST(1, 0, Direction.EAST_ID),

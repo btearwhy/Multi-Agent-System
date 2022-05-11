@@ -2,10 +2,12 @@ package environment.world.crumb;
 
 import environment.Representation;
 
+import java.io.Serializable;
+
 /**
  * A class for representations of crumbs.
  */
-public class CrumbRep extends Representation {
+public class CrumbRep extends Representation implements Serializable {
 
     private int number;
     

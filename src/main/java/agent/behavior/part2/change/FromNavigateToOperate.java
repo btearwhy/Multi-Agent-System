@@ -8,6 +8,7 @@ package agent.behavior.part2.change;/**
 
 import agent.AgentState;
 import agent.behavior.BehaviorChange;
+import agent.behavior.part2.Cor;
 import agent.behavior.part2.Utils;
 import agent.behavior.part2.behavior.Navigate;
 import environment.CellPerception;
@@ -28,18 +29,18 @@ public class FromNavigateToOperate extends BehaviorChange {
     @Override
     public void updateChange(){
         hasGoal = Utils.hasGoal(getAgentState());
-        Coordinate goal = Utils.getCoordinateFromGoal(getAgentState());
-        inReach = Utils.isInReach(getAgentState(), goal);
+        if(hasGoal){
+
+            Cor goal = Utils.getCoordinateFromGoal(getAgentState());
+            inReach = Utils.isInReach(getAgentState(), goal);
+        }
+
     }
 
 
     @Override
     public boolean isSatisfied(){
-        if(hasGoal && inReach){
-            getAgentState().clearGoal();
-            return true;
-        }
-        return false;
+        return hasGoal && inReach;
     }
 
 }

@@ -1,6 +1,8 @@
 package environment.world.wall;
 
-public class GlassWallRep extends WallRep {
+import java.io.Serializable;
+
+public class GlassWallRep extends WallRep implements Serializable {
 
     protected GlassWallRep(int x, int y) {
         super(x, y);

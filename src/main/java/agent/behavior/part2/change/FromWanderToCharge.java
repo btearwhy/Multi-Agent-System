@@ -11,9 +11,9 @@ public class FromWanderToCharge extends BehaviorChange {
 
     @Override
     public boolean isSatisfied() {
-        if (getAgentState().getBatteryState() < Utils.chargeThreshold(getAgentState())) {
-            return true;
-        }
+//        if (getAgentState().getBatteryState() < Utils.chargeThreshold(getAgentState())) {
+//            return true;
+//        }
         return false;
     }
 }

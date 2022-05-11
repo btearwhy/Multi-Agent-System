@@ -1,6 +1,7 @@
 package environment;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ import environment.world.wall.WallRep;
  * Representations of items on that coordinate.
  */
 
-public class CellPerception {
+public class CellPerception implements Serializable {
     
     /**
      * The x and y coordinate (wrt. the environment) of this cell.

@@ -7,6 +7,7 @@ package agent.behavior.part2.change;/**
  */
 
 import agent.behavior.BehaviorChange;
+import agent.behavior.part2.Cor;
 import agent.behavior.part2.Utils;
 import com.google.gson.JsonObject;
 import environment.Coordinate;
@@ -25,25 +26,37 @@ public class FromWanderToNavigate extends BehaviorChange {
     private boolean packetOrGenerator = false;
     private boolean inReach = false;
 
+    private boolean force = false;
+
     @Override
     public void updateChange(){
-        JsonObject goal = Utils.searchGoal(this.getAgentState());
-        if(goal != null){
-            Utils.setGoal(getAgentState(), goal);
-            this.hasGoal = true;
-            this.packetOrGenerator = Utils.getTargetFromGoal(getAgentState()).equals("packet") || Utils.getTargetFromGoal(getAgentState()).equals("generator");
+        if(Utils.hasGoal(getAgentState())){
             this.inReach = Utils.isInReach(this.getAgentState(), Utils.getCoordinateFromGoal(getAgentState()));
+            hasGoal = true;
         }
-        else hasGoal = false;
+        else{
+            JsonObject goal = Utils.searchGoal(this.getAgentState());
+            if(goal != null){
+                Utils.setGoal(getAgentState(), goal);
+                this.hasGoal = true;
+                this.inReach = Utils.isInReach(this.getAgentState(), Utils.getCoordinateFromGoal(getAgentState()));
+            }
+            else hasGoal = false;
+        }
+//        if(getAgentState().getMemoryFragment("switch") != null){
+//            getAgentState().removeMemoryFragment("switch");
+//            force = true;
+//            return;
+//        }
+
     }
 
 
     @Override
     public boolean isSatisfied(){
-        if(hasGoal && packetOrGenerator && !inReach){
-            Coordinate goal = Utils.getCoordinateFromGoal(getAgentState());
-            getAgentState().getMapMemory().getDstarLite().startOver(new Coordinate(getAgentState().getX(), getAgentState().getY()), goal);
-
+        if(hasGoal && !inReach){
+            Cor goal = Utils.getCoordinateFromGoal(getAgentState());
+            getAgentState().getMapMemory().getDstarLite().startOver(new Cor(getAgentState().getX(), getAgentState().getY()), goal);
             return true;
         }
         return false;

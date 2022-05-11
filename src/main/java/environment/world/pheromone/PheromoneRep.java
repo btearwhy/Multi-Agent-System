@@ -2,10 +2,12 @@ package environment.world.pheromone;
 
 import environment.Representation;
 
+import java.io.Serializable;
+
 /**
  * A class for representations of pheromones.
  */
-public class PheromoneRep extends Representation {
+public class PheromoneRep extends Representation implements Serializable {
 
     private int lifetime;
     

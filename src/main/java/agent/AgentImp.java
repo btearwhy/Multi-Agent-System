@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 
 import agent.behavior.part2.CellMemory;
+import agent.behavior.part2.Cor;
 import agent.behavior.part2.DstarLite;
 import agent.behavior.part2.MapMemory;
 import com.google.common.eventbus.EventBus;
@@ -104,8 +105,12 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
     @Override
     public void updateMapMemory(){
+        int t = Integer.parseInt(getMemoryFragment("time"));
         List<CellPerception> cellPerceptions = getPerception().getAllCells();
-        mapMemory.updateMapMemory(cellPerceptions, new Coordinate(getX(), getY()), getPerception().getWidth(), getPerception().getHeight());
+        List<CellPerception> neighbors = new ArrayList<>(Arrays.asList(getPerception().getNeighbours()));
+        neighbors.removeIf(Objects::isNull);
+        mapMemory.updateBorder(neighbors, new Cor(getX(), getY()));
+        mapMemory.updateMapMemory(cellPerceptions, t);
     }
 
     @Override

@@ -7,6 +7,7 @@ package agent.behavior.part2.change;/**
  */
 
 import agent.behavior.BehaviorChange;
+import agent.behavior.part2.Cor;
 import agent.behavior.part2.Utils;
 import com.google.gson.JsonObject;
 import environment.Coordinate;
@@ -21,10 +22,10 @@ import environment.Coordinate;
 
 public class FromOperateToNavigate extends BehaviorChange {
     private boolean hasGoal = false;
-
+    private boolean inReach = false;
     @Override
     public void updateChange(){
-        JsonObject goal = null;
+        JsonObject goal;
         if(getAgentState().hasCarry()){
             goal = Utils.searchNearestDestination(getAgentState(), getAgentState().getCarry().get().getColor());
         }
@@ -34,6 +35,7 @@ public class FromOperateToNavigate extends BehaviorChange {
         if(goal != null){
             hasGoal = true;
             Utils.setGoal(getAgentState(), goal);
+            inReach = Utils.isInReach(getAgentState(), Utils.getCoordinateFromGoal(getAgentState()));
         }
         else hasGoal = false;
     }
@@ -41,10 +43,6 @@ public class FromOperateToNavigate extends BehaviorChange {
 
     @Override
     public boolean isSatisfied(){
-        if(hasGoal){
-            Coordinate goal = Utils.getCoordinateFromGoal(getAgentState());
-            getAgentState().getMapMemory().getDstarLite().startOver(new Coordinate(getAgentState().getX(), getAgentState().getY()), goal);
-        }
-        return hasGoal;
+        return hasGoal && !inReach;
     }
 }

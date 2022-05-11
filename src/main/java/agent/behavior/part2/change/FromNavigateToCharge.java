@@ -14,10 +14,10 @@ public class FromNavigateToCharge extends BehaviorChange {
 
     @Override
     public boolean isSatisfied() {
-        if (getAgentState().getBatteryState() < Utils.chargeThreshold(getAgentState())) {
-            getAgentState().clearGoal();
-            return true;
-        }
+//        if (getAgentState().getBatteryState() < Utils.chargeThreshold(getAgentState())) {
+//            getAgentState().clearGoal();
+//            return true;
+//        }
         return false;
     }
 }

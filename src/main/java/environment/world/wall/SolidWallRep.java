@@ -1,9 +1,11 @@
 package environment.world.wall;
 
+import java.io.Serializable;
+
 /**
  * A class for representations of walls.
  */
-public class SolidWallRep extends WallRep {
+public class SolidWallRep extends WallRep implements Serializable {
 
     /**
      * Initializes a new ObscureWallRep instance

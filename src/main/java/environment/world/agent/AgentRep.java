@@ -1,6 +1,7 @@
 package environment.world.agent;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.Optional;
 
 import environment.ActiveItemID;
@@ -10,7 +11,7 @@ import environment.world.packet.PacketRep;
 /**
  * A class for representations of Agents.
  */
-public class AgentRep extends Representation {
+public class AgentRep extends Representation implements Serializable {
 
     private final ActiveItemID id;
     private final String name;

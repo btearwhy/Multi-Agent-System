@@ -87,7 +87,6 @@ public class Navigate extends Behavior {
         for (Mail mail:agentCommunication.getMessages()){
             //mail.getMessage().startsWith("info")
             if(mail.message().startsWith("exchange")){
-                //System.out.println("111");
                 if(agentState.getMemoryFragment("exchange") != null){
                     String sender = mail.getFrom();
                     String[] m = mail.getMessage().split("/");
@@ -95,9 +94,7 @@ public class Navigate extends Behavior {
                     Cor goal = new Cor(Integer.parseInt(m[3].split(",")[0]), Integer.parseInt(m[3].split(",")[1]));
                     String[] my =  agentState.getMemoryFragment("exchange").split("/");
                     String requiredSender = my[0];
-                    //System.out.println(sender + "==" + requiredSender + "&&" + name + "==" + agentState.getName());
                     if(sender.equals(requiredSender) && name.equals(agentState.getName())) {
-                        //System.out.println("???");
                         if(m[1].equals("wander")){
                             agentState.addMemoryFragment("wander", goal.toString());
                             agentState.removeMemoryFragment("goal");
@@ -157,7 +154,6 @@ public class Navigate extends Behavior {
                 if(Utils.isInReach(agentState, obCor)
                         && !agentState.hasCarry()
                         && ((AgentRep)obstacle).carriesPacket()){
-                    //System.out.println("偷包");
                     agentAction.stealPacket(obCor.getX(), obCor.getY());
                 }
                 else {

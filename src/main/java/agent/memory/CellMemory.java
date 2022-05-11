@@ -1,4 +1,4 @@
-package agent.memory;/**
+package agent.behavior.part2;/**
  * @author ：mmzs
  * @date ：Created in 2022/4/30 16:06
  * @description：
@@ -9,7 +9,12 @@ package agent.memory;/**
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Representation;
+import environment.world.agent.AgentRep;
+import util.Pair;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -20,29 +25,37 @@ import java.util.List;
  * @version: $
  */
 
-public class CellMemory extends CellPerception{
+public class CellMemory extends CellPerception implements Serializable {
 
+    int time = 0;
 
-
-
-    public CellMemory(CellPerception cellPerception){
+    public CellMemory(CellPerception cellPerception, int time){
         super(cellPerception.getX(), cellPerception.getY());
         List<Representation> reps = cellPerception.getReps();
-        //reps.removeIf(e->e instanceof AgentRep);
         for (Representation rep:reps){
             this.addRep(rep);
         }
-
+        this.time = time;
     }
 
-    public Coordinate getCoordinate(){
-        return new Coordinate(this.getX(), this.getY());
+
+
+    public Cor getCoordinate(){
+        return new Cor(this.getX(), this.getY());
     }
 
-    public CellMemory(int x, int y){
+    public CellMemory(int x, int y, int time){
         super(x, y);
+        this.time = time;
     }
 
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
 
     @Override
     public boolean equals(Object c){

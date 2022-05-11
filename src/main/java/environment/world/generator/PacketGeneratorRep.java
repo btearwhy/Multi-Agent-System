@@ -1,10 +1,11 @@
 package environment.world.generator;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 import environment.Representation;
 
-public class PacketGeneratorRep extends Representation {
+public class PacketGeneratorRep extends Representation implements Serializable {
     
     private final Color color;
     private final int packetsInBuffer;

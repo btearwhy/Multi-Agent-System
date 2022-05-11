@@ -1,6 +1,7 @@
 package environment;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import environment.world.destination.Destination;
 import environment.world.destination.DestinationRep;
 import environment.world.energystation.EnergyStationRep;
 import environment.world.flag.FlagRep;
+import environment.world.generator.PacketGeneratorRep;
 import environment.world.gradient.GradientRep;
 import environment.world.packet.PacketRep;
 import environment.world.pheromone.PheromoneRep;
@@ -24,7 +26,7 @@ import environment.world.wall.WallRep;
  * Representations of items on that coordinate.
  */
 
-public class CellPerception {
+public class CellPerception implements Serializable {
     
     /**
      * The x and y coordinate (wrt. the environment) of this cell.
@@ -102,6 +104,10 @@ public class CellPerception {
      */
     public boolean containsPacket() {
         return this.getRepOfType(PacketRep.class) != null;
+    }
+
+    public boolean containsGenerator(){
+        return this.getRepOfType(PacketGeneratorRep.class) != null;
     }
 
     /**

@@ -2,7 +2,9 @@ package environment.world.gradient;
 
 import environment.Representation;
 
-public class GradientRep extends Representation {
+import java.io.Serializable;
+
+public class GradientRep extends Representation implements Serializable {
 
     private final int value;
     

@@ -1,10 +1,12 @@
 package environment;
 
+import java.io.Serializable;
+
 /**
  * A class for representations being data objects originating from Items.
  * They contain all values concerning their originating item.
  */
-abstract public class Representation {
+abstract public class Representation implements Serializable {
 
     int xPos;
     int yPos;

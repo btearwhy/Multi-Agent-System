@@ -10,6 +10,7 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
+import agent.behavior.part2.Cor;
 import agent.behavior.part2.Utils;
 import environment.CellPerception;
 import environment.Coordinate;
@@ -30,14 +31,17 @@ public class Operate extends Behavior{
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
         // No communication
+        Utils.updateTime(agentState);
+        agentState.updateMapMemory();
     }
 
 
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
-        agentState.updateMapMemory();
+
+
         Perception perception = agentState.getPerception();
-        Coordinate goalCor = Utils.getCoordinateFromGoal(agentState);
+        Cor goalCor = Utils.getCoordinateFromGoal(agentState);
         String target = Utils.getTargetFromGoal(agentState);
         Color color = Utils.getTargetColorFromGoal(agentState);
         CellPerception goalCell = perception.getCellPerceptionOnAbsPos(goalCor.getX(), goalCor.getY());
@@ -53,5 +57,7 @@ public class Operate extends Behavior{
             agentAction.putPacket(goalCor.getX(), goalCor.getY());
         }
         else agentAction.skip();
+        //Utils.updateAgentNum(agentState);
+        //agentState.updateMapMemory();
     }
 }

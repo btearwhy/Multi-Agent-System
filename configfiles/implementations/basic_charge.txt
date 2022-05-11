@@ -4,23 +4,27 @@ description "Executing using memory"
 # ------------------------------------------------
 # The amount of the behavior states the agent has
 # ------------------------------------------------
-nbStates 4                          # The wander behavior is implemented in a single state
+nbStates 6                                   # The wander behavior is implemented in a single state
 1 agent.behavior.part2.behavior.Wander       # First behavior
-nbArgs 0                            # Constructor with no args
+nbArgs 0                                     # Constructor with no args
 2 agent.behavior.part2.behavior.Navigate     # Second behavior
-nbArgs 0                            # // (no arguments)
+nbArgs 0                                     # // (no arguments)
 3 agent.behavior.part2.behavior.Operate      # Third behavior
-nbArgs 0                            # // (no arguments)
-4 agent.behavior.part2.behavior.Charge      # Fourth behavior
-nbArgs 0                            # // (no arguments)
-
+nbArgs 0                                     # // (no arguments)
+4 agent.behavior.part2.behavior.ToStation    # Fourth behavior
+nbArgs 0                                     # // (no arguments)
+5 agent.behavior.part2.behavior.Wait         # Fifth behavior
+nbArgs 1                                     # 1 argument
+Integer 1                                    # charging area gradient value
+6 agent.behavior.part2.behavior.Charging     # Sixth behavior
+nbArgs 0                                     # // (no arguments)
 
 
 # ---------------------------------------------------------------
 # The amount of behavior changes for the agent
 #  (only necessary when more than 1 agent behavior is specified)
 # ---------------------------------------------------------------
-nbChanges 10
+nbChanges 13
                                                         # First change, from behavior with ID 1 to behavior with ID 2
 agent.behavior.part2.change.FromWanderToNavigate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
@@ -79,17 +83,29 @@ target 4                                                # ID of resulting behavi
 agent.behavior.part2.change.FromChargeToWander
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
-source 4                                                # ID of starting behavior
+source 6                                                # ID of starting behavior
 target 1                                                # ID of resulting behavior
 
 agent.behavior.part2.change.FromChargeToNavigate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
-source 4                                                # ID of starting behavior
+source 6                                                # ID of starting behavior
 target 2                                                # ID of resulting behavior
 
+agent.behavior.part2.change.FromToStationToWait
+nbArgs 2
+Integer 1
+Integer 1
+priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
+source 4                                                # ID of starting behavior
+target 5                                                # ID of resulting behavior
 
-
+agent.behavior.part2.change.FromWaitToCharging
+nbArgs 1
+Integer 0
+priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
+source 5                                                # ID of starting behavior
+target 6                                                # ID of resulting behavior
 
 # ----------------
 # Further comments

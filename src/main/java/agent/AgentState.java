@@ -7,10 +7,11 @@ import java.util.Set;
 
 import agent.behavior.Behavior;
 import agent.behavior.BehaviorState;
-import agent.memory.CellMemory;
-import agent.memory.MapMemory;
-import agent.dstarlite.DStarLite;
+import agent.behavior.part2.CellMemory;
+import agent.behavior.part2.DstarLite;
+import agent.behavior.part2.MapMemory;
 import environment.CellPerception;
+import environment.Coordinate;
 import environment.Perception;
 import environment.world.packet.Packet;
 
@@ -161,9 +162,10 @@ public interface AgentState {
 
     void updateMapMemory();
 
+    void clearGoal();
+
     List<CellMemory> getAllCellsMemory();
 
     MapMemory getMapMemory();
 
-    DStarLite getDStarLite();
 }

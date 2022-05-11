@@ -6,15 +6,26 @@ package agent.behavior.part2;/**
  * @version: $
  */
 
+import agent.AgentAction;
 import agent.AgentState;
-import agent.memory.CellMemory;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import environment.CellPerception;
-import environment.Coordinate;
+import agent.behavior.part2.Cor;
 import environment.Perception;
+import environment.Representation;
+import environment.ActiveItemID;
+import environment.EnergyValues;
+import environment.world.agent.Agent;
 import environment.world.destination.DestinationRep;
+import environment.world.energystation.EnergyStation;
+import environment.world.generator.PacketGeneratorRep;
 import environment.world.packet.PacketRep;
+import environment.world.agent.AgentRep;
+import util.Pair;
+import environment.Mail;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -30,13 +41,14 @@ import java.util.List;
  */
 
 public class Utils {
-    public static final List<Coordinate> moves = new ArrayList<>(List.of(
-            new Coordinate(0, 1), new Coordinate(1, 1),
-            new Coordinate(1, 0), new Coordinate(1, -1),
-            new Coordinate(0, -1), new Coordinate(-1, -1),
-            new Coordinate(-1, 0), new Coordinate(-1, 1)
+    public static final List<Cor> moves = new ArrayList<>(List.of(
+            new Cor(0, 1), new Cor(1, 1),
+            new Cor(1, 0), new Cor(1, -1),
+            new Cor(0, -1), new Cor(-1, -1),
+            new Cor(-1, 0), new Cor(-1, 1)
     ));
 
+    public static final int trapTimes = 5;
 
 
     public static int getDir(int x1, int y1, int x2, int y2){
@@ -83,10 +95,10 @@ public class Utils {
         return new Color(Integer.parseInt(goal.get("color").getAsString()));
     }
 
-    public static Coordinate getCoordinateFromGoal(AgentState agentState){
+    public static Cor getCoordinateFromGoal(AgentState agentState){
         JsonObject goalObject = new Gson().fromJson(agentState.getMemoryFragment("goal"), JsonObject.class);
         JsonObject corObject = goalObject.getAsJsonObject("coordinate");
-        Coordinate cor = new Coordinate(Integer.valueOf(corObject.get("x").getAsString()), Integer.valueOf(corObject.get("y").getAsString()));
+        Cor cor = new Cor(Integer.parseInt(corObject.get("x").getAsString()), Integer.parseInt(corObject.get("y").getAsString()));
         return cor;
     }
 
@@ -105,6 +117,15 @@ public class Utils {
     public static JsonObject searchGoal(AgentState agentState){
         return searchGoalInMemory(agentState);
 
+    }
+
+    public static void updateTime(AgentState agentState){
+        if(agentState.getMemoryFragment("time") == null){
+            agentState.addMemoryFragment("time", String.valueOf(0));
+        }
+        else{
+            agentState.addMemoryFragment("time", String.valueOf(Integer.parseInt(agentState.getMemoryFragment("time")) + 1));
+        }
     }
 
     public static JsonObject searchNearestDestination(AgentState agentState, Color color){
@@ -194,10 +215,168 @@ public class Utils {
         return goal;
     }
 
+    public static boolean trapped(AgentState agentState){
+        if(agentState.getMemoryFragment("stay") == null){
+            agentState.addMemoryFragment("stay", String.valueOf(0));
+        }
+        int times = Integer.parseInt(agentState.getMemoryFragment("stay"));
+        agentState.addMemoryFragment("stay", String.valueOf(++times));
+        if(times == trapTimes) {
+            agentState.removeMemoryFragment("stay");
+            return true;
+        }
+        return false;
+    }
 
-    public static boolean isInReach(AgentState agentState, Coordinate coordinate){
+    public static boolean isInReach(AgentState agentState, Cor coordinate){
         return agentState.getPerception().getCellPerceptionOnAbsPos(coordinate.getX(), coordinate.getY()) != null &&
                 Perception.distance(agentState.getX(), agentState.getY(), coordinate.getX(), coordinate.getY()) < 2;
+    }
+
+    public static double chargeThreshold(AgentState agentState) {
+
+        double agentNum = (double)calAgentInMemory(agentState);
+        double batteryCapacity = (double)EnergyValues.BATTERY_SAFE_MAX;
+        double unitConsumption =  (double)EnergyValues.BATTERY_DECAY_SKIP;
+        double stepConsumption =(double) EnergyValues.BATTERY_DECAY_STEP;
+        double chargingEfficiency = (double)95;
+        boolean hasPacket = agentState.hasCarry();
+        double field = (double)agentState.getPerception().getCellPerceptionOnRelPos(0,0).getGradientRepresentation().get().getValue();
+        int H = agentState.getPerception().getHeight();
+        int W = agentState.getPerception().getHeight();
+        double perceptionRadius = (double)Math.max(H, W);
+
+        double waitEnergy = Math.ceil(batteryCapacity*(Math.pow((unitConsumption/chargingEfficiency+1),(agentNum-1.0))-1.0)
+                /(Math.pow((unitConsumption/chargingEfficiency+1),(agentNum-1.0))));
+        double navigateEnergy = unitConsumption*(-("false".indexOf("" + hasPacket)))+stepConsumption*field;
+        double agentStepEnergy = unitConsumption*agentNum*(perceptionRadius+1.0)/2.0;
+
+        double threshold = navigateEnergy + agentStepEnergy + waitEnergy + 20;
+        // in the Wait action, sometimes the agent needs to take extra steps to reach charge station,
+        // therefore add 20 here
+        //System.out.println(agentNum+" "+waitEnergy+" "+threshold);///
+        return threshold;
+    }
+
+    //calculate agent number
+    public static int calAgentInMemory(AgentState agentState){
+        int agentNum = 1;
+        String key = "agent";
+        JsonObject agentObj = new Gson().fromJson(agentState.getMemoryFragment(key), JsonObject.class);
+        if(agentObj!=null) {
+            JsonArray agentArray = agentObj.get(key).getAsJsonArray();
+            //System.out.println("agentnum"+agentArray.size());
+            agentNum = agentArray.size()+1;
+        }
+        return 6;//agentNum;
+    }
+
+    //update agent
+    public static void updateAgentNum(AgentState agentState){
+        Perception perception = agentState.getPerception();
+        List<CellPerception> allCells = perception.getAllCells();
+        for(CellPerception cell : allCells){
+            if(cell.containsAgent()){
+                if (cell.getX()!=agentState.getX()&&cell.getY()!=agentState.getY()) {
+                    //System.out.println("agent"+agentState.getX()+" "+agentState.getY()+"cell"+cell.getX()+" "+cell.getY());///
+                    updateAgentNum(agentState, cell.getRepOfType(AgentRep.class));
+                }
+            }
+        }
+    }
+
+    public static void updateAgentNum(AgentState agentState, Representation representation) {
+        String key = "agent";
+        ActiveItemID id = ((AgentRep) representation).getId();
+        if(agentState.getMemoryFragment(key) != null){
+            JsonObject data = new Gson().fromJson(agentState.getMemoryFragment(key), JsonObject.class);
+            // System.out.println("id1");///
+            JsonArray array = data.get(key).getAsJsonArray();
+            boolean mark = false;
+            for(int i = 0;i < array.size(); i++){
+                int idJson = array.get(i).getAsJsonObject().get("id").getAsInt();
+                if(idJson == id.getID()){
+                    mark = true;
+                    return;
+                }
+            }
+            if(!mark){
+                JsonObject newIdObj = new JsonObject();
+                newIdObj.addProperty("id", String.valueOf(id.getID()));
+                //System.out.println("id2");///
+                array.add(newIdObj);
+            }
+            agentState.removeMemoryFragment(key);
+            agentState.addMemoryFragment(key, data.toString());
+
+        }else{
+            JsonObject basicObj = new JsonObject();
+            JsonObject idObject = new JsonObject();
+            JsonArray idArray = new JsonArray();
+            idObject.addProperty("id", String.valueOf(id.getID()));
+            idArray.add(idObject);
+            basicObj.add(key, idArray);
+            agentState.addMemoryFragment(key, basicObj.toString());
+            //System.out.println("id0");
+        }
+    }
+
+    public static void memoryElectricity(AgentState agentState, Collection<Mail> mails){
+        JsonObject electricity_log = new JsonObject();
+        for (Mail m : mails){
+            electricity_log.addProperty(m.getFrom(),Integer.valueOf(m.getMessage()));
+        }
+
+        agentState.addMemoryFragment("electricity", electricity_log.toString());
+    }
+
+    public static String getLowestEnergy(AgentState agentState) {
+
+        JsonObject electricity_log = new Gson().
+                fromJson(agentState.getMemoryFragment("electricity"), JsonObject.class);
+        Set<String> names = electricity_log.keySet();
+
+        int min_energy = EnergyValues.BATTERY_MAX;
+        String min_agent = null;
+        for (String name : names) {
+            int current_energy = electricity_log.get(name).getAsInt();
+            if (current_energy < min_energy) {
+                min_energy = current_energy;
+                min_agent = name;
+            }
+        }
+
+        if (agentState.getBatteryState() < min_energy){
+            min_energy = agentState.getBatteryState();
+            min_agent = agentState.getName();
+        }
+
+        return min_agent;
+
+    }
+
+    public static int count_walkable_neighbors(Perception perception, CellPerception cell){
+        int x = cell.getX();
+        int y = cell.getY();
+
+        List<Cor> moves = new ArrayList<>(List.of(
+                new Cor(1, 1), new Cor(-1, -1),
+                new Cor(1, 0), new Cor(-1, 0),
+                new Cor(0, 1), new Cor(0, -1),
+                new Cor(1, -1), new Cor(-1, 1)
+        ));
+
+
+        int count = 0;
+        for (Cor m : moves){
+            CellPerception neighbor_cell = perception.getCellPerceptionOnAbsPos(x+m.getX(),y+m.getY());
+            if ( neighbor_cell != null && neighbor_cell.isWalkable()){
+                count ++;
+            }
+        }
+
+        return count;
+
     }
 
 

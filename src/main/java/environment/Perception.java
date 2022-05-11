@@ -421,4 +421,5 @@ public class Perception {
             cells[i][j] = null;
         } catch (ArrayIndexOutOfBoundsException ignored) {}
     }
+
 }

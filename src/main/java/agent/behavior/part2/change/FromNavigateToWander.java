@@ -23,19 +23,20 @@ import environment.Coordinate;
 
 public class FromNavigateToWander extends BehaviorChange {
     private boolean hasGoal = false;
-
+    private boolean force = false;
     @Override
     public void updateChange(){
+//        if(getAgentState().getMemoryFragment("switch") != null){
+//            getAgentState().removeMemoryFragment("switch");
+//            force = true;
+//        }
+
         hasGoal = Utils.hasGoal(getAgentState());
     }
 
 
     @Override
     public boolean isSatisfied(){
-        if(!hasGoal){
-            getAgentState().getDStarLite().clearGoal();
-            return true;
-        }
-        return false;
+       return !hasGoal;
     }
 }

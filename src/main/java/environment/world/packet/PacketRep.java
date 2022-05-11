@@ -1,13 +1,14 @@
 package environment.world.packet;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 import environment.Representation;
 
 /**
  *  A class for representations of packets.
  */
-public class PacketRep extends Representation {
+public class PacketRep extends Representation implements Serializable {
 
     private Color color;
 

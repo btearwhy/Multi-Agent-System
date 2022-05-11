@@ -1,13 +1,14 @@
 package environment.world.flag;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 import environment.Representation;
 
 /**
  * A class for representations of flags.
  */
-public class FlagRep extends Representation {
+public class FlagRep extends Representation implements Serializable {
 
     private Color color;
 

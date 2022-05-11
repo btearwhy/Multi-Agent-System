@@ -10,11 +10,20 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.part2.Utils;
-import agent.dstarlite.DStarLite;
+import agent.behavior.part2.*;
 import environment.*;
+import environment.world.agent.AgentRep;
+import environment.world.destination.DestinationRep;
+import environment.world.packet.Packet;
+import environment.world.packet.PacketRep;
+import environment.world.wall.SolidWallRep;
+import environment.world.wall.WallRep;
 
-import java.util.Random;
+import javax.swing.*;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * @author     ：mmzs
@@ -27,66 +36,201 @@ import java.util.Random;
 public class Navigate extends Behavior {
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
-        // No communication
+        Utils.updateTime(agentState);
+        agentState.updateMapMemory();
+
+        if(agentState.getPerception().getAllCells().stream().anyMatch(c ->
+                !(c.getX() == agentState.getX() && c.getY() == agentState.getY()) && c.containsAgent())){
+            //sending message
+            //sending exchange request
+
+            if(agentState.getMemoryFragment("exchange") != null){
+                String name = agentState.getMemoryFragment("exchange").split("/")[0];
+                for (CellPerception c:agentState.getPerception().getAllCells()){
+                    if(c.containsAgent() && c.getAgentRepresentation().get().getName().equals(name)){
+                        String message = "exchange/" + agentState.getMemoryFragment("goal") +"/" + agentState.getMemoryFragment("exchange");
+                        agentCommunication.sendMessage(c.getAgentRepresentation().get(), message);
+                        break;
+                    }
+                }
+            }
+
+
+
+            //sending map info
+            String mapMessage = "";
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);
+                MapMemory mapMemory = agentState.getMapMemory();
+                oos.writeObject(mapMemory);
+                oos.writeObject(null);
+                oos.flush();
+                mapMessage = baos.toString(StandardCharsets.ISO_8859_1);
+                oos.close();
+                baos.close();
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            //mapMessage = "info/" + mapMessage;
+            for (CellPerception c: agentState.getAllCellsMemory()){
+                if(c.containsAgent() && !(c.getX() == agentState.getX() && c.getY() == agentState.getY())){
+                    agentCommunication.sendMessage(c.getAgentRepresentation().get(), mapMessage);
+                }
+            }
+        }
+
+
+        //handle message
+        for (Mail mail:agentCommunication.getMessages()){
+            //mail.getMessage().startsWith("info")
+            if(mail.message().startsWith("exchange")){
+                if(agentState.getMemoryFragment("exchange") != null){
+                    String sender = mail.getFrom();
+                    String[] m = mail.getMessage().split("/");
+                    String name = m[2];
+                    Cor goal = new Cor(Integer.parseInt(m[3].split(",")[0]), Integer.parseInt(m[3].split(",")[1]));
+                    String[] my =  agentState.getMemoryFragment("exchange").split("/");
+                    String requiredSender = my[0];
+                    if(sender.equals(requiredSender) && name.equals(agentState.getName())) {
+                        if(m[1].equals("wander")){
+                            agentState.addMemoryFragment("wander", goal.toString());
+                            agentState.removeMemoryFragment("goal");
+                        }
+                        else{
+                            //System.out.println(agentState.getName() +" 交换前goal" + agentState.getMemoryFragment("goal"));
+                            //System.out.println(agentState.getName() + "交换后goal" + m[1]);
+                            agentState.addMemoryFragment("goal", m[1]);
+                        }
+                        agentState.addMemoryFragment("steal", "none");
+                        if(m[1].contains("destination")){
+                            agentState.addMemoryFragment("steal", agentState.getName());
+                        }
+                    }
+                    agentState.removeMemoryFragment("exchange");
+                }
+            }
+            else{
+                try {
+                    String info = mail.getMessage();
+                    //String info = mail.getMessage().split("/")[1];
+                    ByteArrayInputStream bais = new ByteArrayInputStream(info.getBytes(StandardCharsets.ISO_8859_1));
+                    ObjectInputStream ois = new ObjectInputStream(bais);
+                    MapMemory mm = (MapMemory) ois.readObject();
+                    agentState.getMapMemory().updateMapMemory(mm);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+
+        agentCommunication.clearMessages();
+
     }
 
 
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
-        agentState.updateMapMemory();
+        //System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
 
-        Coordinate cur = new Coordinate(agentState.getX(), agentState.getY());
-        Coordinate goal = Utils.getCoordinateFromGoal(agentState);
-        agentState.getDStarLite().updateStart(cur);
-        agentState.getDStarLite().updateGoal(goal);
-        agentState.getDStarLite().run(DStarLite.getObservedMap(agentState));
-        Coordinate next = agentState.getDStarLite().getNextMove(cur);
-
-        if(next.equals(new Coordinate(-1, -1))) {
-            if(agentState.getMemoryFragment("stay") == null){
-                agentState.addMemoryFragment("stay", String.valueOf(0));
-            }
-            int times = Integer.parseInt(agentState.getMemoryFragment("stay"));
-            if(times == 10){
-                agentState.getDStarLite().clearGoal();
-                agentState.getDStarLite().updateStart(cur);
-                agentState.getDStarLite().updateGoal(goal);
-                Coordinate n = agentState.getDStarLite().getNextMove(cur);
-                agentAction.step(n.getX(), n.getY());
-                agentState.removeMemoryFragment("stay");
-                return;
-            }
-            times++;
-            agentState.addMemoryFragment("stay", String.valueOf(times));
-            agentAction.skip();
+        if(agentState.getName().equals("a")){
+            System.out.println("行动前");
+            System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
+            agentState.getMapMemory().show(10, 10);
+            System.out.println();
         }
-        else{
-            agentState.removeMemoryFragment("stay");
-            agentState.addMemoryFragment("stay", "0");
-            if(agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()) != null &&
-                    agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()).containsAgent()){
-                collideHandle(agentState, agentAction, Utils.getDir(agentState.getX(),agentState.getY(), next.getX(), next.getY()));
+        Cor cur = new Cor(agentState.getX(), agentState.getY());
+
+        if(agentState.getMemoryFragment("steal") != null){
+            if(agentState.getMemoryFragment("steal").equals(agentState.getName())){
+                CellMemory cellMemory = agentState.getMapMemory().getFirstObstacle(cur);
+                Cor obCor = cellMemory.getCoordinate();
+                Representation obstacle = cellMemory.getReps().get(0);
+                if(Utils.isInReach(agentState, obCor)
+                        && !agentState.hasCarry()
+                        && ((AgentRep)obstacle).carriesPacket()){
+                    agentAction.stealPacket(obCor.getX(), obCor.getY());
+                }
+                else {
+                    agentAction.skip();
+                }
             }
             else{
-                agentAction.step(next.getX(), next.getY());
-
-            }
-        }
-
-    }
-
-    private void collideHandle(AgentState agentState, AgentAction agentAction, int intendedDir){
-        int x = agentState.getX();
-        int y = agentState.getY();
-        if(agentState.getPerception().getCellPerceptionOnAbsPos(x + Utils.moves.get(intendedDir).getX(), y + Utils.moves.get(intendedDir).getY()) != null &&
-                agentState.getPerception().getCellPerceptionOnAbsPos(x + Utils.moves.get(intendedDir).getX(), y + Utils.moves.get(intendedDir).getY()).containsAgent()) {
-            Random ra = new Random();
-            if (ra.nextInt(2) < 1) {
                 agentAction.skip();
-                return;
+            }
+            agentState.removeMemoryFragment("steal");
+            return;
+        }
+
+
+        Cor goal = Utils.getCoordinateFromGoal(agentState);
+        Cor next = agentState.getMapMemory().getNextMove(cur, goal);
+        if(next.equals(new Cor(-1, -1))) {
+            if(Utils.trapped(agentState)){
+                agentState.getMapMemory().getDstarLite().startOver(cur, goal);
+                Cor n = agentState.getMapMemory().getNextMove(cur, goal);
+                CellPerception m = agentState.getPerception().getCellPerceptionOnAbsPos(n.getX(), n.getY());
+                if(m != null && m.isWalkable())
+                    agentAction.step(n.getX(), n.getY());
+                else agentAction.skip();
+            }
+            else{
+                agentAction.skip();
             }
         }
-        intendedDir = Utils.getClockwiseDirectionIfBlocked(agentState, intendedDir);
-        agentAction.step(x + Utils.moves.get(intendedDir).getX(), y + Utils.moves.get(intendedDir).getY());
+        else{
+            if(agentState.getMapMemory().trajContainsObtacle(cur)){
+                CellMemory cellMemory = agentState.getMapMemory().getFirstObstacle(cur);
+
+                Representation obstacle = cellMemory.getReps().get(0);
+                if(obstacle instanceof AgentRep){
+                    //System.out.println(agentState.getName() + "发现" + ((AgentRep) obstacle).getName() + "在" +obstacle.getX() + "," + obstacle.getY() +"挡路");
+                    if(agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()).isWalkable()){
+                        agentAction.step(next.getX(), next.getY());
+                    }
+                    else{
+                        agentAction.skip();
+                        agentState.addMemoryFragment("exchange", ((AgentRep)obstacle).getName() + "/" + goal);
+                    }
+                    //两者带不同颜色包相撞，无法处理
+                }
+                else if(obstacle instanceof PacketRep){
+                    if(((PacketRep) obstacle).getColor().equals(agentState.getColor())){
+                        agentState.addMemoryFragment("clear", obstacle.getX() +","+obstacle.getY());
+                    }
+                    else{
+                        agentState.addMemoryFragment("help", String.valueOf(((PacketRep) obstacle).getColor().getRGB()));
+                    }
+                    agentAction.skip();
+                }
+                else{
+                    //不存在的情况
+                    agentAction.skip();
+                }
+            }
+            else{
+                agentState.removeMemoryFragment("exchange");
+                agentAction.step(next.getX(), next.getY());
+//                CellPerception m = agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY());
+//                if(m != null && m.isWalkable())
+//                    agentAction.step(next.getX(), next.getY());
+//                else agentAction.skip();
+            }
+        }
+
+        if(agentState.getName().equals("a")){
+            System.out.println("行动后---------------");
+            System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
+            agentState.getMapMemory().show(10, 10);
+            System.out.println();
+        }
+        //System.out.println(agentState.getName() + "|" + agentState.getMemoryFragment("exchange"));
+        //Utils.updateAgentNum(agentState);
+        //agentState.updateMapMemory();
     }
 }

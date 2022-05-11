@@ -33,6 +33,10 @@ public class FromOperateToWander extends BehaviorChange {
 
     @Override
     public boolean isSatisfied(){
-        return !hasGoal && !hasPacket;
+        if(!hasGoal && !hasPacket){
+            getAgentState().removeMemoryFragment("goal");
+            return true;
+        }
+        return false;
     }
 }

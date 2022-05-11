@@ -1,4 +1,4 @@
-package agent.memory;/**
+package agent.behavior.part2;/**
  * @author ：mmzs
  * @date ：Created in 2022/4/30 14:29
  * @description：
@@ -6,10 +6,18 @@ package agent.memory;/**
  * @version: $
  */
 
+import com.google.common.collect.Table;
 import environment.CellPerception;
 import environment.Coordinate;
+import environment.Representation;
+import org.checkerframework.checker.units.qual.C;
+import org.w3c.dom.ls.LSException;
 
+
+import java.io.Serializable;
+import java.lang.reflect.AnnotatedArrayType;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * @author     ：mmzs
@@ -19,88 +27,211 @@ import java.util.*;
  * @version: $
  */
 
-public class MapMemory {
+public class MapMemory implements Serializable {
     int width = Integer.MAX_VALUE;
     int height = Integer.MAX_VALUE;
 
-    Map<Coordinate, CellMemory> map;
+    Map<Cor, CellMemory> map;
+    transient DstarLite dstarLite;
+
+    public DstarLite getDstarLite() {
+        return dstarLite;
+    }
+
+    public void setDstarLite(DstarLite dstarLite) {
+        this.dstarLite = dstarLite;
+    }
 
     public MapMemory(){
         map = new HashMap<>();
+        dstarLite = new DstarLite();
+    }
+
+    public List<Cor> getTrajectory(Cor start){
+        return dstarLite.getTrajectory(start);
+    }
+
+    public boolean trajContainsAgent(Cor start){
+        return dstarLite.trajContainsAgent(start);
+    }
+
+    public boolean trajContainsPacket(Cor start){
+       return dstarLite.trajContainsPacket(start);
+    }
+
+    public boolean trajContainsObtacle(Cor start){
+        return dstarLite.trajContainsObtacle(start);
+    }
+
+    public boolean discovered(Cor cor){
+        return map.containsKey(cor);
+    }
+
+    public boolean allDiscovered(){
+        return width != Integer.MAX_VALUE && height != Integer.MAX_VALUE && map.size() == width * height;
+    }
+
+    public boolean borderDiscovered(){
+        return width != Integer.MAX_VALUE && height != Integer.MAX_VALUE;
+    }
+
+    public Cor getRandomUndiscoveredCor(){
+        Cor res = null;
+        Random ra = new Random();
+        if(allDiscovered()){
+            res = new Cor(-1, -1);
+        }
+        else if(borderDiscovered()){
+            List<Cor> cors = new ArrayList<>();
+            for (int i = 0; i < width; i++){
+                for (int j = 0; j < height; j++){
+                    Cor c = new Cor(i, j);
+                    if(!map.containsKey(c)){
+                        cors.add(c);
+                    }
+                }
+            }
+            Random r = new Random();
+            res = cors.get(r.nextInt(cors.size()));
+        }
+        else{
+            int x, y;
+            do{
+                int x_far = Collections.max(map.keySet(), new Comparator<Cor>(){
+                    @Override
+                    public int compare(Cor o1, Cor o2) {
+                        return o1.getX() - o2.getX();
+                    }
+                }).getX();
+                int y_far = Collections.max(map.keySet(), new Comparator<Cor>(){
+                    @Override
+                    public int compare(Cor o1, Cor o2) {
+                        return o1.getY() - o2.getY();
+                    }
+                }).getY();
+                x = ra.nextInt(Math.min(x_far * 2, width));
+                y = ra.nextInt(Math.min(y_far * 2, height));
+            }while(discovered(new Cor(x, y)));
+            res = new Cor(x, y);
+        }
+        return res;
+    }
+    public CellMemory getFirstObstacle(Cor start){
+        System.out.println(dstarLite.getFirstObstacleCor(start));
+        return map.get(dstarLite.getFirstObstacleCor(start));
+    }
+
+    public Cor getFirstObstacleCor(Cor start){
+        return dstarLite.getFirstObstacleCor(start);
     }
 
     public List<CellMemory> getAllCellsMemory(){
         return new ArrayList<>(map.values());
     }
 
-    public void updateBorder(List<CellPerception> cellPerceptions, Coordinate cur, int width, int height){
-        CellPerception w = Collections.max(cellPerceptions, new Comparator<CellPerception>() {
+    public void updateBorder(List<CellPerception> neighbors, Cor cur){
+        int ymax = Collections.max(neighbors, new Comparator<CellPerception>(){
             @Override
-            public int compare(CellPerception o1, CellPerception o2) {
-                return o1.getX() - o2.getX();
+            public int compare(CellPerception c1, CellPerception c2){
+                return c1.getY() - c2.getY();
             }
-        });
-
-        CellPerception h = Collections.max(cellPerceptions, new Comparator<CellPerception>() {
+        }).getY();
+        int xmax = Collections.max(neighbors, new Comparator<CellPerception>(){
             @Override
-            public int compare(CellPerception o1, CellPerception o2) {
-                return o1.getY() - o2.getY();
+            public int compare(CellPerception c1, CellPerception c2){
+                return c1.getX() - c2.getX();
             }
-        });
+        }).getX();
 
-
-        List<CellPerception> widths = new ArrayList<>();
-        List<CellPerception> heights = new ArrayList<>();
-        if(w.getX() < cur.getX() + width / 2){
-            for (CellPerception c:cellPerceptions){
-                if(c.getX() == w.getX()){
-                    widths.add(c);
-                }
-            }
-            int i = 0;
-            for (CellPerception cw:widths){
-                if(!cw.containsWall()) i++;
-            }
-            if(i == widths.size()){
-                setWidth(w.getX() + 1);
-            }
-
-        }
-
-        if(h.getY() < cur.getY() + height / 2){
-            for (CellPerception c:cellPerceptions){
-                if(c.getY() == h.getY()){
-                    heights.add(c);
-                }
-            }
-            int i = 0;
-            for (CellPerception ch:heights){
-                if(!ch.containsWall()) i++;
-            }
-            if(i == heights.size()){
-                setHeight(h.getY() + 1);
-            }
-        }
+        if(xmax == cur.getX()) this.width = xmax + 1;
+        if(ymax == cur.getY()) this.height = ymax + 1;
     }
 
-    public void updateMapMemory(List<CellPerception> cellPerceptions, Coordinate cur, int width, int height){
-        updateBorder(cellPerceptions, cur, width, height);
-        Map<Coordinate, Boolean> obstacles = new HashMap<>();
+    public void updateMapMemory(MapMemory mm){
+        List<CellMemory> cells = new ArrayList<>(mm.getMap().values());
+        Map<Cor, Obstacle> obstacles = new HashMap<>();
+        if(mm.getWidth() < this.width){
+            setWidth(mm.getWidth());
+        }
+        if(mm.getHeight() < this.height){
+            setHeight(mm.getHeight());
+        }
+        for (CellMemory cell:cells){
+            if(!map.containsKey(cell.getCoordinate())){
+                map.put(cell.getCoordinate(), new CellMemory(cell, cell.getTime()));
+                obstacles.put(cell.getCoordinate(), getObstacleFromCell(cell));
+            }
+            else if(map.get(cell.getCoordinate()).getTime() < cell.getTime()){
+                map.put(cell.getCoordinate(), new CellMemory(cell, cell.getTime()));
+                obstacles.put(cell.getCoordinate(), getObstacleFromCell(cell));
+            }
+        }
+        updateDstar(obstacles);
+
+    }
+    public void updateMapMemory(List<CellPerception> cellPerceptions, int t){
+        updateCells(cellPerceptions, t);
+        updateDstar(extractObstacles(cellPerceptions));
+    }
+
+    public void updateDstar(Map<Cor, Obstacle> obstacles){
+        dstarLite.recalculate(obstacles, this.width, this.height);
+    }
+
+    public void updateCells(List<CellPerception> cellPerceptions, int t){
         for (CellPerception cellPerception:cellPerceptions){
-            Coordinate cor = new Coordinate(cellPerception.getX(), cellPerception.getY());
-            map.put(cor, new CellMemory(cellPerception));
+            Cor cor = new Cor(cellPerception.getX(), cellPerception.getY());
+            map.put(cor, new CellMemory(cellPerception, t));
+        }
+    }
+    public Map<Cor, Obstacle> extractObstacles(List<CellPerception> cellPerceptions){
+        List<Cor> cors = new ArrayList<>();
+        for (CellPerception c:cellPerceptions){
+            cors.add(new Cor(c.getX(), c.getY()));
+        }
+        Map<Cor, Obstacle> obstacles = new HashMap<>();
+        List<Cor> agents = new ArrayList<>();
+        for (Map.Entry<Cor, Obstacle> entry:dstarLite.getObstacles().entrySet()){
+            if(entry.getValue() == Obstacle.AGENT)  agents.add(entry.getKey());
+        }
+        for (Cor agent:agents){
+            if(!cors.contains(agent)){
+                obstacles.put(agent, Obstacle.NULL);
+            }
+        }
+        for (CellPerception cellPerception:cellPerceptions){
+            Cor cor = new Cor(cellPerception.getX(), cellPerception.getY());
+            obstacles.put(cor, getObstacleFromCell(cellPerception));
+        }
 
-            if(!cellPerception.isWalkable() && !(cellPerception.getX() == cur.getX() && cellPerception.getY() == cur.getY())/*&& !cellPerception.containsAgent()*/){
-                obstacles.put(cor, true);
-            }
-            else{
-                obstacles.put(cor, false);
-            }
+
+        return obstacles;
+    }
+
+    public Obstacle getObstacleFromCell(CellPerception cellPerception){
+        if(!cellPerception.isWalkable()){
+            if (cellPerception.containsAgent())
+                return Obstacle.AGENT;
+            else if(cellPerception.containsPacket() && !cellPerception.containsGenerator())
+                return Obstacle.PACKET;
+            else
+                return Obstacle.FIXED;
+        }
+        else{
+            return Obstacle.NULL;
         }
     }
 
-    public Map<Coordinate, CellMemory> getMap() {
+    public void clearGoal(){
+        dstarLite.clearGoal();
+    }
+
+    public Map<Cor, CellMemory> getMap() {
         return map;
+    }
+
+    public Cor getNextMove(Cor start, Cor goal){
+        return dstarLite.getNextMove(start, goal);
     }
 
     public int getWidth() {
@@ -119,4 +250,42 @@ public class MapMemory {
         this.height = height;
     }
 
+    public void setMap(Map<Cor, CellMemory> map) {
+        this.map = map;
+    }
+
+    public void show(int width, int height){
+        for(int j = 0;j < height + 1; j++){
+            for(int i = 0; i < width + 1; i++){
+                Cor c = new Cor(i, j);
+                String s = "";
+                if(map.containsKey(c)){
+                    if(map.get(c).containsAgent()){
+                        s += "人";
+                    }
+                    else if(map.get(c).containsPacket()){
+                        s += "包";
+                    }
+                    else if(map.get(c).containsAnyDestination()){
+                        s += "桶";
+                    }
+                    else if(map.get(c).containsWall()){
+                        s += "墙";
+                    }
+                }
+                if(i == width && this.width == width || j == height && this.height == height){
+                    s += "界";
+                }
+                if(s.equals("")){
+                    s += "无";
+                }
+                String g = dstarLite.getG(c) == Integer.MAX_VALUE? "X":String.valueOf(dstarLite.getG(c));
+                String rhs = dstarLite.getRhs(c) == Integer.MAX_VALUE? "X":String.valueOf(dstarLite.getRhs(c));
+                s += "|" + g + "|" + rhs;
+                System.out.print(String.format("%20s", s));
+            }
+            System.out.println();
+        }
+    }
 }
+

@@ -5,9 +5,10 @@ import java.util.*;
 import java.util.logging.Logger;
 
 
-import agent.memory.CellMemory;
-import agent.memory.MapMemory;
-import agent.dstarlite.DStarLite;
+import agent.behavior.part2.CellMemory;
+import agent.behavior.part2.Cor;
+import agent.behavior.part2.DstarLite;
+import agent.behavior.part2.MapMemory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -64,8 +65,6 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
     private boolean committedAction;
 
-    private DStarLite dstarLite;
-
     /**
      * The memory of an agent has the form of a key mapped to a memory fragment (represented as String)
      * e.g.  "target" -> "3, 4"
@@ -101,14 +100,22 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
         this.eventBus.register(this);
 
-        dstarLite = new DStarLite();
     }
 
 
     @Override
     public void updateMapMemory(){
+        int t = Integer.parseInt(getMemoryFragment("time"));
         List<CellPerception> cellPerceptions = getPerception().getAllCells();
-        mapMemory.updateMapMemory(cellPerceptions, new Coordinate(getX(), getY()), getPerception().getWidth(), getPerception().getHeight());
+        List<CellPerception> neighbors = new ArrayList<>(Arrays.asList(getPerception().getNeighbours()));
+        neighbors.removeIf(Objects::isNull);
+        mapMemory.updateBorder(neighbors, new Cor(getX(), getY()));
+        mapMemory.updateMapMemory(cellPerceptions, t);
+    }
+
+    @Override
+    public void clearGoal(){
+        mapMemory.clearGoal();
     }
 
     @Override
@@ -960,11 +967,6 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
     public boolean hasCommittedAction() {
         return this.committedAction;
-    }
-
-    @Override
-    public DStarLite getDStarLite(){
-        return this.dstarLite;
     }
 
 

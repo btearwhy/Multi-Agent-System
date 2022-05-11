@@ -3,11 +3,13 @@ package environment.world.conveyor;
 import environment.Representation;
 import util.Direction;
 
+import java.io.Serializable;
+
 
 /**
  * A class for representations of Conveyors.
  */
-public class ConveyorRep extends Representation {
+public class ConveyorRep extends Representation implements Serializable {
 
     private Direction direction;
 

@@ -1,13 +1,14 @@
 package environment.world.destination;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 import environment.Representation;
 
 /**
  * A class for representations of Destinations.
  */
-public class DestinationRep extends Representation {
+public class DestinationRep extends Representation implements Serializable {
 
     private Color color;
 

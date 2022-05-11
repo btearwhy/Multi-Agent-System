@@ -2,10 +2,12 @@ package environment.world.pheromone;
 
 import environment.CellPerception;
 
+import java.io.Serializable;
+
 /**
  * A class for representations of directed pheromones.
  */
-public class DirPheromoneRep extends PheromoneRep {
+public class DirPheromoneRep extends PheromoneRep implements Serializable {
 
     private CellPerception target;
     

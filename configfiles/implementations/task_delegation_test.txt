@@ -1,10 +1,10 @@
-description "Randomly wandering around"
+description "task delegation environment"
 
 
 # ------------------------------------------------
 # The amount of the behavior states the agent has
 # ------------------------------------------------
-nbStates 1                          # The wander behavior is implemented in a single state
+nbStates 1
 
 
 # Enumeration of the behavior agent states

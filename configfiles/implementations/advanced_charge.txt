@@ -4,7 +4,7 @@ description "Executing using memory"
 # ------------------------------------------------
 # The amount of the behavior states the agent has
 # ------------------------------------------------
-nbStates 6                          # The wander behavior is implemented in a single state
+nbStates 6                                   # The wander behavior is implemented in a single state
 1 agent.behavior.part2.behavior.Wander       # First behavior
 nbArgs 0                            # Constructor with no args
 2 agent.behavior.part2.behavior.Navigate     # Second behavior

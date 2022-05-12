@@ -40,8 +40,8 @@ public class DstarLite {
         gMap = new HashMap<>();
     }
 
-       public List<Cor> getTrajectory(Cor start){
-        List<Cor> trajectory = new ArrayList<>();
+       public List<Coordinate> getTrajectory(Coordinate start){
+        List<Coordinate> trajectory = new ArrayList<>();
         Cor r = start;
         while(!this.goal.equals(r) && r.getX() != -1 && r.getY() != -1){
             r = getSmallestGCor(r);
@@ -53,17 +53,17 @@ public class DstarLite {
         return trajectory;
     }
 
-    public boolean trajContainsObtacle(Cor start){
+    public boolean trajContainsObtacle(Coordinate start){
         int g = getSmallestG(start);
         return g >= Obstacle.AGENT.getCost() && g != Integer.MAX_VALUE;
     }
 
-    public boolean trajContainsAgent(Cor start){
+    public boolean trajContainsAgent(Coordinate start){
         int g = getSmallestG(start);
         return g < Obstacle.PACKET.getCost() && g >= Obstacle.AGENT.getCost();
     }
 
-    public boolean trajContainsPacket(Cor start){
+    public boolean trajContainsPacket(Coordinate start){
         int g = getSmallestG(start);
         return g >= Obstacle.PACKET.getCost() && g != Integer.MAX_VALUE;
     }

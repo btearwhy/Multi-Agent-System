@@ -44,56 +44,19 @@ public class Wander extends Behavior {
 
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
+
         Utils.updateTime(agentState);
         agentState.updateMapMemory();
-
-        if(agentState.getPerception().getAllCells().stream().anyMatch(c ->
-                !(c.getX() == agentState.getX() && c.getY() == agentState.getY()) && c.containsAgent())){
-            //sending message
-            //sending exchange request
-            if(agentState.getMemoryFragment("exchange") != null){
-                String name = agentState.getMemoryFragment("exchange").split("/")[0];
-                for (CellPerception c:agentState.getPerception().getAllCells()){
-                    if(c.containsAgent() && c.getAgentRepresentation().get().getName().equals(name)){
-                        agentCommunication.sendMessage(c.getAgentRepresentation().get(),
-                                "exchange/wander/" + agentState.getMemoryFragment("exchange"));
-                        break;
-                    }
-                }
-            }
-
-
-            //sending map info
-            String mapMessage = "";
-            try {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(baos);
-                MapMemory mapMemory = agentState.getMapMemory();
-                oos.writeObject(mapMemory);
-                oos.writeObject(null);
-                oos.flush();
-                mapMessage = baos.toString(StandardCharsets.ISO_8859_1);
-                oos.close();
-                baos.close();
-
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-            //mapMessage = "info/" + mapMessage;
-            for (CellPerception c: agentState.getAllCellsMemory()){
-                if(c.containsAgent() && !(c.getX() == agentState.getX() && c.getY() == agentState.getY())){
-                    agentCommunication.sendMessage(c.getAgentRepresentation().get(), mapMessage);
-                }
-            }
-        }
 
         //handle message
         for (Mail mail:agentCommunication.getMessages()){
             //mail.getMessage().startsWith("info")
             if(mail.message().startsWith("exchange")){
-                if(agentState.getMemoryFragment("exchange") != null){
-                    String sender = mail.getFrom();
+                String sender = mail.getFrom();
+                if(agentState.getMemoryFragment("exchange") != null
+                        && agentState.getMemoryFragment("exchangeRequest") != null
+                        && agentState.getMemoryFragment("exchangeRequest").equals(sender)){
+
                     String[] m = mail.getMessage().split("/");
                     String name = m[2];
                     Cor goal = new Cor(Integer.parseInt(m[3].split(",")[0]), Integer.parseInt(m[3].split(",")[1]));
@@ -101,23 +64,23 @@ public class Wander extends Behavior {
                     String requiredSender = my[0];
                     if(sender.equals(requiredSender) && name.equals(agentState.getName())) {
                         if(m[1].equals("wander")){
+//                            System.out.println(agentState.getName() +" wander交换前goal" + agentState.getMemoryFragment("goal"));
+//                            System.out.println(agentState.getName() + "wander交换后goal" + m[1]);
                             agentState.addMemoryFragment("wander", goal.toString());
                         }
-
                         else{
-                            //System.out.println(agentState.getName() +" 交换前goal" + agentState.getMemoryFragment("goal"));
-                            //System.out.println(agentState.getName() + "交换后goal" + m[1]);
+//                            System.out.println(agentState.getName() +" goal交换前goal" + agentState.getMemoryFragment("goal"));
+//                            System.out.println(agentState.getName() + "goal交换后goal" + m[1]);
                             agentState.addMemoryFragment("goal", m[1]);
                             agentState.removeMemoryFragment("wander");
                         }
                         agentState.addMemoryFragment("steal", "none");
                         if(m[1].contains("destination")){
-                            agentState.addMemoryFragment("steal", agentState.getName());
+                            agentState.addMemoryFragment("steal", sender);
                         }
+                        agentState.removeMemoryFragment("exchange");
                     }
-                    agentState.removeMemoryFragment("exchange");
                 }
-
             }
             else{
                 try {
@@ -134,9 +97,60 @@ public class Wander extends Behavior {
             }
         }
 
+        agentState.removeMemoryFragment("exchangeRequest");
+
+
+        //sending message
+        //sending exchange request
+        if(agentState.getPerception().getAllCells().stream().anyMatch(c ->
+                !(c.getX() == agentState.getX() && c.getY() == agentState.getY()) && c.containsAgent())){
+
+
+            if(agentState.getMemoryFragment("exchange") != null){
+                String name = agentState.getMemoryFragment("exchange").split("/")[0];
+                for (CellPerception c:agentState.getPerception().getAllCells()){
+                    if(c.containsAgent() && c.getAgentRepresentation().get().getName().equals(name)){
+                        String message = "exchange/" + agentState.getMemoryFragment("goal") +"/" + agentState.getMemoryFragment("exchange");
+                        System.out.println(agentState.getName() + "|send|" + message + "|to|" + name);
+                        agentCommunication.sendMessage(c.getAgentRepresentation().get(), message);
+                        agentState.addMemoryFragment("exchangeRequest", name);
+                        break;
+                    }
+                }
+            }
+
+
+
+            //sending map info
+            String mapMessage = "";
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);
+                MapMemory mapMemory = agentState.getMapMemory();
+                oos.writeObject(mapMemory);
+                oos.writeObject(null);
+                oos.flush();
+                mapMessage = baos.toString(StandardCharsets.ISO_8859_1);
+                oos.close();
+                baos.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            //mapMessage = "info/" + mapMessage;
+            for (CellPerception c: agentState.getAllCellsMemory()){
+                if(c.containsAgent() && !(c.getX() == agentState.getX() && c.getY() == agentState.getY())){
+                    agentCommunication.sendMessage(c.getAgentRepresentation().get(), mapMessage);
+                }
+            }
+        }
+
+        agentState.removeMemoryFragment("exchange");
+
 
 
         agentCommunication.clearMessages();
+
     }
 
 
@@ -146,21 +160,19 @@ public class Wander extends Behavior {
 
 
         Cor cur = new Cor(agentState.getX(), agentState.getY());
-
-
         if(agentState.getMemoryFragment("steal") != null){
-            if(agentState.getMemoryFragment("steal").equals(agentState.getName())){
-                CellMemory cellMemory = agentState.getMapMemory().getFirstObstacle(cur);
-                Cor obCor = cellMemory.getCoordinate();
-                Representation obstacle = cellMemory.getReps().get(0);
-                if(Utils.isInReach(agentState, obCor)
-                        && !agentState.hasCarry()
-                        && ((AgentRep)obstacle).carriesPacket()){
-                    agentAction.stealPacket(obCor.getX(), obCor.getY());
+            if(!agentState.getMemoryFragment("steal").equals("none")){
+                String stealee = agentState.getMemoryFragment("steal");
+                CellPerception k = null;
+                for(CellPerception c:agentState.getPerception().getNeighbours()){
+                    if(c != null && c.getAgentRepresentation().isPresent() && c.getAgentRepresentation().get().getName().equals(stealee)){
+                        System.out.println(agentState.getName() + "|偷" + c.getX() + "," +c.getY() +"包|" + stealee);
+                        k = c;
+                        break;
+                    }
                 }
-                else {
-                    agentAction.skip();
-                }
+                if(k != null) agentAction.stealPacket(k.getX(), k.getY());
+                else agentAction.skip();
             }
             else{
                 agentAction.skip();
@@ -194,32 +206,46 @@ public class Wander extends Behavior {
             agentAction.skip();
         }
         else{
-            if(agentState.getMapMemory().trajContainsObtacle(cur)) {
-                CellMemory cellMemory = agentState.getMapMemory().getFirstObstacle(cur);
-
-                Representation obstacle = cellMemory.getReps().get(0);
-                if(obstacle instanceof AgentRep){
-                    //System.out.println(agentState.getName() + "发现" + ((AgentRep) obstacle).getName() +"挡路");
-                    if(agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()).isWalkable()){
-                        agentAction.step(next.getX(), next.getY());
+            if(agentState.getMapMemory().trajContainsObtacle(cur)){
+                List<Cor> traj = agentState.getMapMemory().getTrajectory(cur);
+                Representation obstacle = null;
+                for (Cor cor:traj){
+                    CellPerception c = agentState.getPerception().getCellPerceptionOnAbsPos(cor.getX(), cor.getY());
+                    if(c != null){
+                        if(!c.isWalkable()){
+                            obstacle = c.getReps().get(0);
+                            break;
+                        }
                     }
-                    else{
-                        agentAction.skip();
-                        agentState.addMemoryFragment("exchange", ((AgentRep)obstacle).getName() + "/" + goal);
-                    }
+                    else break;
                 }
-                else if(obstacle instanceof PacketRep){
-                    if(((PacketRep) obstacle).getColor().equals(agentState.getColor())){
-                        agentState.addMemoryFragment("clear", obstacle.getX() +","+obstacle.getY());
-                    }
-                    else{
-                        agentState.addMemoryFragment("help", String.valueOf(((PacketRep) obstacle).getColor().getRGB()));
-                    }
-                    agentAction.skip();
+                if(obstacle == null){
+                    agentAction.step(next.getX(), next.getY());
                 }
                 else{
-                    //不存在的情况
-                    agentAction.skip();
+                    if(obstacle instanceof AgentRep){
+                       if(agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()).isWalkable()){
+                            agentAction.step(next.getX(), next.getY());
+                        }
+                        else {
+                            agentAction.skip();
+                            agentState.addMemoryFragment("exchange", ((AgentRep)obstacle).getName() + "/" + goal);
+                        }
+
+                    }
+                    else if(obstacle instanceof PacketRep){
+                        if(((PacketRep) obstacle).getColor().equals(agentState.getColor())){
+                            agentState.addMemoryFragment("clear", obstacle.getX() +","+obstacle.getY());
+                        }
+                        else{
+                            agentState.addMemoryFragment("help", String.valueOf(((PacketRep) obstacle).getColor().getRGB()));
+                        }
+                        agentAction.skip();
+                    }
+                    else{
+                        //不存在的情况
+                        agentAction.skip();
+                    }
                 }
             }
             else{
@@ -227,6 +253,5 @@ public class Wander extends Behavior {
                 agentAction.step(next.getX(), next.getY());
             }
         }
-        //agentState.updateMapMemory();
     }
 }

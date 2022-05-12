@@ -123,6 +123,9 @@ public class Perception {
         return cellPerceptions;
     }
 
+    public boolean see(int x, int y){
+        return getCellPerceptionOnAbsPos(x, y) != null;
+    }
 
     /**
      *  Returns all Representations that are situated right next to the agent that issued this

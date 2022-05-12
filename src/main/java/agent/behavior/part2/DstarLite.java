@@ -27,11 +27,11 @@ public class DstarLite{
     Map<Cor, Obstacle> obstacles;
     Map<Cor, Integer> rhsMap;
     Map<Cor, Integer> gMap;
-    int width = Integer.MAX_VALUE;
-    int height = Integer.MAX_VALUE;
+    int width = BORDER;
+    int height = BORDER;
 
-
-
+    static final int MAX_LOOP = Integer.MAX_VALUE;
+    static final int BORDER = 30;
     public DstarLite(){
         priorityQueue = new PriorityQueueU<>();
         obstacles = new HashMap<>();
@@ -47,16 +47,16 @@ public class DstarLite{
             trajectory.add(r);
         }
         if(r.getX() == -1 && r.getY() == -1){
-            return null;
+            return new ArrayList<>();
         }
         return trajectory;
     }
 
     public boolean trajContainsObtacle(Cor start){
-        int rhs = getRhs(start);
-        return rhs > Obstacle.AGENT.getCost() && rhs != Integer.MAX_VALUE;
-//        int g = getSmallestG(start);
-//        return g > Obstacle.AGENT.getCost() && g != Integer.MAX_VALUE;
+//        int rhs = getRhs(start);
+//        return rhs > Obstacle.AGENT.getCost() && rhs != Integer.MAX_VALUE;
+        int g = getSmallestG(start);
+        return g >= Obstacle.AGENT.getCost() && g != Integer.MAX_VALUE;
     }
 
     public boolean trajContainsAgent(Cor start){
@@ -255,7 +255,9 @@ public class DstarLite{
     }
 
     void computeShortestPath(){
-        while(!priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) < getRhs(start))){
+        int i = 0;
+        while(++i < MAX_LOOP && !priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) <= 0  || getG(start) < getRhs(start))){
+//            System.out.print(i);
             Cor u = priorityQueue.peek().getCoordinate();
             PriorityKey kOld = priorityQueue.peek().getPriorityKey();
             PriorityKey kNew = calculateKey(u);
@@ -290,7 +292,7 @@ public class DstarLite{
                 }
             }
         }
-
+        //System.out.println();
     }
 
     public int getSmallestRhs(Cor u){
@@ -304,21 +306,21 @@ public class DstarLite{
     }
 
     int cost(Cor c, Cor u){
-        if(u.equals(this.goal)){
-            return 1;
-        }
-        else if(validCell(u)){
-            return obstacles.getOrDefault(u, Obstacle.NULL).getCost();
-        }
-        else return Integer.MAX_VALUE;
-
-//        if(c.equals(this.start)){
+//        if(u.equals(this.goal)){
 //            return 1;
 //        }
-//        else if(validCell(c)){
-//            return obstacles.getOrDefault(c, Obstacle.NULL).getCost();
+//        else if(validCell(u)){
+//            return obstacles.getOrDefault(u, Obstacle.NULL).getCost();
 //        }
 //        else return Integer.MAX_VALUE;
+
+        if(c.equals(this.start)){
+            return 1;
+        }
+        else if(validCell(c)){
+            return obstacles.getOrDefault(c, Obstacle.NULL).getCost();
+        }
+        else return Integer.MAX_VALUE;
     }
 
     void initialize(Cor start, Cor goal){
@@ -471,12 +473,12 @@ enum Obstacle{
     },
     AGENT{
         public int getCost(){
-            return 50;
+            return 100;
         }
     },
     PACKET{
         public int getCost(){
-            return 1000;
+            return 10000;
         }
     },
     NULL{

@@ -28,12 +28,12 @@ import java.util.function.Predicate;
  */
 
 public class MapMemory implements Serializable {
-    int width = Integer.MAX_VALUE;
-    int height = Integer.MAX_VALUE;
+    int width = BORDER;
+    int height = BORDER;
 
     Map<Cor, CellMemory> map;
     transient DstarLite dstarLite;
-
+    static final int BORDER = 30;
     public DstarLite getDstarLite() {
         return dstarLite;
     }
@@ -68,11 +68,11 @@ public class MapMemory implements Serializable {
     }
 
     public boolean allDiscovered(){
-        return width != Integer.MAX_VALUE && height != Integer.MAX_VALUE && map.size() == width * height;
+        return width != BORDER && height != BORDER && map.size() == width * height;
     }
 
     public boolean borderDiscovered(){
-        return width != Integer.MAX_VALUE && height != Integer.MAX_VALUE;
+        return width != BORDER && height != BORDER;
     }
 
     public Cor getRandomUndiscoveredCor(){
@@ -96,8 +96,7 @@ public class MapMemory implements Serializable {
         }
         else{
             int x, y;
-            do{
-                int x_far = Collections.max(map.keySet(), new Comparator<Cor>(){
+            int x_far = Collections.max(map.keySet(), new Comparator<Cor>(){
                     @Override
                     public int compare(Cor o1, Cor o2) {
                         return o1.getX() - o2.getX();
@@ -109,6 +108,9 @@ public class MapMemory implements Serializable {
                         return o1.getY() - o2.getY();
                     }
                 }).getY();
+            do{
+//                x = Math.min(x_far + y_far, width);
+//                y = x;
                 x = ra.nextInt(Math.min(x_far * 2, width));
                 y = ra.nextInt(Math.min(y_far * 2, height));
             }while(discovered(new Cor(x, y)));
@@ -149,6 +151,7 @@ public class MapMemory implements Serializable {
 
     public void updateMapMemory(MapMemory mm){
         List<CellMemory> cells = new ArrayList<>(mm.getMap().values());
+        cells.removeIf(c -> c.getAgentRepresentation().isPresent());
         Map<Cor, Obstacle> obstacles = new HashMap<>();
         if(mm.getWidth() < this.width){
             setWidth(mm.getWidth());
@@ -185,20 +188,20 @@ public class MapMemory implements Serializable {
         }
     }
     public Map<Cor, Obstacle> extractObstacles(List<CellPerception> cellPerceptions){
-        List<Cor> cors = new ArrayList<>();
-        for (CellPerception c:cellPerceptions){
-            cors.add(new Cor(c.getX(), c.getY()));
-        }
+//        List<Cor> cors = new ArrayList<>();
+//        for (CellPerception c:cellPerceptions){
+//            cors.add(new Cor(c.getX(), c.getY()));
+//        }
         Map<Cor, Obstacle> obstacles = new HashMap<>();
-        List<Cor> agents = new ArrayList<>();
-        for (Map.Entry<Cor, Obstacle> entry:dstarLite.getObstacles().entrySet()){
-            if(entry.getValue() == Obstacle.AGENT)  agents.add(entry.getKey());
-        }
-        for (Cor agent:agents){
-            if(!cors.contains(agent)){
-                obstacles.put(agent, Obstacle.NULL);
-            }
-        }
+//        List<Cor> agents = new ArrayList<>();
+//        for (Map.Entry<Cor, Obstacle> entry:dstarLite.getObstacles().entrySet()){
+//            if(entry.getValue() == Obstacle.AGENT)  agents.add(entry.getKey());
+//        }
+//        for (Cor agent:agents){
+//            if(!cors.contains(agent)){
+//                obstacles.put(agent, Obstacle.NULL);
+//            }
+//        }
         for (CellPerception cellPerception:cellPerceptions){
             Cor cor = new Cor(cellPerception.getX(), cellPerception.getY());
             obstacles.put(cor, getObstacleFromCell(cellPerception));
@@ -259,9 +262,10 @@ public class MapMemory implements Serializable {
             for(int i = 0; i < width + 1; i++){
                 Cor c = new Cor(i, j);
                 String s = "";
+                if(dstarLite.start.equals(c)) s = "s|";
                 if(map.containsKey(c)){
                     if(map.get(c).containsAgent()){
-                        s += "人";
+                        s += map.get(c).getAgentRepresentation().get().getName();
                     }
                     else if(map.get(c).containsPacket()){
                         s += "包";
@@ -281,7 +285,7 @@ public class MapMemory implements Serializable {
                 }
                 String g = dstarLite.getG(c) == Integer.MAX_VALUE? "X":String.valueOf(dstarLite.getG(c));
                 String rhs = dstarLite.getRhs(c) == Integer.MAX_VALUE? "X":String.valueOf(dstarLite.getRhs(c));
-                s += "|" + g + "|" + rhs;
+                s += "|" + g + "|" + rhs + "|" + dstarLite.obstacles.getOrDefault(c, Obstacle.NULL);
                 System.out.print(String.format("%20s", s));
             }
             System.out.println();

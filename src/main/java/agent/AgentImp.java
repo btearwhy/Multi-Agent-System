@@ -110,6 +110,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
         List<CellPerception> neighbors = new ArrayList<>(Arrays.asList(getPerception().getNeighbours()));
         neighbors.removeIf(Objects::isNull);
         mapMemory.updateBorder(neighbors, new Cor(getX(), getY()));
+        cellPerceptions.removeIf(c -> c.getX() == getAgent().getX() && c.getY() == getAgent().getY());
         mapMemory.updateMapMemory(cellPerceptions, t);
     }
 

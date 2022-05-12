@@ -103,9 +103,18 @@ public class Utils {
     }
 
 
+    public static void updateGoalCor(AgentState agentState, Cor cor){
+        JsonObject goalObject = new Gson().fromJson(agentState.getMemoryFragment("goal"), JsonObject.class);
+        goalObject.remove("coordinate");
+        JsonObject corObject = new JsonObject();
+        corObject.addProperty("x", String.valueOf(cor.getX()));
+        corObject.addProperty("y", String.valueOf(cor.getY()));
+        goalObject.add("coordinate", corObject);
+        setGoal(agentState, goalObject);
+
+    }
 
     public static void setGoal(AgentState agentState, JsonObject goalObject){
-        agentState.removeMemoryFragment("goal");
         agentState.addMemoryFragment("goal", goalObject.toString());
     }
 

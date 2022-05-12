@@ -42,6 +42,18 @@ public class MapMemory {
     public List<Coordinate> getTrajectory(Coordinate start){
         return dstarLite.getTrajectory(start);
     }
+
+    public boolean trajContainsAgent(Coordinate start){
+        return dstarLite.trajContainsAgent(start);
+    }
+
+    public boolean trajContainsPacket(Coordinate start){
+       return dstarLite.trajContainsPacket(start);
+    }
+
+    public boolean trajContainsObtacle(Coordinate start){
+        return dstarLite.trajContainsObtacle(start);
+    }
     public List<CellMemory> getAllCellsMemory(){
         return new ArrayList<>(map.values());
     }

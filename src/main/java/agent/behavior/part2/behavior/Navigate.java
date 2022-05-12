@@ -11,6 +11,8 @@ import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
 import agent.behavior.part2.*;
+import agent.behavior.part2.CellMemory;
+import agent.behavior.part2.MapMemory;
 import environment.*;
 import environment.world.agent.AgentRep;
 import environment.world.destination.DestinationRep;

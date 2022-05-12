@@ -53,10 +53,10 @@ public class DstarLite{
     }
 
     public boolean trajContainsObtacle(Cor start){
-        int rhs = getRhs(start);
-        return rhs > Obstacle.AGENT.getCost() && rhs != Integer.MAX_VALUE;
-//        int g = getSmallestG(start);
-//        return g > Obstacle.AGENT.getCost() && g != Integer.MAX_VALUE;
+//         int rhs = getRhs(start);
+//         return rhs > Obstacle.AGENT.getCost() && rhs != Integer.MAX_VALUE;
+       int g = getSmallestG(start);
+       return g > Obstacle.AGENT.getCost() && g != Integer.MAX_VALUE;
     }
 
     public boolean trajContainsAgent(Cor start){
@@ -304,21 +304,21 @@ public class DstarLite{
     }
 
     int cost(Cor c, Cor u){
-        if(u.equals(this.goal)){
-            return 1;
-        }
-        else if(validCell(u)){
-            return obstacles.getOrDefault(u, Obstacle.NULL).getCost();
-        }
-        else return Integer.MAX_VALUE;
+//         if(u.equals(this.goal)){
+//             return 1;
+//         }
+//         else if(validCell(u)){
+//             return obstacles.getOrDefault(u, Obstacle.NULL).getCost();
+//         }
+//         else return Integer.MAX_VALUE;
 
-//        if(c.equals(this.start)){
-//            return 1;
-//        }
-//        else if(validCell(c)){
-//            return obstacles.getOrDefault(c, Obstacle.NULL).getCost();
-//        }
-//        else return Integer.MAX_VALUE;
+       if(c.equals(this.start)){
+           return 1;
+       }
+       else if(validCell(c)){
+           return obstacles.getOrDefault(c, Obstacle.NULL).getCost();
+       }
+       else return Integer.MAX_VALUE;
     }
 
     void initialize(Cor start, Cor goal){

@@ -5,9 +5,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 
-import agent.behavior.part2.CellMemory;
-import agent.behavior.part2.DstarLite;
-import agent.behavior.part2.MapMemory;
+import agent.behavior.part3.CellMemory;
+import agent.behavior.part3.MapMemory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 

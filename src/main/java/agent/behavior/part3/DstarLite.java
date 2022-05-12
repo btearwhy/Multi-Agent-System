@@ -42,7 +42,7 @@ public class DstarLite {
 
        public List<Coordinate> getTrajectory(Coordinate start){
         List<Coordinate> trajectory = new ArrayList<>();
-        Cor r = start;
+        Coordinate r = start;
         while(!this.goal.equals(r) && r.getX() != -1 && r.getY() != -1){
             r = getSmallestGCor(r);
             trajectory.add(r);

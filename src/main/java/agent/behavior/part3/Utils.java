@@ -432,10 +432,10 @@ public class Utils {
          }
          // destination is found
          if (goal != null) {
-             agentState.getMapMemory().getNextMove(cur, goal);
              // get the path with the lowest cost
-             List<Coordinate> path = agentState.getMapMemory().getTrajectory(cur);
              if (agentState.getMapMemory().trajContainsPacket(cur)) {
+                 agentState.getMapMemory().getNextMove(cur, goal);
+                 List<Coordinate> path = agentState.getMapMemory().getTrajectory(cur);
                  // find first packet in the path
                  for (Coordinate c:path) {
                      CellPerception cell = agentState.getMapMemory().getMap().get(c);

@@ -8,6 +8,8 @@ package agent.behavior.part3.change;/**
 
 import agent.behavior.BehaviorChange;
 import agent.behavior.part3.Utils;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import environment.Coordinate;
 
@@ -26,14 +28,32 @@ public class FromWanderToNavigate extends BehaviorChange {
 
     @Override
     public void updateChange(){
-        JsonObject goal = Utils.searchGoal(this.getAgentState());
+        JsonObject goal = null;
+
+        if (getAgentState().getMemoryFragmentKeys().contains("be_requested")){
+            JsonArray be_requested = new Gson().fromJson(getAgentState().getMemoryFragment("be_requested"),
+                    JsonArray.class);
+            if (be_requested.size() > 0){
+                // add into goal
+                goal.addProperty("target", "packet");
+                goal.addProperty("color", getAgentState().getColor().get().getRGB());
+                goal.add("coordinate", be_requested.get(0).getAsJsonObject());
+                be_requested.remove(0);
+            }
+        }
+        else{
+            goal = Utils.searchGoal(this.getAgentState());
+        }
+
         if(goal != null){
             Utils.setGoal(getAgentState(), goal);
             this.hasGoal = true;
             this.packetOrGenerator = Utils.getTargetFromGoal(getAgentState()).equals("packet") || Utils.getTargetFromGoal(getAgentState()).equals("generator");
             this.inReach = Utils.isInReach(this.getAgentState(), Utils.getCoordinateFromGoal(getAgentState()));
         }
-        else hasGoal = false;
+        else{
+            this.hasGoal = false;
+        }
     }
 
 

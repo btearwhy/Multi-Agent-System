@@ -350,7 +350,6 @@ public class Utils {
                 new Coordinate(1, -1), new Coordinate(-1, 1)
         ));
 
-
         int count = 0;
         for (Coordinate m : moves){
             CellPerception neighbor_cell = perception.getCellPerceptionOnAbsPos(x+m.getX(),y+m.getY());
@@ -361,6 +360,18 @@ public class Utils {
 
         return count;
 
+    }
+
+    public static boolean jsonarray_contain (JsonArray list, JsonObject object){
+        for (int i = 0; i < list.size(); i ++){
+            JsonObject packet = list.get(i).getAsJsonObject();
+            if (packet.get("x").getAsInt() == object.get("x").getAsInt() &&
+                packet.get("y").getAsInt() == object.get("y").getAsInt()){
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

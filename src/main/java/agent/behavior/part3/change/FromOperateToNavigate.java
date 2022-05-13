@@ -8,6 +8,8 @@ package agent.behavior.part3.change;/**
 
 import agent.behavior.BehaviorChange;
 import agent.behavior.part3.Utils;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import environment.Coordinate;
 
@@ -29,8 +31,22 @@ public class FromOperateToNavigate extends BehaviorChange {
             goal = Utils.searchNearestDestination(getAgentState(), getAgentState().getCarry().get().getColor());
         }
         else{
-            goal = Utils.searchGoal(getAgentState());
+            if (getAgentState().getMemoryFragmentKeys().contains("be_requested")){
+                JsonArray be_requested = new Gson().fromJson(getAgentState().getMemoryFragment("be_requested"),
+                        JsonArray.class);
+                if (be_requested.size() > 0){
+                    // add into memory goal
+                    goal.addProperty("target", "packet");
+                    goal.addProperty("color", getAgentState().getColor().get().getRGB());
+                    goal.add("coordinate", be_requested.get(0).getAsJsonObject());
+                    be_requested.remove(0);
+                }
+            }
+            else{
+                goal = Utils.searchGoal(this.getAgentState());
+            }
         }
+
         if(goal != null){
             hasGoal = true;
             Utils.setGoal(getAgentState(), goal);

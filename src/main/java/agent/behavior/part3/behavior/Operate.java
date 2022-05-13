@@ -69,6 +69,9 @@ public class Operate extends Behavior{
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
         agentState.updateMapMemory();
+
+        Utils.addRequestMemory(agentState);
+
         Perception perception = agentState.getPerception();
         Coordinate goalCor = Utils.getCoordinateFromGoal(agentState);
         String target = Utils.getTargetFromGoal(agentState);

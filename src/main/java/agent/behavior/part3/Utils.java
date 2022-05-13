@@ -420,5 +420,49 @@ public class Utils {
     	 return agengTarget;
      }
 
+     public static void addRequestMemory(AgentState agentState) {
+         Coordinate cur = new Coordinate(agentState.getX(), agentState.getY());
+         Coordinate goal = null;
+         // find destination in perception
+         for (CellPerception cell:agentState.getPerception().getAllCells()) {
+             if (agentState.getColor().isPresent() && cell.containsDestination(agentState.getColor().get())) {
+                 goal = new Coordinate(cell.getX(), cell.getY());
+                 break;
+             }
+         }
+         // destination is found
+         if (goal != null) {
+             agentState.getMapMemory().getNextMove(cur, goal);
+             // get the path with the lowest cost
+             List<Coordinate> path = agentState.getMapMemory().getTrajectory(cur);
+             if (agentState.getMapMemory().trajContainsPacket(cur)) {
+                 // find first packet in the path
+                 for (Coordinate c:path) {
+                     CellPerception cell = agentState.getMapMemory().getMap().get(c);
+                     if (cell.containsPacket() && cell.getPacketRepresentation().isPresent()) {
+                         Color color = cell.getPacketRepresentation().get().getColor();
+                         JsonObject jsonCoordinate = new JsonObject();
+                         jsonCoordinate.addProperty("x", cell.getX());
+                         jsonCoordinate.addProperty("y", cell.getY());
+
+                         if (color.equals(agentState.getColor().get())) {
+                             // add packet to be_requested
+                             JsonArray array = new JsonArray();
+                             array.add(jsonCoordinate);
+                             agentState.addMemoryFragment("be_requested", array.toString());
+                         }
+                         else {
+                             // add packet to request
+                             JsonObject object = new JsonObject();
+                             object.addProperty("color", color.getRGB());
+                             object.add("coordinate", jsonCoordinate);
+                             agentState.addMemoryFragment("request", object.toString());
+                         }
+                     }
+                 }
+             }
+         }
+     }
+
 }
 

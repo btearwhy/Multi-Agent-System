@@ -138,6 +138,7 @@ public class Navigate extends Behavior {
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
 
+        Utils.addRequestMemory(agentState);
 
         Coordinate cur = new Coordinate(agentState.getX(), agentState.getY());
         Coordinate goal = Utils.getCoordinateFromGoal(agentState);

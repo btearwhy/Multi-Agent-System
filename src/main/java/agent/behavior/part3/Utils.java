@@ -374,6 +374,52 @@ public class Utils {
         return false;
     }
 
+          //get request from memory
+     public static JsonObject getRequest(AgentState agentState) {
+    	 JsonObject requestObj = null;
+    	 String key = "request";
+         requestObj = new Gson().fromJson(agentState.getMemoryFragment(key), JsonObject.class);
+         /*if(requestObj!=null) {
+             requestArray = requestObj.get(key).getAsJsonArray();
+         }*/
+         return requestObj;
+     }
+     // get target request: match agent with request
+     public static JsonArray getTargetRequest(AgentState agentState,Optional<Color> agentColor) {
+    	 JsonObject requestObj = getRequest(agentState);
+    	 JsonArray targetRequest = null;
+    	 String color = agentColor.toString();
+    	 if(requestObj!=null) {
+    		 JsonArray requestArray = requestObj.getAsJsonArray();
+    		 for (int i = 0;i<requestArray.size();i++) {
+    			 JsonObject targetRequestObj = (JsonObject)requestArray.get(i);
+    			 if (targetRequestObj.get("color").toString().equals(color)) {
+    				 targetRequest = targetRequestObj.getAsJsonArray();
+    			 }	
+    		 } 
+    	 }
+         return targetRequest;
+     }
+     //get target agent for request   
+     public static AgentRep requestAgentTarget(AgentState agentState) {
+    	 AgentRep agengTarget = null;
+       //match agent with request
+         Perception perception = agentState.getPerception();
+         List<CellPerception> allCells = perception.getAllCells();
+         for(CellPerception cell : allCells){
+             if(cell.containsAgent()){
+                 if (cell.getX()!=agentState.getX()&&cell.getY()!=agentState.getY()) {
+                	 Optional<Color> agentColor = cell.getRepOfType(AgentRep.class).getColor();
+                	 JsonArray targetRequest = getTargetRequest(agentState,agentColor);
+                	 if (targetRequest != null) {
+                		 agengTarget = cell.getRepOfType(AgentRep.class);
+                     }
+                 }
+             }
+         }
+    	 return agengTarget;
+     }
+    
 
 }
 

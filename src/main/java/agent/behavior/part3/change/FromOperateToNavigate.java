@@ -34,13 +34,15 @@ public class FromOperateToNavigate extends BehaviorChange {
             if (getAgentState().getMemoryFragmentKeys().contains("be_requested")){
                 JsonArray be_requested = new Gson().fromJson(getAgentState().getMemoryFragment("be_requested"),
                         JsonArray.class);
-                if (be_requested.size() > 0){
-                    // add into memory goal
-                    goal.addProperty("target", "packet");
-                    goal.addProperty("color", getAgentState().getColor().get().getRGB());
-                    goal.add("coordinate", be_requested.get(0).getAsJsonObject());
-                    be_requested.remove(0);
-                }
+
+                // add into memory goal
+                goal.addProperty("target", "packet");
+                goal.addProperty("color", getAgentState().getColor().get().getRGB());
+                goal.add("coordinate", be_requested.get(0).getAsJsonObject());
+                be_requested.remove(0);
+
+                // no more be_requested goals, remove memory
+                if (be_requested.size() == 0) getAgentState().removeMemoryFragment("be_requested");
             }
             else{
                 goal = Utils.searchGoal(this.getAgentState());

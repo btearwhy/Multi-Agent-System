@@ -373,8 +373,8 @@ public class Utils {
 
         return false;
     }
-
-          //get request from memory
+    
+//get request from memory
      public static JsonObject getRequest(AgentState agentState) {
     	 JsonObject requestObj = null;
     	 String key = "request";
@@ -385,16 +385,16 @@ public class Utils {
          return requestObj;
      }
      // get target request: match agent with request
-     public static JsonArray getTargetRequest(AgentState agentState,Optional<Color> agentColor) {
+     public static JsonObject getTargetRequest(AgentState agentState,Optional<Color> agentColor) {
     	 JsonObject requestObj = getRequest(agentState);
-    	 JsonArray targetRequest = null;
+    	 JsonObject targetRequest = null;
     	 String color = agentColor.toString();
     	 if(requestObj!=null) {
     		 JsonArray requestArray = requestObj.getAsJsonArray();
     		 for (int i = 0;i<requestArray.size();i++) {
     			 JsonObject targetRequestObj = (JsonObject)requestArray.get(i);
     			 if (targetRequestObj.get("color").toString().equals(color)) {
-    				 targetRequest = targetRequestObj.getAsJsonArray();
+    				 targetRequest = targetRequestObj;
     			 }	
     		 } 
     	 }
@@ -410,7 +410,7 @@ public class Utils {
              if(cell.containsAgent()){
                  if (cell.getX()!=agentState.getX()&&cell.getY()!=agentState.getY()) {
                 	 Optional<Color> agentColor = cell.getRepOfType(AgentRep.class).getColor();
-                	 JsonArray targetRequest = getTargetRequest(agentState,agentColor);
+                	 JsonObject targetRequest = getTargetRequest(agentState,agentColor);
                 	 if (targetRequest != null) {
                 		 agengTarget = cell.getRepOfType(AgentRep.class);
                      }
@@ -419,7 +419,6 @@ public class Utils {
          }
     	 return agengTarget;
      }
-    
 
 }
 

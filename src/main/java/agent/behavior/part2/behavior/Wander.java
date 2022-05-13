@@ -157,7 +157,14 @@ public class Wander extends Behavior {
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
         //System.out.println(agentState.getName() + "|wander|" + agentState.getMemoryFragment("wander"));
+        agentState.updateMapMemory();
 
+        System.out.println(agentState.getName() + "|wander|" + agentState.getMemoryFragment("wander"));
+        if(agentState.getName().equals("a")){
+            //System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
+            agentState.getMapMemory().show(10, 10);
+            System.out.println();
+        }
 
         Cor cur = new Cor(agentState.getX(), agentState.getY());
         if(agentState.getMemoryFragment("steal") != null){

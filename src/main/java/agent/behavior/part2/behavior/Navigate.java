@@ -147,17 +147,19 @@ public class Navigate extends Behavior {
 
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
+        agentState.updateMapMemory();
         //System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
 //        if(agentState.getName().equals("b") || agentState.getName().equals("c")){
 //            System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
 //        }
-        //System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
+        System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
         if(agentState.getName().equals("a")){
-            System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
+            //System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
             agentState.getMapMemory().show(10, 10);
             System.out.println();
         }
 
+        agentState.updateMapMemory();
         Cor cur = new Cor(agentState.getX(), agentState.getY());
         if(agentState.getMemoryFragment("steal") != null){
             if(!agentState.getMemoryFragment("steal").equals("none")){

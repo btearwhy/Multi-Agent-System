@@ -45,7 +45,7 @@ public class Operate extends Behavior{
         String target = Utils.getTargetFromGoal(agentState);
         Color color = Utils.getTargetColorFromGoal(agentState);
         CellPerception goalCell = perception.getCellPerceptionOnAbsPos(goalCor.getX(), goalCor.getY());
-        if(target.equals("packet") || target.equals("generator")){
+        if(target.equals("packet")){
             if(goalCell.getRepOfType(PacketRep.class) != null && color.equals(goalCell.getRepOfType(PacketRep.class).getColor())){
                 agentAction.pickPacket(goalCor.getX(), goalCor.getY());
             }

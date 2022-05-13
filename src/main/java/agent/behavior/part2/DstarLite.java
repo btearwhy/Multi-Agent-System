@@ -185,7 +185,7 @@ public class DstarLite{
                             return o1.getY() - o2.getY();
                         }
                     }).getY();
-                    for (int i = 0; i < ymax; i++){
+                    for (int i = 0; i <= ymax + 1; i++){
                         obstacles.put(new Cor(width, i), Obstacle.FIXED);
                     }
                 }
@@ -197,7 +197,7 @@ public class DstarLite{
                             return o1.getX() - o2.getX();
                         }
                     }).getX();
-                    for (int i = 0; i < xmax; i++){
+                    for (int i = 0; i <= xmax + 1; i++){
                         obstacles.put(new Cor(i, height), Obstacle.FIXED);
                     }
                 }
@@ -314,11 +314,16 @@ public class DstarLite{
 //        }
 //        else return Integer.MAX_VALUE;
 
+        int costC = obstacles.getOrDefault(c, Obstacle.NULL).getCost();
+        int costU = obstacles.getOrDefault(u, Obstacle.NULL).getCost();
         if(c.equals(this.start)){
-            return 1;
+            return add(1,  costU);
         }
-        else if(validCell(c)){
-            return obstacles.getOrDefault(c, Obstacle.NULL).getCost();
+        if(u.equals(this.goal)){
+            return add(1 , costC);
+        }
+        if(validCell(c) && validCell(u)){
+            return add(costC ,costU);
         }
         else return Integer.MAX_VALUE;
     }
@@ -344,7 +349,7 @@ public class DstarLite{
     }
 
     int heuristic(Cor u, Cor v){
-        return Math.max(Math.abs(u.getX() - v.getX()), Math.abs(u.getY() - v.getY()));
+        return 2 * Math.max(Math.abs(u.getX() - v.getX()), Math.abs(u.getY() - v.getY()));
     }
 
 

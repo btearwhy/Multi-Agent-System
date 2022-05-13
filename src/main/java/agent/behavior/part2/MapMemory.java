@@ -262,7 +262,7 @@ public class MapMemory implements Serializable {
             for(int i = 0; i < width + 1; i++){
                 Cor c = new Cor(i, j);
                 String s = "";
-                if(dstarLite.start.equals(c)) s = "s|";
+                if(c.equals(dstarLite.start)) s = "s|";
                 if(map.containsKey(c)){
                     if(map.get(c).containsAgent()){
                         s += map.get(c).getAgentRepresentation().get().getName();

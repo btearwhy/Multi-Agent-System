@@ -27,7 +27,7 @@ public class FromOperateToWander extends BehaviorChange {
     @Override
     public void updateChange(){
         hasPacket = getAgentState().hasCarry();
-        JsonObject goal = null;
+        JsonObject goal = new JsonObject();
 
         if (getAgentState().getMemoryFragmentKeys().contains("be_requested")){
             JsonArray be_requested = new Gson().fromJson(getAgentState().getMemoryFragment("be_requested"),

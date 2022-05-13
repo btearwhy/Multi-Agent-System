@@ -26,7 +26,7 @@ public class FromOperateToNavigate extends BehaviorChange {
 
     @Override
     public void updateChange(){
-        JsonObject goal = null;
+        JsonObject goal = new JsonObject();
         if(getAgentState().hasCarry()){
             goal = Utils.searchNearestDestination(getAgentState(), getAgentState().getCarry().get().getColor());
         }

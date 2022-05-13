@@ -151,12 +151,12 @@ public class Navigate extends Behavior {
 //        if(agentState.getName().equals("b") || agentState.getName().equals("c")){
 //            System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
 //        }
-        System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
-//        if(agentState.getName().equals("a")){
-//            System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
-//            agentState.getMapMemory().show(10, 10);
-//            System.out.println();
-//        }
+        //System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
+        if(agentState.getName().equals("a")){
+            System.out.println(agentState.getName() + "|navigate|" + agentState.getMemoryFragment("goal"));
+            agentState.getMapMemory().show(10, 10);
+            System.out.println();
+        }
 
         Cor cur = new Cor(agentState.getX(), agentState.getY());
         if(agentState.getMemoryFragment("steal") != null){
@@ -236,6 +236,7 @@ public class Navigate extends Behavior {
                 List<Cor> traj = agentState.getMapMemory().getTrajectory(cur);
                 Representation obstacle = null;
                 for (Cor cor:traj){
+
                     CellPerception c = agentState.getPerception().getCellPerceptionOnAbsPos(cor.getX(), cor.getY());
                     if(c != null){
                         if(!c.isWalkable()){
@@ -245,15 +246,20 @@ public class Navigate extends Behavior {
                     }
                     else break;
                 }
+                if(agentState.getName().equals("a")){
+                    System.out.println(agentState.getName() + "被堵");
+                    for (Cor cor:traj){
+                        System.out.print(cor + "\t");
+                    }
+
+                    System.out.println("被" + obstacle + "堵");
+                }
                 if(obstacle == null){
                     agentAction.step(next.getX(), next.getY());
-                    if(agentState.getName().equals("a")){
-                        //System.out.println(next + "|还能走11111");
-                    }
                 }
                 else{
                     if(obstacle instanceof AgentRep){
-                        if(agentState.getName().equals("a"))
+//                        if(agentState.getName().equals("a"))
                             //System.out.println(agentState.getName() + "发现" + ((AgentRep) obstacle).getName() + "在" +obstacle.getX() + "," + obstacle.getY() +"挡路");
                         if(agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()).isWalkable()){
                             agentAction.step(next.getX(), next.getY());

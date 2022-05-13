@@ -224,7 +224,7 @@ public class Wander extends Behavior {
                 }
                 else{
                     if(obstacle instanceof AgentRep){
-                       if(agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()).isWalkable()){
+                        if(agentState.getPerception().getCellPerceptionOnAbsPos(next.getX(), next.getY()).isWalkable()){
                             agentAction.step(next.getX(), next.getY());
                         }
                         else {
@@ -240,6 +240,7 @@ public class Wander extends Behavior {
                         else{
                             agentState.addMemoryFragment("help", String.valueOf(((PacketRep) obstacle).getColor().getRGB()));
                         }
+                        System.out.println("包裹挡路");
                         agentAction.skip();
                     }
                     else{

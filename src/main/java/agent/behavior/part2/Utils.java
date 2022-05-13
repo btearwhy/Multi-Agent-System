@@ -258,7 +258,7 @@ public class Utils {
             //System.out.println("agentnum"+agentArray.size());
             agentNum = agentArray.size()+1;
         }
-        return 6;//agentNum;
+        return agentNum;
     }
 
     //update agent

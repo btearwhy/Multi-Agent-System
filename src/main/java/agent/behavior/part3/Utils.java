@@ -439,7 +439,7 @@ public class Utils {
                  // find first packet in the path
                  for (Coordinate c:path) {
                      CellPerception cell = agentState.getMapMemory().getMap().get(c);
-                     if (cell.containsPacket() && cell.getPacketRepresentation().isPresent()) {
+                     if (cell != null && cell.containsPacket() && cell.getPacketRepresentation().isPresent()) {
                          Color color = cell.getPacketRepresentation().get().getColor();
                          JsonObject jsonCoordinate = new JsonObject();
                          jsonCoordinate.addProperty("x", cell.getX());
@@ -458,6 +458,7 @@ public class Utils {
                              object.add("coordinate", jsonCoordinate);
                              agentState.addMemoryFragment("request", object.toString());
                          }
+                         break;
                      }
                  }
              }

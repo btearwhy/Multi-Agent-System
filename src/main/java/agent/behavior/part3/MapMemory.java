@@ -20,8 +20,8 @@ import java.util.*;
  */
 
 public class MapMemory {
-    int width = Integer.MAX_VALUE;
-    int height = Integer.MAX_VALUE;
+    int width = 30;
+    int height = 30;
 
     Map<Coordinate, CellMemory> map;
     DstarLite dstarLite;

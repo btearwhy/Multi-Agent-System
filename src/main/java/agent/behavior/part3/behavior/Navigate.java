@@ -102,12 +102,10 @@ public class Navigate extends Behavior {
                 }
                 else {
                     agentAction.step(next.getX(), next.getY());
-                    agentState.getMapMemory().getDstarLite().setStart(next);
                 }
             }
             else {
                 agentAction.step(next.getX(), next.getY());
-                agentState.getMapMemory().getDstarLite().setStart(next);
             }
         }
         else {

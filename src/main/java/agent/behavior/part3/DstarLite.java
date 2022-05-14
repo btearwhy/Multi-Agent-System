@@ -44,6 +44,8 @@ public class DstarLite{
         Coordinate r = start;
         while(!this.goal.equals(r) && r.getX() != -1 && r.getY() != -1){
             r = getSmallestGCoordinate(r);
+            PriorityKey p = calculateKey(this.start);
+            VertexWithPriority pp = priorityQueue.peek();
             trajectory.add(r);
         }
         if(r.getX() == -1 && r.getY() == -1){
@@ -310,17 +312,17 @@ public class DstarLite{
     }
 
     void computeShortestPath(){
-        while(!priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) < getRhs(start))){
+        while(!priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) != getRhs(start))){
             Coordinate u = priorityQueue.peek().getCoordinate();
             PriorityKey kOld = priorityQueue.peek().getPriorityKey();
             PriorityKey kNew = calculateKey(u);
             if(kOld.compareTo(kNew) < 0){
-                priorityQueue.remove(u);
+                priorityQueue.poll();
                 priorityQueue.add(new VertexWithPriority(u, kNew));
             }
             else if(getG(u) > getRhs(u)){
                 gMap.put(u, getRhs(u));
-                priorityQueue.remove(u);
+                priorityQueue.poll();
                 for (Coordinate s: getNeighbors(u)){
                     if(!s.equals(goal)) rhsMap.put(s, Math.min(getRhs(s), add(cost(s, u) , getG(u))));
                     updateVertex(s);
@@ -443,7 +445,7 @@ class PriorityKey implements Comparable<PriorityKey>{
 
     @Override
     public int compareTo(PriorityKey k){
-        if(key.first == k.getKey().first) return key.second - k.getKey().second;
+        if(key.first.equals(k.getKey().first)) return key.second - k.getKey().second;
         else return key.first - k.getKey().first;
     }
 

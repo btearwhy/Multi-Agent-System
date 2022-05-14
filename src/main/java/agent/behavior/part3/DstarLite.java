@@ -257,34 +257,11 @@ public class DstarLite{
                         updateVertex(u);
                     }
                 }
-//                for (Map.Entry<Pair<Coordinate, Coordinate>, Integer> entry:oldEdges.entrySet()){
-//                    Coordinate u = entry.getKey().first;
-//                    Coordinate v = entry.getKey().second;
-//                    if(entry.getValue() == cost(u, v)) continue;
-//                    if(entry.getValue() > cost(u, v)){
-//                        if(!u.equals(goal)) rhsMap.put(u, Math.min(getRhs(u), add(cost(u, v), getG(v))));
-//                    }
-//                    else if(getRhs(u) == add(entry.getValue(), getG(v))){
-//                        if(!u.equals(goal)) rhsMap.put(u, getSmallestRhs(u));
-//                    }
-//                    updateVertex(u);
-//                }
                 computeShortestPath();
             }
         }
 
     }
-
-
-//    public List<Coordinate> getValidNeighbors(Coordinate c){
-//        List<Coordinate> neighbors = new ArrayList<>();
-//        for (Coordinate dir:Utils.moves){
-//            Coordinate des = c.add(dir);
-//            if(validCell(des) || des.equals(this.goal))
-//                neighbors.add(des);
-//        }
-//        return neighbors;
-//    }
 
     public boolean validCell(Coordinate u){
         return inside(u) && obstacles.getOrDefault(u, Obstacle.NULL) != Obstacle.FIXED;
@@ -446,7 +423,7 @@ class PriorityKey implements Comparable<PriorityKey>{
 
     @Override
     public int compareTo(PriorityKey k){
-        if(key.first == k.getKey().first) return key.second - k.getKey().second;
+        if(key.first.equals(k.getKey().first)) return key.second - k.getKey().second;
         else return key.first - k.getKey().first;
     }
 

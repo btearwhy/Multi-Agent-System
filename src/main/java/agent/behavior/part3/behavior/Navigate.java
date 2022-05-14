@@ -102,7 +102,6 @@ public class Navigate extends Behavior {
                 }
                 else {
                     agentAction.step(next.getX(), next.getY());
-                    agentState.getMapMemory().getDstarLite().setStart(next);
                 }
             }
             else if (agentState.getMapMemory().trajContainsAgent(cur)) {
@@ -113,11 +112,9 @@ public class Navigate extends Behavior {
                 int x = agentState.getX() + Utils.moves.get(dir).getX();
                 int y = agentState.getY() + Utils.moves.get(dir).getY();
                 agentAction.step(x, y);
-                agentState.getMapMemory().getDstarLite().setStart(new Coordinate(x, y));
             }
             else {
                 agentAction.step(next.getX(), next.getY());
-                agentState.getMapMemory().getDstarLite().setStart(next);
             }
         }
         else {

@@ -31,10 +31,10 @@ public class FromOperateToWander extends BehaviorChange {
             //Find empty place as goal
             goal = Utils.getSafeDropPlaceAsGoal(getAgentState());
         }
-        else if(getAgentState().hasCarry()){
+        else if(getAgentState().hasCarry() && Utils.requestedQueueEmpty(getAgentState())){
             goal = Utils.searchNearestDestination(getAgentState(), getAgentState().getCarry().get().getColor());
         }
-        else if (!Utils.requestedQueueEmpty(getAgentState())){
+        else if (!getAgentState().hasCarry() && !Utils.requestedQueueEmpty(getAgentState())){
             goal = Utils.topRequestedQueue(getAgentState());
         }
         else{
@@ -44,7 +44,6 @@ public class FromOperateToWander extends BehaviorChange {
 
         if(goal != null){
             hasGoal = true;
-            Utils.setGoal(getAgentState(), goal);
         }
         else hasGoal = false;
     }
@@ -52,6 +51,10 @@ public class FromOperateToWander extends BehaviorChange {
 
     @Override
     public boolean isSatisfied(){
-        return !hasGoal && !getAgentState().hasCarry();
+        if(!hasGoal && !getAgentState().hasCarry()) {
+            getAgentState().clearGoal();
+            return true;
+        }
+        return false;
     }
 }

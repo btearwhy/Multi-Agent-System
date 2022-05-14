@@ -449,7 +449,12 @@ public class Utils {
      }
 
      public static boolean requestedQueueEmpty(AgentState agentState){
-        return agentState.getMemoryFragment("requested") == null;
+        if(agentState.getMemoryFragment("requested") == null) return true;
+        else{
+            JsonArray requested = new Gson().fromJson(agentState.getMemoryFragment("requested"),
+                    JsonArray.class);
+            return requested.size() == 0;
+        }
      }
 
      public static JsonObject topRequestedQueue(AgentState agentState){
@@ -475,8 +480,9 @@ public class Utils {
          goal.add("coordinate", requested.get(0).getAsJsonObject());
          requested.remove(0);
 
+         agentState.addMemoryFragment("requested", requested.toString());
          // no more requested goals, remove memory
-         if (requested.size() == 0) agentState.removeMemoryFragment("requested");
+         //if (requested.size() == 0) agentState.removeMemoryFragment("requested");
          return goal;
      }
 
@@ -496,6 +502,7 @@ public class Utils {
          // if agent already remember the packet don't put it into memory; if not add into memory
          if (!Utils.jsonarray_contain(requested, packetInfo)){
              requested.add(packetInfo);
+             agentState.addMemoryFragment("requested",requested.toString());
          }
      }
 
@@ -505,7 +512,7 @@ public class Utils {
         for (CellPerception c:agentState.getPerception().getAllCells()){
             if(!c.isFree()) continue;
             List<CellPerception> neighbors = agentState.getPerception().getNeighbors(c);
-            neighbors.removeIf(t -> t != null && !t.isFree() && t.getX() != agentState.getX() && t.getY() != agentState.getY());
+            neighbors.removeIf(t -> t != null && !t.isFree() && !(t.getX() == agentState.getX() && t.getY() == agentState.getY()));
             if(neighbors.size() > max){
                 max = neighbors.size();
                 cell = c;

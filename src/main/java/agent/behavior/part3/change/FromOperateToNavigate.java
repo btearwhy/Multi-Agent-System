@@ -24,7 +24,6 @@ import environment.Coordinate;
 public class FromOperateToNavigate extends BehaviorChange {
     private boolean hasGoal = false;
 
-    private boolean requested = false;
     @Override
     public void updateChange(){
         JsonObject goal = new JsonObject();
@@ -32,12 +31,11 @@ public class FromOperateToNavigate extends BehaviorChange {
             //Find empty place as goal
             goal = Utils.getSafeDropPlaceAsGoal(getAgentState());
         }
-        else if(getAgentState().hasCarry()){
+        else if(getAgentState().hasCarry() && Utils.requestedQueueEmpty(getAgentState())){
             goal = Utils.searchNearestDestination(getAgentState(), getAgentState().getCarry().get().getColor());
         }
-        else if (!Utils.requestedQueueEmpty(getAgentState())){
+        else if (!getAgentState().hasCarry() && !Utils.requestedQueueEmpty(getAgentState())){
             goal = Utils.topRequestedQueue(getAgentState());
-            requested = true;
         }
         else{
             goal = Utils.searchGoal(this.getAgentState());
@@ -54,8 +52,10 @@ public class FromOperateToNavigate extends BehaviorChange {
 
     @Override
     public boolean isSatisfied(){
-        if(hasGoal){
-            if(requested) Utils.popRequestedQueue(getAgentState());
+        if(hasGoal && !Utils.isInReach(getAgentState(), Utils.getCoordinateFromGoal(getAgentState()))){
+            if(!Utils.requestedQueueEmpty(getAgentState())) {
+                Utils.popRequestedQueue(getAgentState());
+            }
             return true;
         }
         return false;

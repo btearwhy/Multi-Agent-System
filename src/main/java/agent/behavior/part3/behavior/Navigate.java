@@ -69,20 +69,10 @@ public class Navigate extends Behavior {
                     jsonCoordinate.addProperty("y", obstacle.getY());
                     if (obstacle.getColor().equals(agentState.getColor().get())) {
                         // add packet to be_requested
-                        //Utils.pushRequestedQueue(agentState, jsonCoordinate);
-                        JsonObject corObject = new JsonObject();
-                        corObject.addProperty("x", String.valueOf(obstacle.getX()));
-                        corObject.addProperty("y", String.valueOf(obstacle.getY()));
-                        JsonObject goalObj = new JsonObject();
-                        goalObj.addProperty("target", "packet");
-                        goalObj.addProperty("color", obstacle.getColor().getRGB());
-                        goalObj.add("coordinate", corObject);
-                        Utils.setGoal(agentState, goalObj);
+                        Utils.pushRequestedQueue(agentState, jsonCoordinate);
                         if(agentState.hasCarry()){
-                            for (CellPerception c: agentState.getPerception().getNeighbours()){
-                                if(c != null && c.isFree())
-                                    agentAction.putPacket(c.getX(), c.getY());
-                            }
+                            Utils.setGoal(agentState, Utils.getSafeDropPlaceAsGoal(agentState));
+                            agentAction.skip();
                         }
                         else agentAction.skip();
 

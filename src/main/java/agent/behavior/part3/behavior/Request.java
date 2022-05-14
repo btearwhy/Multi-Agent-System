@@ -59,7 +59,7 @@ public class Request extends Behavior{
 	public void act(AgentState agentState, AgentAction agentAction) {
         agentState.updateMapMemory();
 
-        Utils.addRequestMemory(agentState);
+        //Utils.addRequestMemory(agentState);
 
         int dir;
         if(agentState.getPerceptionLastCell() == null){

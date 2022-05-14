@@ -50,7 +50,7 @@ public class Operate extends Behavior{
     public void act(AgentState agentState, AgentAction agentAction) {
         agentState.updateMapMemory();
 
-        Utils.addRequestMemory(agentState);
+        //Utils.addRequestMemory(agentState);
 
         Perception perception = agentState.getPerception();
         Coordinate goalCor = Utils.getCoordinateFromGoal(agentState);

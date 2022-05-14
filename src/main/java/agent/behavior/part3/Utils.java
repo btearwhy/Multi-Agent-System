@@ -414,7 +414,38 @@ public class Utils {
              }
          }
          // destination is found
+         if (goal != null) {
+             // get the path with the lowest cost
+             if (agentState.getMapMemory().trajContainsPacket(cur)) {
+                 agentState.getMapMemory().getNextMove(cur, goal);
+                 List<Coordinate> path = agentState.getMapMemory().getTrajectory(cur);
+                 // find first packet in the path
+                 for (Coordinate c:path) {
+                     CellPerception cell = agentState.getMapMemory().getMap().get(c);
+                     if (cell != null && cell.containsPacket() && cell.getPacketRepresentation().isPresent()) {
+                         Color color = cell.getPacketRepresentation().get().getColor();
+                         JsonObject jsonCoordinate = new JsonObject();
+                         jsonCoordinate.addProperty("x", cell.getX());
+                         jsonCoordinate.addProperty("y", cell.getY());
 
+                         if (color.equals(agentState.getColor().get())) {
+                             // add packet to be_requested
+                             JsonArray array = new JsonArray();
+                             array.add(jsonCoordinate);
+                             agentState.addMemoryFragment("be_requested", array.toString());
+                         }
+                         else {
+                             // add packet to request
+                             JsonObject object = new JsonObject();
+                             object.addProperty("color", color.getRGB());
+                             object.add("coordinate", jsonCoordinate);
+                             agentState.addMemoryFragment("request", object.toString());
+                         }
+                         break;
+                     }
+                 }
+             }
+         }
      }
 
      public static boolean requestedQueueEmpty(AgentState agentState){

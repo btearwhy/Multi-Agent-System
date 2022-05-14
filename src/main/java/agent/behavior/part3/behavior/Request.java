@@ -28,7 +28,7 @@ public class Request extends Behavior{
 	@Override
 	public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
         //match agent with request
-
+        agentState.updateMapMemory();
         JsonObject requestObj = new Gson().fromJson(agentState.getMemoryFragment("request"), JsonObject.class);
         JsonObject corObj  = requestObj.getAsJsonObject("coordinate");
         Color color = new Color(Integer.parseInt(requestObj.get("color").getAsString()));
@@ -39,6 +39,7 @@ public class Request extends Behavior{
                     && cell.getAgentRepresentation().get().getColor().get().equals(color)){
                 agentCommunication.sendMessage(cell.getAgentRepresentation().get(), corObj.toString());
                 agentState.removeMemoryFragment("request");
+                Utils.addToAsked(agentState, corObj);
             }
         }
 
@@ -57,7 +58,6 @@ public class Request extends Behavior{
 
 	@Override
 	public void act(AgentState agentState, AgentAction agentAction) {
-        agentState.updateMapMemory();
 
         //Utils.addRequestMemory(agentState);
 

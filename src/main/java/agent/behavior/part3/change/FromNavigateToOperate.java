@@ -33,7 +33,6 @@ public class FromNavigateToOperate extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(hasGoal && inReach){
-            getAgentState().clearGoal();
             return true;
         }
         return false;

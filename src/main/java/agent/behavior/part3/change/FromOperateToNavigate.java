@@ -52,10 +52,9 @@ public class FromOperateToNavigate extends BehaviorChange {
 
     @Override
     public boolean isSatisfied(){
+        if(hasGoal && !Utils.requestedQueueEmpty(getAgentState())) Utils.popRequestedQueue(getAgentState());
         if(hasGoal && !Utils.isInReach(getAgentState(), Utils.getCoordinateFromGoal(getAgentState()))){
-            if(!Utils.requestedQueueEmpty(getAgentState())) {
-                Utils.popRequestedQueue(getAgentState());
-            }
+            getAgentState().getMapMemory().getDstarLite().startOver(new Coordinate(getAgentState().getX(), getAgentState().getY()), Utils.getCoordinateFromGoal(getAgentState()));
             return true;
         }
         return false;

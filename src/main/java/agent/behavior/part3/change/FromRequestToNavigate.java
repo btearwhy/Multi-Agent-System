@@ -38,11 +38,7 @@ public class FromRequestToNavigate extends BehaviorChange {
                     Utils.setGoal(getAgentState(), Utils.popRequestedQueue(getAgentState()));
                 }
             }
-            else{
-                getAgentState().getMapMemory().getDstarLite().startOver(new Coordinate(getAgentState().getX(), getAgentState().getY()), Utils.getCoordinateFromGoal(getAgentState()));
-
-            }
-
+            getAgentState().getMapMemory().getDstarLite().startOver(new Coordinate(getAgentState().getX(), getAgentState().getY()), Utils.getCoordinateFromGoal(getAgentState()));
             return true;
         }
         return false;

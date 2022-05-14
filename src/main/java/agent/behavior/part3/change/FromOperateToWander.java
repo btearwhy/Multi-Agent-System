@@ -52,7 +52,7 @@ public class FromOperateToWander extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(!hasGoal && !getAgentState().hasCarry()) {
-            getAgentState().clearGoal();
+            getAgentState().removeMemoryFragment("goal");
             return true;
         }
         return false;

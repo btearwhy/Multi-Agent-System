@@ -32,7 +32,7 @@ import java.util.List;
 public class Navigate extends Behavior {
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
-        agentState.updateMapMemory();
+
 
         // receive request message and add into memory
         if (agentCommunication.getNbMessages() > 0){
@@ -50,6 +50,7 @@ public class Navigate extends Behavior {
 
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
+        agentState.updateMapMemory();
         Coordinate cur = new Coordinate(agentState.getX(), agentState.getY());
         Coordinate goal = Utils.getCoordinateFromGoal(agentState);
         Coordinate next = agentState.getMapMemory().getNextMove(cur, goal);
@@ -79,18 +80,39 @@ public class Navigate extends Behavior {
                     }
                     else {
                         // add packet to request
-                        JsonObject object = new JsonObject();
-                        object.addProperty("color", obstacle.getColor().getRGB());
-                        object.add("coordinate", jsonCoordinate);
-                        agentState.addMemoryFragment("request", object.toString());
+                        if(Utils.asked(agentState, jsonCoordinate)){
+                            if(!Utils.requestedQueueEmpty(agentState)){
+                                if(agentState.hasCarry()){
+                                    Utils.setGoal(agentState, Utils.getSafeDropPlaceAsGoal(agentState));
+                                }
+                                else{
+                                    Utils.setGoal(agentState, Utils.popRequestedQueue(agentState));
+                                }
+                            }
+                        }
+                        else{
+                            JsonObject object = new JsonObject();
+                            object.addProperty("color", obstacle.getColor().getRGB());
+                            object.add("coordinate", jsonCoordinate);
+                            agentState.addMemoryFragment("request", object.toString());
+
+                        }
                         agentAction.skip();
                     }
                 }
-                else agentAction.step(next.getX(), next.getY());
+                else {
+                    agentAction.step(next.getX(), next.getY());
+                    agentState.getMapMemory().getDstarLite().setStart(next);
+                }
             }
-            else agentAction.step(next.getX(), next.getY());
+            else {
+                agentAction.step(next.getX(), next.getY());
+                agentState.getMapMemory().getDstarLite().setStart(next);
+            }
         }
-        else agentAction.skip();
+        else {
+            agentAction.skip();
+        }
 
 
         Utils.updateAgentNum(agentState);

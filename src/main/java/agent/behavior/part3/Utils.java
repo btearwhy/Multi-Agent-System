@@ -512,7 +512,7 @@ public class Utils {
         for (CellPerception c:agentState.getPerception().getAllCells()){
             if(!c.isFree()) continue;
             List<CellPerception> neighbors = agentState.getPerception().getNeighbors(c);
-            neighbors.removeIf(t -> t != null && !t.isFree() && !(t.getX() == agentState.getX() && t.getY() == agentState.getY()));
+            neighbors.removeIf(t -> t == null || !t.isWalkable() && !t.containsAgent());
             if(neighbors.size() > max){
                 max = neighbors.size();
                 cell = c;
@@ -526,6 +526,33 @@ public class Utils {
          goal.add("coordinate", corObject);
          return goal;
 
+     }
+
+     public static void addToAsked(AgentState agentState, JsonObject corObj){
+
+         if (agentState.getMemoryFragment("asked") == null){
+             JsonArray asked = new JsonArray();
+             asked.add(corObj);
+             agentState.addMemoryFragment("asked",asked.toString());
+         }
+
+
+         JsonArray asked = new Gson().fromJson(agentState.getMemoryFragment("asked"),
+                 JsonArray.class);
+
+         if (!Utils.jsonarray_contain(asked, corObj)){
+             asked.add(corObj);
+             agentState.addMemoryFragment("asked",asked.toString());
+         }
+     }
+
+     public static boolean asked(AgentState agentState, JsonObject corObj){
+        if(agentState.getMemoryFragment("asked") == null) return false;
+
+
+         JsonArray asked = new Gson().fromJson(agentState.getMemoryFragment("asked"),
+                 JsonArray.class);
+         return jsonarray_contain(asked, corObj);
      }
 }
 

@@ -31,7 +31,6 @@ public class DstarLite{
     int width = BORDER;
     int height = BORDER;
 
-    static final int MAX_LOOP = Integer.MAX_VALUE;
     static final int BORDER = 30;
     public DstarLite(){
         priorityQueue = new PriorityQueueU<>();
@@ -54,8 +53,6 @@ public class DstarLite{
     }
 
     public boolean trajContainsObtacle(Coordinate start){
-//        int rhs = getRhs(start);
-//        return rhs > Obstacle.AGENT.getCost() && rhs != Integer.MAX_VALUE;
         int g = getSmallestG(start);
         return g >= Obstacle.AGENT.getCost() && g != Integer.MAX_VALUE;
     }
@@ -83,7 +80,7 @@ public class DstarLite{
     }
     public int getSmallestG(Coordinate start){
         int g = Integer.MAX_VALUE;
-        List<Coordinate> neighbors = getValidNeighbors(start);
+        List<Coordinate> neighbors = getNeighbors(start);
         for (Coordinate neighbor:neighbors){
             if(getG(neighbor) < g){
                 g = getG(neighbor);
@@ -94,7 +91,7 @@ public class DstarLite{
     public Coordinate getSmallestGCoordinate(Coordinate start){
         int g = Integer.MAX_VALUE;
         Coordinate cor = new Coordinate(-1, -1);
-        List<Coordinate> neighbors = getValidNeighbors(start);
+        List<Coordinate> neighbors = getNeighbors(start);
         for (Coordinate neighbor:neighbors){
             if(getG(neighbor) < g){
                 g = getG(neighbor);
@@ -117,9 +114,9 @@ public class DstarLite{
         }
 
         Coordinate cor = getSmallestGCoordinate(start);
-        if(cor.getX() != -1 && cor.getY() != -1){
-            this.start = cor;
-        }
+//        if(cor.getX() != -1 && cor.getY() != -1){
+//            this.start = cor;
+//        }
         return cor;
     }
 
@@ -136,18 +133,53 @@ public class DstarLite{
         goal = null;
     }
 
-    public Map<Pair<Coordinate, Coordinate>, Integer> getChangedEdgeOldCost(Map<Coordinate, Obstacle> obstacles){
-        Map<Pair<Coordinate, Coordinate>, Integer> res = new HashMap<>();
+    public Map<Coordinate, Map<Coordinate, Integer>> getChangedEdgeOldCost(Map<Coordinate, Obstacle> obstacles){
+//        Map<Coordinate, Obstacle> newObstacle = new HashMap<>();
+//
+//        newObstacle.putAll(this.obstacles);
+//        Map<Pair<Coordinate, Coordinate>, Integer> res = new HashMap<>();
+//        for(Map.Entry<Coordinate, Obstacle> entry: obstacles.entrySet()){
+//            newObstacle.put(entry.getKey(), entry.getValue());
+//        }
+//        for(Map.Entry<Coordinate, Obstacle> entry:newObstacle.entrySet()){
+//            if(obstacles.getOrDefault(entry.getKey(), Obstacle.NULL) != entry.getValue()){
+//                for (Coordinate c:getNeighbors(entry.getKey())){
+//                    res.put(new Pair<>(entry.getKey(), c), cost(entry.getKey(), c, newObstacle));
+//                    res.put(new Pair<>(c, entry.getKey()), cost(c, entry.getKey(), newObstacle));
+//                }
+//            }
+//        }
+//        return res;
+
+        Map<Coordinate, Map<Coordinate, Integer>> res = new HashMap<>();
         for(Map.Entry<Coordinate, Obstacle> entry: obstacles.entrySet()){
             if(this.obstacles.getOrDefault(entry.getKey(), Obstacle.NULL) != entry.getValue()){
                 for (Coordinate n:getNeighbors(entry.getKey())){
-                    res.put(new Pair<>(entry.getKey(), n), cost(entry.getKey(), n));
-                    res.put(new Pair<>(n, entry.getKey()), cost(n, entry.getKey()));
+                    if(res.containsKey(entry.getKey())){
+                        res.get(entry.getKey()).put(n, cost(entry.getKey(), n));
+                    }
+                    else{
+                        Map<Coordinate, Integer> h = new HashMap<>();
+                        h.put(n, cost(entry.getKey(), n));
+                        res.put(entry.getKey(), h);
+                    }
+                    if(res.containsKey(n)){
+                        res.get(n).put(entry.getKey(), cost(n, entry.getKey()));
+                    }
+                    else{
+                        Map<Coordinate, Integer> h = new HashMap<>();
+                        h.put(entry.getKey(), cost(n, entry.getKey()));
+                        res.put(n, h);
+                    }
+//                    res.put(new Pair<>(entry.getKey(), n), cost(entry.getKey(), n));
+//                    res.put(new Pair<>(n, entry.getKey()), cost(n, entry.getKey()));
                 }
             }
         }
         return res;
     }
+
+
 
     public List<Coordinate> getNeighbors(Coordinate c){
         List<Coordinate> neighbors = new ArrayList<>();
@@ -202,22 +234,38 @@ public class DstarLite{
                         obstacles.put(new Coordinate(i, height), Obstacle.FIXED);
                     }
                 }
-                Map<Pair<Coordinate, Coordinate>, Integer> oldEdges = getChangedEdgeOldCost(obstacles);
+                Map<Coordinate, Map<Coordinate, Integer>> oldEdges = getChangedEdgeOldCost(obstacles);
                 updateObstacles(obstacles);
                 this.width = width;
                 this.height = height;
 
-                for (Map.Entry<Pair<Coordinate, Coordinate>, Integer> entry:oldEdges.entrySet()){
-                    Coordinate u = entry.getKey().first;
-                    Coordinate v = entry.getKey().second;
-                    if(entry.getValue() > cost(u, v)){
-                        if(!u.equals(goal)) rhsMap.put(u, Math.min(getRhs(u), add(cost(u, v), getG(v))));
+                for (Map.Entry<Coordinate, Map<Coordinate, Integer>> out:oldEdges.entrySet()){
+                    for(Map.Entry<Coordinate, Integer> in:out.getValue().entrySet()){
+                        Coordinate u = out.getKey();
+                        Coordinate v = in.getKey();
+                        int oldCost = in.getValue();
+                        if(oldCost == cost(u, v)) continue;
+                        if(oldCost > cost(u, v)){
+                            if(!u.equals(goal)) rhsMap.put(u, Math.min(getRhs(u), add(cost(u, v), getG(v))));
+                        }
+                        else if(getRhs(u) == add(oldCost, getG(v))){
+                            if(!u.equals(goal)) rhsMap.put(u, getSmallestRhs(u));
+                        }
+                        updateVertex(u);
                     }
-                    else if(getRhs(u) == add(entry.getValue(), getG(v))){
-                        if(!u.equals(goal)) rhsMap.put(u, getSmallestRhs(u));
-                    }
-                    updateVertex(u);
                 }
+//                for (Map.Entry<Pair<Coordinate, Coordinate>, Integer> entry:oldEdges.entrySet()){
+//                    Coordinate u = entry.getKey().first;
+//                    Coordinate v = entry.getKey().second;
+//                    if(entry.getValue() == cost(u, v)) continue;
+//                    if(entry.getValue() > cost(u, v)){
+//                        if(!u.equals(goal)) rhsMap.put(u, Math.min(getRhs(u), add(cost(u, v), getG(v))));
+//                    }
+//                    else if(getRhs(u) == add(entry.getValue(), getG(v))){
+//                        if(!u.equals(goal)) rhsMap.put(u, getSmallestRhs(u));
+//                    }
+//                    updateVertex(u);
+//                }
                 computeShortestPath();
             }
         }
@@ -225,15 +273,15 @@ public class DstarLite{
     }
 
 
-    public List<Coordinate> getValidNeighbors(Coordinate c){
-        List<Coordinate> neighbors = new ArrayList<>();
-        for (Coordinate dir:Utils.moves){
-            Coordinate des = c.add(dir);
-            if(validCell(des) || des.equals(this.goal))
-                neighbors.add(des);
-        }
-        return neighbors;
-    }
+//    public List<Coordinate> getValidNeighbors(Coordinate c){
+//        List<Coordinate> neighbors = new ArrayList<>();
+//        for (Coordinate dir:Utils.moves){
+//            Coordinate des = c.add(dir);
+//            if(validCell(des) || des.equals(this.goal))
+//                neighbors.add(des);
+//        }
+//        return neighbors;
+//    }
 
     public boolean validCell(Coordinate u){
         return inside(u) && obstacles.getOrDefault(u, Obstacle.NULL) != Obstacle.FIXED;
@@ -245,8 +293,14 @@ public class DstarLite{
 
 
     public List<Coordinate> getValidNeighborsAndSelf(Coordinate c){
-        List<Coordinate> neighbors = getValidNeighbors(c);
+        List<Coordinate> neighbors = getNeighbors(c);
         if(validCell(c)) neighbors.add(c);
+        return neighbors;
+    }
+
+    public List<Coordinate> getNeighborsAndSelf(Coordinate c){
+        List<Coordinate> neighbors = getNeighbors(c);
+        neighbors.add(c);
         return neighbors;
     }
 
@@ -256,8 +310,7 @@ public class DstarLite{
     }
 
     void computeShortestPath(){
-        int i = 0;
-        while(++i < MAX_LOOP && !priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) < getRhs(start))){
+        while(!priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) < getRhs(start))){
             Coordinate u = priorityQueue.peek().getCoordinate();
             PriorityKey kOld = priorityQueue.peek().getPriorityKey();
             PriorityKey kNew = calculateKey(u);
@@ -268,7 +321,7 @@ public class DstarLite{
             else if(getG(u) > getRhs(u)){
                 gMap.put(u, getRhs(u));
                 priorityQueue.remove(u);
-                for (Coordinate s: getValidNeighbors(u)){
+                for (Coordinate s: getNeighbors(u)){
                     if(!s.equals(goal)) rhsMap.put(s, Math.min(getRhs(s), add(cost(s, u) , getG(u))));
                     updateVertex(s);
                 }
@@ -276,7 +329,7 @@ public class DstarLite{
             else{
                 int gOld = getG(u);
                 gMap.remove(u);
-                for (Coordinate s: getValidNeighborsAndSelf(u)){
+                for (Coordinate s: getNeighborsAndSelf(u)){
                     if(add(cost(s, u) , gOld) == getRhs(s)){
                         if(!s.equals(goal)){
                             int minRhs = getSmallestRhs(s);
@@ -292,12 +345,11 @@ public class DstarLite{
                 }
             }
         }
-        //System.out.println();
     }
 
     public int getSmallestRhs(Coordinate u){
         int rhs = Integer.MAX_VALUE;
-        for (Coordinate neighbor: getValidNeighbors(u)){
+        for (Coordinate neighbor: getNeighbors(u)){
             if(add(cost(u, neighbor), getG(neighbor))< rhs){
                 rhs = add(cost(u, neighbor), getG(neighbor));
             }
@@ -306,10 +358,7 @@ public class DstarLite{
     }
 
     int cost(Coordinate c, Coordinate u){
-        if(c.equals(this.start)){
-            return 1;
-        }
-        else if(validCell(c)){
+        if(validCell(c)){
             return obstacles.getOrDefault(c, Obstacle.NULL).getCost();
         }
         else return Integer.MAX_VALUE;
@@ -363,6 +412,14 @@ public class DstarLite{
 
     public void setObstacles(Map<Coordinate, Obstacle> obstacles) {
         this.obstacles = obstacles;
+    }
+
+    public Coordinate getStart() {
+        return start;
+    }
+
+    public void setStart(Coordinate start) {
+        this.start = start;
     }
 }
 
@@ -480,5 +537,6 @@ enum Obstacle{
     };
 
     public abstract int getCost();
+
 
 }

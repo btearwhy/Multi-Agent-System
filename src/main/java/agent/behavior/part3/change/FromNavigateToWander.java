@@ -29,7 +29,7 @@ public class FromNavigateToWander extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(!hasGoal){
-            getAgentState().clearGoal();
+            getAgentState().removeMemoryFragment("goal");
             return true;
         }
         return false;

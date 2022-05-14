@@ -18,6 +18,7 @@ import environment.CellPerception;
 import environment.Coordinate;
 import environment.Mail;
 import environment.Perception;
+import environment.world.destination.DestinationRep;
 import environment.world.packet.PacketRep;
 
 import java.awt.*;
@@ -57,7 +58,17 @@ public class Operate extends Behavior{
         String target = Utils.getTargetFromGoal(agentState);
         CellPerception goalCell = perception.getCellPerceptionOnAbsPos(goalCor.getX(), goalCor.getY());
         if(agentState.hasCarry()){
-            agentAction.putPacket(goalCor.getX(), goalCor.getY());
+            if(goalCell.getRepOfType(DestinationRep.class) == null && !goalCell.isWalkable()){
+                agentAction.skip();
+                JsonObject jsonCoordinate = new JsonObject();
+                Utils.setGoal(agentState, Utils.getSafeDropPlaceAsGoal(agentState));
+                jsonCoordinate.addProperty("x", Utils.getCoordinateFromGoal(agentState).getX());
+                jsonCoordinate.addProperty("y", Utils.getCoordinateFromGoal(agentState).getY());
+                Utils.pushRequestedQueue(agentState, jsonCoordinate);
+
+            }
+            else
+                agentAction.putPacket(goalCor.getX(), goalCor.getY());
         }
         else {
             if(target.equals("packet")){
@@ -71,6 +82,7 @@ public class Operate extends Behavior{
             }
             else agentAction.skip();
         }
+        agentState.removeMemoryFragment("goal");
         Utils.updateAgentNum(agentState);
     }
 }

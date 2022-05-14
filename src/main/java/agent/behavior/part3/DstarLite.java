@@ -44,6 +44,9 @@ public class DstarLite{
         Coordinate r = start;
         while(!this.goal.equals(r) && r.getX() != -1 && r.getY() != -1){
             r = getSmallestGCoordinate(r);
+            if (trajectory.contains(r)) {
+                return trajectory;
+            }
             trajectory.add(r);
         }
         if(r.getX() == -1 && r.getY() == -1){

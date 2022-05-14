@@ -35,34 +35,14 @@ public class Operate extends Behavior{
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
         // receive request message and add into memory
-        if (agentCommunication.getNbMessages() > 0){
-            Collection<Mail> mails = agentCommunication.getMessages();
-            for (Mail m : mails){
-                JsonObject packet_request = new Gson().fromJson(m.getMessage(), JsonObject.class);
-
-                // doesn't have memory fragment "be_requested", create
-                if (agentState.getMemoryFragment("be_requested") == null){
-                    JsonArray be_requested = new JsonArray();
-
-
-
-                    be_requested.add(packet_request);
-                    agentState.addMemoryFragment("be_requested",be_requested.toString());
-                }
-
-                // "be_requested" exists in memory
-                JsonArray be_requested = new Gson().fromJson(agentState.getMemoryFragment("be_requested"),
-                        JsonArray.class);
-                // if agent already remember the packet don't put it into memory; if not add into memory
-                if (!Utils.jsonarray_contain(be_requested, packet_request)){
-                    be_requested.add(packet_request);
-                }
-            }
-
-            // process all messages, clear
-            agentCommunication.clearMessages();
-
+        Collection<Mail> mails = agentCommunication.getMessages();
+        for (Mail m : mails){
+            JsonObject packetInfo = new Gson().fromJson(m.getMessage(), JsonObject.class);
+            Utils.pushRequestedQueue(agentState, packetInfo);
         }
+
+        // process all messages, clear
+        agentCommunication.clearMessages();
     }
 
 
@@ -75,20 +55,22 @@ public class Operate extends Behavior{
         Perception perception = agentState.getPerception();
         Coordinate goalCor = Utils.getCoordinateFromGoal(agentState);
         String target = Utils.getTargetFromGoal(agentState);
-        Color color = Utils.getTargetColorFromGoal(agentState);
         CellPerception goalCell = perception.getCellPerceptionOnAbsPos(goalCor.getX(), goalCor.getY());
-        if(target.equals("packet") || target.equals("generator")){
-            if(goalCell.getRepOfType(PacketRep.class) != null && color.equals(goalCell.getRepOfType(PacketRep.class).getColor())){
-                agentAction.pickPacket(goalCor.getX(), goalCor.getY());
-            }
-            else{
-                agentAction.skip();
-            }
-        }
-        else if(target.startsWith("destination")){
+        if(agentState.hasCarry()){
             agentAction.putPacket(goalCor.getX(), goalCor.getY());
         }
-        else agentAction.skip();
+        else {
+            if(target.equals("packet")){
+                Color color = Utils.getTargetColorFromGoal(agentState);
+                if(goalCell.getRepOfType(PacketRep.class) != null && color.equals(goalCell.getRepOfType(PacketRep.class).getColor())){
+                    agentAction.pickPacket(goalCor.getX(), goalCor.getY());
+                }
+                else{
+                    agentAction.skip();
+                }
+            }
+            else agentAction.skip();
+        }
         Utils.updateAgentNum(agentState);
     }
 }

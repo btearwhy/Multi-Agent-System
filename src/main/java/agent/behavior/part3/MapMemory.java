@@ -58,76 +58,63 @@ public class MapMemory {
         return new ArrayList<>(map.values());
     }
 
-    public void updateBorder(List<CellPerception> cellPerceptions, Coordinate cur, int width, int height){
-        CellPerception w = Collections.max(cellPerceptions, new Comparator<CellPerception>() {
+    public void updateBorder(List<CellPerception> neighbors, Coordinate cur){
+        int ymax = Collections.max(neighbors, new Comparator<CellPerception>(){
             @Override
-            public int compare(CellPerception o1, CellPerception o2) {
-                return o1.getX() - o2.getX();
+            public int compare(CellPerception c1, CellPerception c2){
+                return c1.getY() - c2.getY();
             }
-        });
-
-        CellPerception h = Collections.max(cellPerceptions, new Comparator<CellPerception>() {
+        }).getY();
+        int xmax = Collections.max(neighbors, new Comparator<CellPerception>(){
             @Override
-            public int compare(CellPerception o1, CellPerception o2) {
-                return o1.getY() - o2.getY();
+            public int compare(CellPerception c1, CellPerception c2){
+                return c1.getX() - c2.getX();
             }
-        });
+        }).getX();
 
-
-        List<CellPerception> widths = new ArrayList<>();
-        List<CellPerception> heights = new ArrayList<>();
-        if(w.getX() < cur.getX() + width / 2){
-            for (CellPerception c:cellPerceptions){
-                if(c.getX() == w.getX()){
-                    widths.add(c);
-                }
-            }
-            int i = 0;
-            for (CellPerception cw:widths){
-                if(!cw.containsWall()) i++;
-            }
-            if(i == widths.size()){
-                setWidth(w.getX() + 1);
-            }
-
-        }
-
-        if(h.getY() < cur.getY() + height / 2){
-            for (CellPerception c:cellPerceptions){
-                if(c.getY() == h.getY()){
-                    heights.add(c);
-                }
-            }
-            int i = 0;
-            for (CellPerception ch:heights){
-                if(!ch.containsWall()) i++;
-            }
-            if(i == heights.size()){
-                setHeight(h.getY() + 1);
-            }
-        }
+        if(xmax == cur.getX()) this.width = xmax + 1;
+        if(ymax == cur.getY()) this.height = ymax + 1;
     }
-    public void updateMapMemory(List<CellPerception> cellPerceptions, Coordinate cur, int width, int height){
-        updateBorder(cellPerceptions, cur, width, height);
-        Map<Coordinate, Obstacle> obstacles = new HashMap<>();
+
+    public void updateMapMemory(List<CellPerception> cellPerceptions){
+        updateCells(cellPerceptions);
+        updateDstar(extractObstacles(cellPerceptions));
+    }
+
+    public void updateDstar(Map<Coordinate, Obstacle> obstacles){
+        dstarLite.recalculate(obstacles, this.width, this.height);
+    }
+
+    public void updateCells(List<CellPerception> cellPerceptions){
         for (CellPerception cellPerception:cellPerceptions){
             Coordinate cor = new Coordinate(cellPerception.getX(), cellPerception.getY());
             map.put(cor, new CellMemory(cellPerception));
+        }
+    }
+    public Map<Coordinate, Obstacle> extractObstacles(List<CellPerception> cellPerceptions){
 
-            if(!cellPerception.isWalkable() && !(cellPerception.getX() == cur.getX() && cellPerception.getY() == cur.getY())/*&& !cellPerception.containsAgent()*/){
-                if (cellPerception.containsAgent())
-                    obstacles.put(cor, Obstacle.AGENT);
-                else if(cellPerception.containsPacket() && !cellPerception.containsGenerator())
-                    obstacles.put(cor, Obstacle.PACKET);
-                else
-                    obstacles.put(cor, Obstacle.FIXED);
-            }
-            else{
-                obstacles.put(cor, Obstacle.NULL);
-            }
+        Map<Coordinate, Obstacle> obstacles = new HashMap<>();
+
+        for (CellPerception cellPerception:cellPerceptions){
+            Coordinate cor = new Coordinate(cellPerception.getX(), cellPerception.getY());
+            obstacles.put(cor, getObstacleFromCell(cellPerception));
         }
 
-        dstarLite.recalculate(obstacles, this.width, this.height);
+
+        return obstacles;
+    }
+    public Obstacle getObstacleFromCell(CellPerception cellPerception){
+        if(!cellPerception.isWalkable()){
+            if (cellPerception.containsAgent())
+                return Obstacle.AGENT;
+            else if(cellPerception.containsPacket() && !cellPerception.containsGenerator())
+                return Obstacle.PACKET;
+            else
+                return Obstacle.FIXED;
+        }
+        else{
+            return Obstacle.NULL;
+        }
     }
 
     public void clearGoal(){

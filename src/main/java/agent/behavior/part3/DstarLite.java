@@ -19,7 +19,7 @@ import java.util.*;
  * @version: $
  */
 
-public class DstarLite {
+public class DstarLite{
     PriorityQueueU<VertexWithPriority> priorityQueue;
     Coordinate last = null;
     Coordinate start = null;
@@ -28,11 +28,11 @@ public class DstarLite {
     Map<Coordinate, Obstacle> obstacles;
     Map<Coordinate, Integer> rhsMap;
     Map<Coordinate, Integer> gMap;
-    int width = Integer.MAX_VALUE;
-    int height = Integer.MAX_VALUE;
+    int width = BORDER;
+    int height = BORDER;
 
-
-
+    static final int MAX_LOOP = Integer.MAX_VALUE;
+    static final int BORDER = 30;
     public DstarLite(){
         priorityQueue = new PriorityQueueU<>();
         obstacles = new HashMap<>();
@@ -40,11 +40,11 @@ public class DstarLite {
         gMap = new HashMap<>();
     }
 
-       public List<Coordinate> getTrajectory(Coordinate start){
+    public List<Coordinate> getTrajectory(Coordinate start){
         List<Coordinate> trajectory = new ArrayList<>();
         Coordinate r = start;
         while(!this.goal.equals(r) && r.getX() != -1 && r.getY() != -1){
-            r = getSmallestGCor(r);
+            r = getSmallestGCoordinate(r);
             trajectory.add(r);
         }
         if(r.getX() == -1 && r.getY() == -1){
@@ -54,6 +54,8 @@ public class DstarLite {
     }
 
     public boolean trajContainsObtacle(Coordinate start){
+//        int rhs = getRhs(start);
+//        return rhs > Obstacle.AGENT.getCost() && rhs != Integer.MAX_VALUE;
         int g = getSmallestG(start);
         return g >= Obstacle.AGENT.getCost() && g != Integer.MAX_VALUE;
     }
@@ -68,6 +70,17 @@ public class DstarLite {
         return g >= Obstacle.PACKET.getCost() && g != Integer.MAX_VALUE;
     }
 
+    public Coordinate getFirstObstacleCoordinate(Coordinate start){
+        List<Coordinate> traj = getTrajectory(start);
+        if(traj != null){
+            for (Coordinate cor:traj){
+                if(obstacles.getOrDefault(cor, Obstacle.NULL) != Obstacle.NULL){
+                    return cor;
+                }
+            }
+        }
+        return null;
+    }
     public int getSmallestG(Coordinate start){
         int g = Integer.MAX_VALUE;
         List<Coordinate> neighbors = getValidNeighbors(start);
@@ -78,7 +91,7 @@ public class DstarLite {
         }
         return g;
     }
-    public Coordinate getSmallestGCor(Coordinate start){
+    public Coordinate getSmallestGCoordinate(Coordinate start){
         int g = Integer.MAX_VALUE;
         Coordinate cor = new Coordinate(-1, -1);
         List<Coordinate> neighbors = getValidNeighbors(start);
@@ -96,11 +109,14 @@ public class DstarLite {
         computeShortestPath();
     }
     public Coordinate getNextMove(Coordinate start, Coordinate goal){
+        if(goal.getX() >= width || goal.getY() >= height){
+            return new Coordinate(-1, -1);
+        }
         if(!goal.equals(this.goal)){
             startOver(start, goal);
         }
 
-        Coordinate cor = getSmallestGCor(start);
+        Coordinate cor = getSmallestGCoordinate(start);
         if(cor.getX() != -1 && cor.getY() != -1){
             this.start = cor;
         }
@@ -113,85 +129,6 @@ public class DstarLite {
                 return true;
         }
         return false;
-    }
-
-    boolean checkBorderChanges(int width, int height){
-        return checkWidthChange(width) && checkHeightChange(height);
-    }
-
-    boolean checkWidthChange(int width){
-        if(this.width != width){
-            Coordinate c = Collections.max(rhsMap.keySet(), new Comparator<Coordinate>() {
-                @Override
-                public int compare(Coordinate o1, Coordinate o2) {
-                    return o1.getY() - o2.getY();
-                }
-            });
-            for (int h = 0; h <= c.getY(); h++){
-                if(getRhs(new Coordinate(width, h)) != Integer.MAX_VALUE){
-                    return true;
-                }
-            }
-        }
-        return false;
-
-    }
-
-    boolean checkHeightChange(int height){
-        if(this.height != height){
-            Coordinate c = Collections.max(rhsMap.keySet(), new Comparator<Coordinate>() {
-                @Override
-                public int compare(Coordinate o1, Coordinate o2) {
-                    return o1.getX() - o2.getX();
-                }
-            });
-            for (int w = 0; w <= c.getX(); w++){
-                if(getRhs(new Coordinate(w, height)) != Integer.MAX_VALUE){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    void updateWidthVertex(){
-        Coordinate c = Collections.max(rhsMap.keySet(), new Comparator<Coordinate>() {
-            @Override
-            public int compare(Coordinate o1, Coordinate o2) {
-                return o1.getY() - o2.getY();
-            }
-        });
-        for (int h = 0; h <= c.getY(); h++){
-            Coordinate cor = new Coordinate(width - 1, h);
-            Coordinate h1 = new Coordinate(width, h - 1);
-            Coordinate h2 = new Coordinate(width, h);
-            Coordinate h3 = new Coordinate(width, h + 1);
-            int rhs = getRhs(cor);
-            if(rhs != Integer.MAX_VALUE && (rhs == 1 + getG(h1) || rhs == 1 + getG(h2)|| rhs == 1 + getG(h3))){
-                rhsMap.put(cor, getSmallestRhs(cor));
-                updateVertex(cor);
-            }
-        }
-    }
-
-    void updateHeightVertex(){
-        Coordinate c = Collections.max(rhsMap.keySet(), new Comparator<Coordinate>() {
-            @Override
-            public int compare(Coordinate o1, Coordinate o2) {
-                return o1.getX() - o2.getX();
-            }
-        });
-        for (int w = 0; w <= c.getX(); w++){
-            Coordinate cor = new Coordinate(w, height - 1);
-            Coordinate w1 = new Coordinate(w - 1, height);
-            Coordinate w2 = new Coordinate(w, height);
-            Coordinate w3 = new Coordinate(w + 1, height);
-            int rhs = getRhs(cor);
-            if(rhs != Integer.MAX_VALUE && (rhs == 1 + getG(w1) || rhs == 1 + getG(w2)|| rhs == 1 + getG(w3))){
-                rhsMap.put(cor, getSmallestRhs(cor));
-                updateVertex(cor);
-            }
-        }
     }
 
 
@@ -239,19 +176,37 @@ public class DstarLite {
             this.height = height;
         }
         else{
-            if(checkWidthChange(width) || checkHeightChange(height) || checkObstacleChanges(obstacles)){
+            if(this.width != width || this.height != height || checkObstacleChanges(obstacles)){
                 km += heuristic(last, start);
                 last = start;
-                if(checkWidthChange(width)){
-                    this.width = width;
-                    updateWidthVertex();
+                if(this.width != width){
+                    int ymax = Collections.max(rhsMap.keySet(), new Comparator<Coordinate>() {
+                        @Override
+                        public int compare(Coordinate o1, Coordinate o2) {
+                            return o1.getY() - o2.getY();
+                        }
+                    }).getY();
+                    for (int i = 0; i <= ymax + 1; i++){
+                        obstacles.put(new Coordinate(width, i), Obstacle.FIXED);
+                    }
                 }
-                if(checkHeightChange(height)){
-                    this.height = height;
-                    updateHeightVertex();
+
+                if(this.height != height){
+                    int xmax = Collections.max(rhsMap.keySet(), new Comparator<Coordinate>() {
+                        @Override
+                        public int compare(Coordinate o1, Coordinate o2) {
+                            return o1.getX() - o2.getX();
+                        }
+                    }).getX();
+                    for (int i = 0; i <= xmax + 1; i++){
+                        obstacles.put(new Coordinate(i, height), Obstacle.FIXED);
+                    }
                 }
                 Map<Pair<Coordinate, Coordinate>, Integer> oldEdges = getChangedEdgeOldCost(obstacles);
                 updateObstacles(obstacles);
+                this.width = width;
+                this.height = height;
+
                 for (Map.Entry<Pair<Coordinate, Coordinate>, Integer> entry:oldEdges.entrySet()){
                     Coordinate u = entry.getKey().first;
                     Coordinate v = entry.getKey().second;
@@ -301,8 +256,8 @@ public class DstarLite {
     }
 
     void computeShortestPath(){
-        while(!priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) < getRhs(start))){
-
+        int i = 0;
+        while(++i < MAX_LOOP && !priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) < getRhs(start))){
             Coordinate u = priorityQueue.peek().getCoordinate();
             PriorityKey kOld = priorityQueue.peek().getPriorityKey();
             PriorityKey kNew = calculateKey(u);
@@ -337,7 +292,7 @@ public class DstarLite {
                 }
             }
         }
-
+        //System.out.println();
     }
 
     public int getSmallestRhs(Coordinate u){
@@ -351,7 +306,10 @@ public class DstarLite {
     }
 
     int cost(Coordinate c, Coordinate u){
-        if(validCell(c)){
+        if(c.equals(this.start)){
+            return 1;
+        }
+        else if(validCell(c)){
             return obstacles.getOrDefault(c, Obstacle.NULL).getCost();
         }
         else return Integer.MAX_VALUE;
@@ -387,7 +345,7 @@ public class DstarLite {
         return new PriorityKey(add(add(m , heuristic(this.start, u)), km), m);
     }
 
-    //结构可改
+
     void updateVertex(Coordinate u){
         if(getRhs(u) != getG(u) && priorityQueue.contains(u)){
             priorityQueue.remove(u);
@@ -399,7 +357,13 @@ public class DstarLite {
         else if(getRhs(u) == getG(u) && priorityQueue.contains(u)) priorityQueue.remove(u);
     }
 
+    public Map<Coordinate, Obstacle> getObstacles() {
+        return obstacles;
+    }
 
+    public void setObstacles(Map<Coordinate, Obstacle> obstacles) {
+        this.obstacles = obstacles;
+    }
 }
 
 
@@ -501,12 +465,12 @@ enum Obstacle{
     },
     AGENT{
         public int getCost(){
-            return 50;
+            return 20;
         }
     },
     PACKET{
         public int getCost(){
-            return 200;
+            return 100;
         }
     },
     NULL{
@@ -516,4 +480,5 @@ enum Obstacle{
     };
 
     public abstract int getCost();
+
 }

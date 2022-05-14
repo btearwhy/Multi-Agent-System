@@ -16,6 +16,7 @@ import environment.Perception;
 import environment.Representation;
 import environment.ActiveItemID;
 import environment.EnergyValues;
+import environment.world.agent.Agent;
 import environment.world.destination.DestinationRep;
 import environment.world.packet.PacketRep;
 import environment.world.agent.AgentRep;
@@ -92,8 +93,7 @@ public class Utils {
     public static Coordinate getCoordinateFromGoal(AgentState agentState){
         JsonObject goalObject = new Gson().fromJson(agentState.getMemoryFragment("goal"), JsonObject.class);
         JsonObject corObject = goalObject.getAsJsonObject("coordinate");
-        Coordinate cor = new Coordinate(Integer.valueOf(corObject.get("x").getAsString()), Integer.valueOf(corObject.get("y").getAsString()));
-        return cor;
+        return new Coordinate(Integer.parseInt(corObject.get("x").getAsString()), Integer.parseInt(corObject.get("y").getAsString()));
     }
 
 
@@ -401,24 +401,7 @@ public class Utils {
          return targetRequest;
      }
      //get target agent for request   
-     public static AgentRep requestAgentTarget(AgentState agentState) {
-    	 AgentRep agengTarget = null;
-       //match agent with request
-         Perception perception = agentState.getPerception();
-         List<CellPerception> allCells = perception.getAllCells();
-         for(CellPerception cell : allCells){
-             if(cell.containsAgent()){
-                 if (cell.getX()!=agentState.getX()&&cell.getY()!=agentState.getY()) {
-                	 Optional<Color> agentColor = cell.getRepOfType(AgentRep.class).getColor();
-                	 JsonObject targetRequest = getTargetRequest(agentState,agentColor);
-                	 if (targetRequest != null) {
-                		 agengTarget = cell.getRepOfType(AgentRep.class);
-                     }
-                 }
-             }
-         }
-    	 return agengTarget;
-     }
+
 
      public static void addRequestMemory(AgentState agentState) {
          Coordinate cur = new Coordinate(agentState.getX(), agentState.getY());
@@ -431,39 +414,80 @@ public class Utils {
              }
          }
          // destination is found
-         if (goal != null) {
-             agentState.getMapMemory().getNextMove(cur, goal);
-             // get the path with the lowest cost
-             List<Coordinate> path = agentState.getMapMemory().getTrajectory(cur);
-             if (agentState.getMapMemory().trajContainsPacket(cur)) {
-                 // find first packet in the path
-                 for (Coordinate c:path) {
-                     CellPerception cell = agentState.getMapMemory().getMap().get(c);
-                     if (cell != null && cell.containsPacket() && cell.getPacketRepresentation().isPresent()) {
-                         Color color = cell.getPacketRepresentation().get().getColor();
-                         JsonObject jsonCoordinate = new JsonObject();
-                         jsonCoordinate.addProperty("x", cell.getX());
-                         jsonCoordinate.addProperty("y", cell.getY());
 
-                         if (color.equals(agentState.getColor().get())) {
-                             // add packet to be_requested
-                             JsonArray array = new JsonArray();
-                             array.add(jsonCoordinate);
-                             agentState.addMemoryFragment("be_requested", array.toString());
-                         }
-                         else {
-                             // add packet to request
-                             JsonObject object = new JsonObject();
-                             object.addProperty("color", color.getRGB());
-                             object.add("coordinate", jsonCoordinate);
-                             agentState.addMemoryFragment("request", object.toString());
-                         }
-                         break;
-                     }
-                 }
-             }
+     }
+
+     public static boolean requestedQueueEmpty(AgentState agentState){
+        return agentState.getMemoryFragment("requested") == null;
+     }
+
+     public static JsonObject topRequestedQueue(AgentState agentState){
+         JsonObject goal = new JsonObject();
+         JsonArray requested = new Gson().fromJson(agentState.getMemoryFragment("requested"),
+                 JsonArray.class);
+
+         // add into goal
+         goal.addProperty("target", "packet");
+         goal.addProperty("color", agentState.getColor().get().getRGB());
+         goal.add("coordinate", requested.get(0).getAsJsonObject());
+
+         return goal;
+     }
+     public static JsonObject popRequestedQueue(AgentState agentState){
+        JsonObject goal = new JsonObject();
+        JsonArray requested = new Gson().fromJson(agentState.getMemoryFragment("requested"),
+                 JsonArray.class);
+
+         // add into goal
+         goal.addProperty("target", "packet");
+         goal.addProperty("color", agentState.getColor().get().getRGB());
+         goal.add("coordinate", requested.get(0).getAsJsonObject());
+         requested.remove(0);
+
+         // no more requested goals, remove memory
+         if (requested.size() == 0) agentState.removeMemoryFragment("requested");
+         return goal;
+     }
+
+     public static void pushRequestedQueue(AgentState agentState, JsonObject packetInfo){
+
+         // doesn't have memory fragment "requested", create
+         if (requestedQueueEmpty(agentState)){
+             JsonArray requested = new JsonArray();
+
+             requested.add(packetInfo);
+             agentState.addMemoryFragment("requested",requested.toString());
+         }
+
+         // "requested" exists in memory
+         JsonArray requested = new Gson().fromJson(agentState.getMemoryFragment("requested"),
+                 JsonArray.class);
+         // if agent already remember the packet don't put it into memory; if not add into memory
+         if (!Utils.jsonarray_contain(requested, packetInfo)){
+             requested.add(packetInfo);
          }
      }
 
+     public static JsonObject getSafeDropPlaceAsGoal(AgentState agentState){
+        CellPerception cell = null;
+        int max = 0;
+        for (CellPerception c:agentState.getPerception().getAllCells()){
+            if(!c.isFree()) continue;
+            List<CellPerception> neighbors = agentState.getPerception().getNeighbors(c);
+            neighbors.removeIf(t -> t != null && !t.isFree() && t.getX() != agentState.getX() && t.getY() != agentState.getY());
+            if(neighbors.size() > max){
+                max = neighbors.size();
+                cell = c;
+            }
+        }
+         JsonObject goal = new JsonObject();
+         JsonObject corObject = new JsonObject();
+         corObject.addProperty("x", String.valueOf(cell.getX()));
+         corObject.addProperty("y", String.valueOf(cell.getY()));
+         goal.addProperty("target", "empty");
+         goal.add("coordinate", corObject);
+         return goal;
+
+     }
 }
 

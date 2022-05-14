@@ -1,7 +1,12 @@
 package agent.behavior.part3.behavior;
 
+import java.awt.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import agent.AgentAction;
@@ -9,6 +14,10 @@ import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
 import agent.behavior.part3.Utils;
+import environment.CellPerception;
+import environment.Coordinate;
+import environment.Mail;
+import environment.Perception;
 import environment.world.agent.AgentRep;
 
 public class Request extends Behavior{
@@ -18,17 +27,32 @@ public class Request extends Behavior{
 	
 	@Override
 	public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
-		requestTargetAgent = Utils.requestAgentTarget(agentState);
-		JsonObject request = Utils.getTargetRequest(agentState,requestTargetAgent.getColor());
-		
-		String message = request.get("coordinate").getAsString();
-		if (requestTargetAgent != null) {
-			agentCommunication.sendMessage(requestTargetAgent, message);
-			removeSignal = true;
-		}
-		
-		//remover request
-		agentState.removeMemoryFragment("request");
+        //match agent with request
+
+        JsonObject requestObj = new Gson().fromJson(agentState.getMemoryFragment("request"), JsonObject.class);
+        JsonObject corObj  = requestObj.getAsJsonObject("coordinate");
+        Color color = new Color(Integer.parseInt(requestObj.get("color").getAsString()));
+
+
+        for(CellPerception cell : agentState.getPerception().getAllCells()){
+            if(cell.containsAgent() && !(cell.getX() == agentState.getX() && cell.getY() == agentState.getY())
+                    && cell.getAgentRepresentation().get().getColor().get().equals(color)){
+                agentCommunication.sendMessage(cell.getAgentRepresentation().get(), corObj.toString());
+                agentState.removeMemoryFragment("request");
+            }
+        }
+
+
+
+
+        Collection<Mail> mails = agentCommunication.getMessages();
+        for (Mail m : mails){
+            JsonObject packetInfo = new Gson().fromJson(m.getMessage(), JsonObject.class);
+            Utils.pushRequestedQueue(agentState, packetInfo);
+        }
+
+        // process all messages, clear
+        agentCommunication.clearMessages();
 	}
 
 	@Override

@@ -145,6 +145,20 @@ public class Perception {
         return neighbours;
     }
 
+    public List<CellPerception> getNeighbors(CellPerception c){
+        List<CellPerception> cells = new ArrayList<>();
+        int x = c.getX();
+        int y = c.getY();
+        cells.add(getCellPerceptionOnAbsPos(x, y - 1));
+        cells.add(getCellPerceptionOnAbsPos(x + 1, y - 1));
+        cells.add(getCellPerceptionOnAbsPos(x + 1, y));
+        cells.add(getCellPerceptionOnAbsPos(x + 1, y + 1));
+        cells.add(getCellPerceptionOnAbsPos(x, y + 1));
+        cells.add(getCellPerceptionOnAbsPos(x - 1, y - 1));
+        cells.add(getCellPerceptionOnAbsPos(x - 1, y));
+        cells.add(getCellPerceptionOnAbsPos(x - 1, y + 1));
+        return cells;
+    }
     /**
      * Returns all Representations that are situated right next to the agent that issued this
      * Perception. The cells are in successive order in the returning array:

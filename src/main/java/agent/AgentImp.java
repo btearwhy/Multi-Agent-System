@@ -104,7 +104,10 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     @Override
     public void updateMapMemory(){
         List<CellPerception> cellPerceptions = getPerception().getAllCells();
-        mapMemory.updateMapMemory(cellPerceptions, new Coordinate(getX(), getY()), getPerception().getWidth(), getPerception().getHeight());
+        List<CellPerception> neighbors = new ArrayList<>(Arrays.asList(getPerception().getNeighbours()));
+        neighbors.removeIf(Objects::isNull);
+        mapMemory.updateBorder(neighbors, new Coordinate(getX(), getY()));
+        mapMemory.updateMapMemory(cellPerceptions);
     }
 
     @Override

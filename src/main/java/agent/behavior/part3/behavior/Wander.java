@@ -35,34 +35,14 @@ public class Wander extends Behavior {
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
         // receive request message and add into memory
-        if (agentCommunication.getNbMessages() > 0){
-            Collection<Mail> mails = agentCommunication.getMessages();
-            for (Mail m : mails){
-                JsonObject packet_request = new Gson().fromJson(m.getMessage(), JsonObject.class);
-
-                // doesn't have memory fragment "be_requested", create
-                if (agentState.getMemoryFragment("be_requested") == null){
-                    JsonArray be_requested = new JsonArray();
-
-
-
-                    be_requested.add(packet_request);
-                    agentState.addMemoryFragment("be_requested",be_requested.toString());
-                }
-
-                // "be_requested" exists in memory
-                JsonArray be_requested = new Gson().fromJson(agentState.getMemoryFragment("be_requested"),
-                        JsonArray.class);
-                // if agent already remember the packet don't put it into memory; if not add into memory
-                if (!Utils.jsonarray_contain(be_requested, packet_request)){
-                    be_requested.add(packet_request);
-                }
-            }
-
-            // process all messages, clear
-            agentCommunication.clearMessages();
-
+        Collection<Mail> mails = agentCommunication.getMessages();
+        for (Mail m : mails){
+            JsonObject packetInfo = new Gson().fromJson(m.getMessage(), JsonObject.class);
+            Utils.pushRequestedQueue(agentState, packetInfo);
         }
+
+        // process all messages, clear
+        agentCommunication.clearMessages();
 
     }
 
@@ -98,45 +78,5 @@ public class Wander extends Behavior {
 
         Utils.updateAgentNum(agentState);
 
-//        int j = 0;
-//        for (CellPerception c:agentState.getPerception().getAllCells()){
-//            if(c.getNbReps() == 0){
-//                System.out.print('#');
-//            }
-//            if(c.getRepOfType(PacketRep.class) != null){
-//                System.out.print('1');
-//            }
-//            if(c.getRepOfType(DestinationRep.class) != null){
-//                System.out.print('2');
-//            }
-//            if(j++ % 12 == 11) {
-//                System.out.print('\n');
-//            }
-//        }
-//        System.out.println("/////////////");
-//        int i = 0;
-//        List<CellMemory> cells = agentState.getAllCellsMemory();
-//        Collections.sort(cells, new Comparator<CellMemory>() {
-//            @Override
-//            public int compare(CellMemory o1, CellMemory o2) {
-//                int o = o1.getY() - o2.getY();
-//                if(o != 0) return o;
-//                return o1.getX() - o2.getX();
-//            }
-//        });
-//        for (CellMemory c:cells){
-//            if(c.getNbReps() == 0){
-//                System.out.print('#');
-//            }
-//            if(c.getRepOfType(PacketRep.class) != null){
-//                System.out.print('1');
-//            }
-//            if(c.getRepOfType(DestinationRep.class) != null){
-//                System.out.print('2');
-//            }
-//            if(i++ % 12 == 11) {
-//                System.out.print('\n');
-//            }
-//        }
     }
 }

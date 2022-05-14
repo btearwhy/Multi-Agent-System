@@ -104,6 +104,15 @@ public class Navigate extends Behavior {
                     agentAction.step(next.getX(), next.getY());
                 }
             }
+            else if (agentState.getMapMemory().trajContainsAgent(cur)) {
+                // take random move
+                Random ra = new Random();
+                int dir = ra.nextInt(8);
+                dir = Utils.getClockwiseDirectionIfBlocked(agentState, dir);
+                int x = agentState.getX() + Utils.moves.get(dir).getX();
+                int y = agentState.getY() + Utils.moves.get(dir).getY();
+                agentAction.step(x, y);
+            }
             else {
                 agentAction.step(next.getX(), next.getY());
             }

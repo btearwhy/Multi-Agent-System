@@ -44,8 +44,9 @@ public class DstarLite{
         Coordinate r = start;
         while(!this.goal.equals(r) && r.getX() != -1 && r.getY() != -1){
             r = getSmallestGCoordinate(r);
-            PriorityKey p = calculateKey(this.start);
-            VertexWithPriority pp = priorityQueue.peek();
+            if (trajectory.contains(r)) {
+                return trajectory;
+            }
             trajectory.add(r);
         }
         if(r.getX() == -1 && r.getY() == -1){
@@ -256,34 +257,11 @@ public class DstarLite{
                         updateVertex(u);
                     }
                 }
-//                for (Map.Entry<Pair<Coordinate, Coordinate>, Integer> entry:oldEdges.entrySet()){
-//                    Coordinate u = entry.getKey().first;
-//                    Coordinate v = entry.getKey().second;
-//                    if(entry.getValue() == cost(u, v)) continue;
-//                    if(entry.getValue() > cost(u, v)){
-//                        if(!u.equals(goal)) rhsMap.put(u, Math.min(getRhs(u), add(cost(u, v), getG(v))));
-//                    }
-//                    else if(getRhs(u) == add(entry.getValue(), getG(v))){
-//                        if(!u.equals(goal)) rhsMap.put(u, getSmallestRhs(u));
-//                    }
-//                    updateVertex(u);
-//                }
                 computeShortestPath();
             }
         }
 
     }
-
-
-//    public List<Coordinate> getValidNeighbors(Coordinate c){
-//        List<Coordinate> neighbors = new ArrayList<>();
-//        for (Coordinate dir:Utils.moves){
-//            Coordinate des = c.add(dir);
-//            if(validCell(des) || des.equals(this.goal))
-//                neighbors.add(des);
-//        }
-//        return neighbors;
-//    }
 
     public boolean validCell(Coordinate u){
         return inside(u) && obstacles.getOrDefault(u, Obstacle.NULL) != Obstacle.FIXED;
@@ -312,17 +290,17 @@ public class DstarLite{
     }
 
     void computeShortestPath(){
-        while(!priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) != getRhs(start))){
+        while(!priorityQueue.isEmpty() && (priorityQueue.peek().getPriorityKey().compareTo(calculateKey(start)) < 0  || getG(start) < getRhs(start))){
             Coordinate u = priorityQueue.peek().getCoordinate();
             PriorityKey kOld = priorityQueue.peek().getPriorityKey();
             PriorityKey kNew = calculateKey(u);
             if(kOld.compareTo(kNew) < 0){
-                priorityQueue.poll();
+                priorityQueue.remove(u);
                 priorityQueue.add(new VertexWithPriority(u, kNew));
             }
             else if(getG(u) > getRhs(u)){
                 gMap.put(u, getRhs(u));
-                priorityQueue.poll();
+                priorityQueue.remove(u);
                 for (Coordinate s: getNeighbors(u)){
                     if(!s.equals(goal)) rhsMap.put(s, Math.min(getRhs(s), add(cost(s, u) , getG(u))));
                     updateVertex(s);

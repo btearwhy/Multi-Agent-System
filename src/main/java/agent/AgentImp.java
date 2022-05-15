@@ -721,15 +721,6 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
 
 
-
-
-
-
-
-
-
-
-
     @Subscribe
     private void handleAgentActionEvent(AgentActionEvent event) {
         if (event.getAgent() == getAgent() && EnergyValues.ENERGY_ENABLED) {

@@ -54,8 +54,8 @@ public class Navigate extends Behavior {
                     String[] my =  agentState.getMemoryFragment("exchange").split("/");
                     String requiredSender = my[0];
                     if(sender.equals(requiredSender) && name.equals(agentState.getName())) {
-                        if(m[1].equals("wander")){
-                            agentState.addMemoryFragment("wander", goal.toString());
+                        if(m[1].equals("explore")){
+                            agentState.addMemoryFragment("explore", goal.toString());
                             agentState.removeMemoryFragment("goal");
                         }
                         else{

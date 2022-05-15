@@ -65,16 +65,6 @@ public class Utils {
         return dir;
     }
 
-    public static int getClockwiseDirectionIfBlocked(AgentState agentState, int dir){
-        int i = 0;
-        int x = agentState.getX();
-        int y = agentState.getY();
-        while(agentState.getPerception().getCellPerceptionOnAbsPos(x + moves.get((dir + i) % 8).getX(), y + moves.get((dir + i) % 8).getY()) == null ||
-                !agentState.getPerception().getCellPerceptionOnAbsPos(x + moves.get((dir + i) % 8).getX(), y + moves.get((dir + i) % 8).getY()).isWalkable()){
-            i++;
-        }
-        return (dir + i) % 8;
-    }
 
 
     public static String getTargetFromGoal(AgentState agentState){

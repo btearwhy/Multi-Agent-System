@@ -1,4 +1,4 @@
-package agent.behavior.part1b.change;/**
+package agent.behavior.part2.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 02:46
  * @description：An agent successfully deliver a goal and finds there a packet to fetch
@@ -7,7 +7,7 @@ package agent.behavior.part1b.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part1b.Utils;
+import agent.behavior.part2.Utils;
 import com.google.gson.JsonObject;
 
 /**
@@ -18,7 +18,7 @@ import com.google.gson.JsonObject;
  * @version: $
  */
 
-public class FromOperateToWander extends BehaviorChange {
+public class FromOperateToExplore extends BehaviorChange {
     private boolean hasGoal = false;
     private boolean hasPacket = false;
 
@@ -34,8 +34,9 @@ public class FromOperateToWander extends BehaviorChange {
     @Override
     public boolean isSatisfied(){
         if(!hasGoal && !hasPacket){
-            Utils.updatePreviousDistance(getAgentState(), "0");
+            getAgentState().removeMemoryFragment("goal");
+            return true;
         }
-        return !hasGoal && !hasPacket;
+        return false;
     }
 }

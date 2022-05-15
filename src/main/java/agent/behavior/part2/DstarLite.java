@@ -43,9 +43,6 @@ public class DstarLite{
         Cor r = start;
         while(!this.goal.equals(r) && r.getX() != -1 && r.getY() != -1){
             r = getSmallestGCor(r);
-            if (trajectory.contains(r)) {
-                return trajectory;
-            }
             trajectory.add(r);
         }
         if(r.getX() == -1 && r.getY() == -1){
@@ -133,23 +130,6 @@ public class DstarLite{
     }
 
     public Map<Cor, Map<Cor, Integer>> getChangedEdgeOldCost(Map<Cor, Obstacle> obstacles){
-//        Map<Cor, Obstacle> newObstacle = new HashMap<>();
-//
-//        newObstacle.putAll(this.obstacles);
-//        Map<Pair<Cor, Cor>, Integer> res = new HashMap<>();
-//        for(Map.Entry<Cor, Obstacle> entry: obstacles.entrySet()){
-//            newObstacle.put(entry.getKey(), entry.getValue());
-//        }
-//        for(Map.Entry<Cor, Obstacle> entry:newObstacle.entrySet()){
-//            if(obstacles.getOrDefault(entry.getKey(), Obstacle.NULL) != entry.getValue()){
-//                for (Cor c:getNeighbors(entry.getKey())){
-//                    res.put(new Pair<>(entry.getKey(), c), cost(entry.getKey(), c, newObstacle));
-//                    res.put(new Pair<>(c, entry.getKey()), cost(c, entry.getKey(), newObstacle));
-//                }
-//            }
-//        }
-//        return res;
-
         Map<Cor, Map<Cor, Integer>> res = new HashMap<>();
         for(Map.Entry<Cor, Obstacle> entry: obstacles.entrySet()){
             if(this.obstacles.getOrDefault(entry.getKey(), Obstacle.NULL) != entry.getValue()){
@@ -170,8 +150,6 @@ public class DstarLite{
                         h.put(entry.getKey(), cost(n, entry.getKey()));
                         res.put(n, h);
                     }
-//                    res.put(new Pair<>(entry.getKey(), n), cost(entry.getKey(), n));
-//                    res.put(new Pair<>(n, entry.getKey()), cost(n, entry.getKey()));
                 }
             }
         }
@@ -498,12 +476,12 @@ enum Obstacle{
     },
     AGENT{
         public int getCost(){
-            return 20;
+            return 100;
         }
     },
     PACKET{
         public int getCost(){
-            return 100;
+            return 1000;
         }
     },
     NULL{

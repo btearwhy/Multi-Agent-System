@@ -1,46 +1,29 @@
 package agent.behavior.part2.behavior;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 02:39
- * @description：When an agent doesn't have a goal, it just wanders to search a possible goal
+ * @description：When an agent doesn't have a goal, it just explores to search a possible goal
  * @modified By：
  * @version: $
  */
 
-/**
- * @author     ：mmzs
- * @date       ：Created in 2022/3/19 02:39
- * @description：When an agent doesn't have a goal, it just wanders to search a possible goal
- * @modified By：
- * @version: $
- */
 
 import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.part2.CellMemory;
 import agent.behavior.part2.Cor;
 import agent.behavior.part2.MapMemory;
 import agent.behavior.part2.Utils;
-import com.google.common.base.Charsets;
-import com.google.gson.JsonObject;
 import environment.CellPerception;
-import environment.Coordinate;
 import environment.Mail;
 import environment.Representation;
 import environment.world.agent.AgentRep;
-import environment.world.destination.DestinationRep;
-import environment.world.packet.Packet;
-import environment.world.packet.PacketRep;
-import util.Pair;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.CoderResult;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class Wander extends Behavior {
+public class Explore extends Behavior {
 
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
@@ -63,12 +46,12 @@ public class Wander extends Behavior {
                     String[] my =  agentState.getMemoryFragment("exchange").split("/");
                     String requiredSender = my[0];
                     if(sender.equals(requiredSender) && name.equals(agentState.getName())) {
-                        if(m[1].equals("wander")){
-                            agentState.addMemoryFragment("wander", goal.toString());
+                        if(m[1].equals("explore")){
+                            agentState.addMemoryFragment("explore", goal.toString());
                         }
                         else{
                             agentState.addMemoryFragment("goal", m[1]);
-                            agentState.removeMemoryFragment("wander");
+                            agentState.removeMemoryFragment("explore");
                         }
                         agentState.addMemoryFragment("steal", "none");
                         if(m[1].contains("destination")){
@@ -104,7 +87,7 @@ public class Wander extends Behavior {
                 String name = agentState.getMemoryFragment("exchange").split("/")[0];
                 for (CellPerception c:agentState.getPerception().getAllCells()){
                     if(c.containsAgent() && c.getAgentRepresentation().get().getName().equals(name)){
-                        String message = "exchange/" + "wander" +"/" + agentState.getMemoryFragment("exchange");
+                        String message = "exchange/" + "explore" +"/" + agentState.getMemoryFragment("exchange");
                         agentCommunication.sendMessage(c.getAgentRepresentation().get(), message);
                         agentState.addMemoryFragment("exchangeRequest", name);
                         break;
@@ -171,10 +154,10 @@ public class Wander extends Behavior {
 
         Cor next = null;
         MapMemory mm = agentState.getMapMemory();
-        String wanderGoal = agentState.getMemoryFragment("wander");
+        String exploreGoal = agentState.getMemoryFragment("explore");
         Cor goal = null;
-        if(wanderGoal!= null){
-            goal = new Cor(Integer.parseInt(wanderGoal.split(",")[0]), Integer.parseInt(wanderGoal.split(",")[1]));
+        if(exploreGoal!= null){
+            goal = new Cor(Integer.parseInt(exploreGoal.split(",")[0]), Integer.parseInt(exploreGoal.split(",")[1]));
             if(!mm.discovered(goal)){
                 next = agentState.getMapMemory().getNextMove(cur, goal);
             }
@@ -186,7 +169,7 @@ public class Wander extends Behavior {
                 next = new Cor(-1, -1);
             }
             else{
-                agentState.addMemoryFragment("wander", goal.toString());
+                agentState.addMemoryFragment("explore", goal.toString());
                 next = mm.getNextMove(cur, goal);
             }
         }

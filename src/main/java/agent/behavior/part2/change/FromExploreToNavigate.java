@@ -1,27 +1,30 @@
 package agent.behavior.part2.change;/**
  * @author ：mmzs
- * @date ：Created in 2022/3/19 02:43
- * @description：An agent finds a goal
+ * @date ：Created in 2022/3/19 18:41
+ * @description：An agent finds a goal far away and navigates towards it
  * @modified By：
  * @version: $
  */
 
 import agent.behavior.BehaviorChange;
+import agent.behavior.part2.Cor;
 import agent.behavior.part2.Utils;
 import com.google.gson.JsonObject;
 
 /**
  * @author     ：mmzs
- * @date       ：Created in 2022/3/19 02:43
- * @description：An agent finds a goal
+ * @date       ：Created in 2022/3/19 18:41
+ * @description：An agent finds a goal far away and navigates towards it
  * @modified By：
  * @version: $
  */
 
-public class FromWanderToOperate extends BehaviorChange {
+public class FromExploreToNavigate extends BehaviorChange {
     private boolean hasGoal = false;
     private boolean packetOrGenerator = false;
     private boolean inReach = false;
+
+    private boolean force = false;
 
     @Override
     public void updateChange(){
@@ -38,12 +41,20 @@ public class FromWanderToOperate extends BehaviorChange {
             }
             else hasGoal = false;
         }
+//        if(getAgentState().getMemoryFragment("switch") != null){
+//            getAgentState().removeMemoryFragment("switch");
+//            force = true;
+//            return;
+//        }
+
     }
 
 
     @Override
     public boolean isSatisfied(){
-        if(hasGoal && inReach){
+        if(hasGoal && !inReach){
+            Cor goal = Utils.getCoordinateFromGoal(getAgentState());
+            getAgentState().getMapMemory().getDstarLite().startOver(new Cor(getAgentState().getX(), getAgentState().getY()), goal);
             return true;
         }
         return false;

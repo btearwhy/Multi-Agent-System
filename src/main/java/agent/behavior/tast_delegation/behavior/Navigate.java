@@ -1,4 +1,4 @@
-package agent.behavior.part3.behavior;/**
+package agent.behavior.tast_delegation.behavior;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:15
  * @description：An agent has a goal and move towards the goal until the goal is in reach
@@ -10,16 +10,13 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.part3.Utils;
+import agent.behavior.tast_delegation.Utils;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import environment.*;
 import environment.world.packet.PacketRep;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * @author     ：mmzs
@@ -35,15 +32,13 @@ public class Navigate extends Behavior {
 
 
         // receive request message and add into memory
-        if (agentCommunication.getNbMessages() > 0){
-            Collection<Mail> mails = agentCommunication.getMessages();
-            for (Mail m : mails){
-                JsonObject packet_request = new Gson().fromJson(m.getMessage(), JsonObject.class);
-                Utils.pushRequestedQueue(agentState, packet_request);
-            }
-            // process all messages, clear
-            agentCommunication.clearMessages();
+        Collection<Mail> mails = agentCommunication.getMessages();
+        for (Mail m : mails){
+            JsonObject packet_request = new Gson().fromJson(m.getMessage(), JsonObject.class);
+            Utils.pushRequestedQueue(agentState, packet_request);
         }
+        // process all messages, clear
+        agentCommunication.clearMessages();
 
 
     }
@@ -120,8 +115,5 @@ public class Navigate extends Behavior {
         else {
             agentAction.skip();
         }
-
-
-        Utils.updateAgentNum(agentState);
     }
 }

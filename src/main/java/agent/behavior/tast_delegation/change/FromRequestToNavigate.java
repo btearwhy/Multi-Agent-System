@@ -1,4 +1,4 @@
-package agent.behavior.part3.change;/**
+package agent.behavior.tast_delegation.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/5/14 00:10
  * @description：
@@ -7,8 +7,7 @@ package agent.behavior.part3.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part3.Utils;
-import com.google.gson.JsonObject;
+import agent.behavior.tast_delegation.Utils;
 import environment.Coordinate;
 
 /**

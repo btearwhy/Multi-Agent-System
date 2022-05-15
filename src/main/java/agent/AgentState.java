@@ -7,8 +7,8 @@ import java.util.Set;
 
 import agent.behavior.Behavior;
 import agent.behavior.BehaviorState;
-import agent.behavior.part3.CellMemory;
-import agent.behavior.part3.MapMemory;
+import agent.behavior.tast_delegation.CellMemory;
+import agent.behavior.tast_delegation.MapMemory;
 import environment.CellPerception;
 import environment.Perception;
 import environment.world.packet.Packet;

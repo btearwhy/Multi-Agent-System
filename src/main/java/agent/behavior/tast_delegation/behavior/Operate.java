@@ -1,4 +1,4 @@
-package agent.behavior.part3.behavior;/**
+package agent.behavior.tast_delegation.behavior;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:38
  * @description：Agent picks up, drops or do anything except moving
@@ -10,9 +10,8 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.part3.Utils;
+import agent.behavior.tast_delegation.Utils;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import environment.CellPerception;
 import environment.Coordinate;
@@ -51,7 +50,6 @@ public class Operate extends Behavior{
     public void act(AgentState agentState, AgentAction agentAction) {
         agentState.updateMapMemory();
 
-        //Utils.addRequestMemory(agentState);
 
         Perception perception = agentState.getPerception();
         Coordinate goalCor = Utils.getCoordinateFromGoal(agentState);
@@ -61,11 +59,11 @@ public class Operate extends Behavior{
             if(goalCell.getRepOfType(DestinationRep.class) == null && !goalCell.isWalkable()){
                 agentAction.skip();
                 JsonObject jsonCoordinate = new JsonObject();
-                Utils.setGoal(agentState, Utils.getSafeDropPlaceAsGoal(agentState));
                 jsonCoordinate.addProperty("x", Utils.getCoordinateFromGoal(agentState).getX());
                 jsonCoordinate.addProperty("y", Utils.getCoordinateFromGoal(agentState).getY());
                 Utils.pushRequestedQueue(agentState, jsonCoordinate);
-
+                Utils.setGoal(agentState, Utils.getSafeDropPlaceAsGoal(agentState));
+                return;
             }
             else
                 agentAction.putPacket(goalCor.getX(), goalCor.getY());
@@ -83,6 +81,5 @@ public class Operate extends Behavior{
             else agentAction.skip();
         }
         agentState.removeMemoryFragment("goal");
-        Utils.updateAgentNum(agentState);
     }
 }

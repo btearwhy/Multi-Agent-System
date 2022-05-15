@@ -1,4 +1,4 @@
-package agent.behavior.part3;/**
+package agent.behavior.tast_delegation;/**
  * @author ：mmzs
  * @date ：Created in 2022/5/3 12:25
  * @description：
@@ -44,9 +44,6 @@ public class DstarLite{
         Coordinate r = start;
         while(!this.goal.equals(r) && r.getX() != -1 && r.getY() != -1){
             r = getSmallestGCoordinate(r);
-            if (trajectory.contains(r)) {
-                return trajectory;
-            }
             trajectory.add(r);
         }
         if(r.getX() == -1 && r.getY() == -1){
@@ -117,9 +114,6 @@ public class DstarLite{
         }
 
         Coordinate cor = getSmallestGCoordinate(start);
-//        if(cor.getX() != -1 && cor.getY() != -1){
-//            this.start = cor;
-//        }
         return cor;
     }
 
@@ -137,23 +131,6 @@ public class DstarLite{
     }
 
     public Map<Coordinate, Map<Coordinate, Integer>> getChangedEdgeOldCost(Map<Coordinate, Obstacle> obstacles){
-//        Map<Coordinate, Obstacle> newObstacle = new HashMap<>();
-//
-//        newObstacle.putAll(this.obstacles);
-//        Map<Pair<Coordinate, Coordinate>, Integer> res = new HashMap<>();
-//        for(Map.Entry<Coordinate, Obstacle> entry: obstacles.entrySet()){
-//            newObstacle.put(entry.getKey(), entry.getValue());
-//        }
-//        for(Map.Entry<Coordinate, Obstacle> entry:newObstacle.entrySet()){
-//            if(obstacles.getOrDefault(entry.getKey(), Obstacle.NULL) != entry.getValue()){
-//                for (Coordinate c:getNeighbors(entry.getKey())){
-//                    res.put(new Pair<>(entry.getKey(), c), cost(entry.getKey(), c, newObstacle));
-//                    res.put(new Pair<>(c, entry.getKey()), cost(c, entry.getKey(), newObstacle));
-//                }
-//            }
-//        }
-//        return res;
-
         Map<Coordinate, Map<Coordinate, Integer>> res = new HashMap<>();
         for(Map.Entry<Coordinate, Obstacle> entry: obstacles.entrySet()){
             if(this.obstacles.getOrDefault(entry.getKey(), Obstacle.NULL) != entry.getValue()){
@@ -174,8 +151,6 @@ public class DstarLite{
                         h.put(entry.getKey(), cost(n, entry.getKey()));
                         res.put(n, h);
                     }
-//                    res.put(new Pair<>(entry.getKey(), n), cost(entry.getKey(), n));
-//                    res.put(new Pair<>(n, entry.getKey()), cost(n, entry.getKey()));
                 }
             }
         }

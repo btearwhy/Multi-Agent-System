@@ -1,4 +1,4 @@
-package agent.behavior.part3.change;/**
+package agent.behavior.tast_delegation.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:41
  * @description：An agent finds a goal far away and navigates towards it
@@ -7,9 +7,7 @@ package agent.behavior.part3.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part3.Utils;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import agent.behavior.tast_delegation.Utils;
 import com.google.gson.JsonObject;
 import environment.Coordinate;
 

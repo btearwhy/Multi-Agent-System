@@ -1,4 +1,4 @@
-package agent.behavior.part3;/**
+package agent.behavior.tast_delegation;/**
  * @author ：mmzs
  * @date ：Created in 2022/4/30 16:06
  * @description：
@@ -28,7 +28,6 @@ public class CellMemory extends CellPerception{
     public CellMemory(CellPerception cellPerception){
         super(cellPerception.getX(), cellPerception.getY());
         List<Representation> reps = cellPerception.getReps();
-        //reps.removeIf(e->e instanceof AgentRep);
         for (Representation rep:reps){
             this.addRep(rep);
         }

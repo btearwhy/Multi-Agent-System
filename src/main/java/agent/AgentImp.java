@@ -5,8 +5,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 
-import agent.behavior.part3.CellMemory;
-import agent.behavior.part3.MapMemory;
+import agent.behavior.tast_delegation.CellMemory;
+import agent.behavior.tast_delegation.MapMemory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 

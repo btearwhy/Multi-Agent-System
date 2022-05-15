@@ -1,4 +1,4 @@
-package agent.behavior.part3;/**
+package agent.behavior.tast_delegation;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 03:00
  * @description：Some utils methods
@@ -16,7 +16,6 @@ import environment.Perception;
 import environment.Representation;
 import environment.ActiveItemID;
 import environment.EnergyValues;
-import environment.world.agent.Agent;
 import environment.world.destination.DestinationRep;
 import environment.world.packet.PacketRep;
 import environment.world.agent.AgentRep;
@@ -90,6 +89,10 @@ public class Utils {
         return new Color(Integer.parseInt(goal.get("color").getAsString()));
     }
 
+    public static JsonObject getGoalJsonObj(AgentState agentState){
+        return new Gson().fromJson(agentState.getMemoryFragment("goal"), JsonObject.class);
+    }
+
     public static Coordinate getCoordinateFromGoal(AgentState agentState){
         JsonObject goalObject = new Gson().fromJson(agentState.getMemoryFragment("goal"), JsonObject.class);
         JsonObject corObject = goalObject.getAsJsonObject("coordinate");
@@ -99,7 +102,6 @@ public class Utils {
 
 
     public static void setGoal(AgentState agentState, JsonObject goalObject){
-        agentState.removeMemoryFragment("goal");
         agentState.addMemoryFragment("goal", goalObject.toString());
     }
 

@@ -5,18 +5,18 @@ description "Executing using memory"
 # The amount of the behavior states the agent has
 # ------------------------------------------------
 nbStates 6                                   # The wander behavior is implemented in a single state
-1 agent.behavior.part3.behavior.Wander       # First behavior
+1 agent.behavior.tast_delegation.behavior.Wander       # First behavior
 nbArgs 0                                     # Constructor with no args
-2 agent.behavior.part3.behavior.Navigate     # Second behavior
+2 agent.behavior.tast_delegation.behavior.Navigate     # Second behavior
 nbArgs 0                                     # // (no arguments)
-3 agent.behavior.part3.behavior.Operate      # Third behavior
+3 agent.behavior.tast_delegation.behavior.Operate      # Third behavior
 nbArgs 0                                     # // (no arguments)
-4 agent.behavior.part3.behavior.ToStation    # Fourth behavior
+4 agent.behavior.tast_delegation.behavior.ToStation    # Fourth behavior
 nbArgs 0                                     # // (no arguments)
-5 agent.behavior.part3.behavior.Wait         # Fifth behavior
+5 agent.behavior.tast_delegation.behavior.Wait         # Fifth behavior
 nbArgs 1                                     # 1 argument
 Integer 1                                    # charging area gradient value
-6 agent.behavior.part3.behavior.Charging     # Sixth behavior
+6 agent.behavior.tast_delegation.behavior.Charging     # Sixth behavior
 nbArgs 0                                     # // (no arguments)
 
 
@@ -26,73 +26,73 @@ nbArgs 0                                     # // (no arguments)
 # ---------------------------------------------------------------
 nbChanges 13
                                                         # First change, from behavior with ID 1 to behavior with ID 2
-agent.behavior.part3.change.FromWanderToNavigate
+agent.behavior.tast_delegation.change.FromWanderToNavigate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 1                                                # ID of starting behavior
 target 2                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromWanderToOperate
+agent.behavior.tast_delegation.change.FromWanderToOperate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 1                                                # ID of starting behavior
 target 3                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromOperateToNavigate
+agent.behavior.tast_delegation.change.FromOperateToNavigate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 3                                                # ID of starting behavior
 target 2                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromOperateToWander
+agent.behavior.tast_delegation.change.FromOperateToWander
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 3                                                # ID of starting behavior
 target 1                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromOperateToCharge
+agent.behavior.tast_delegation.change.FromOperateToCharge
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 3                                                # ID of starting behavior
 target 4                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromNavigateToWander
+agent.behavior.tast_delegation.change.FromNavigateToWander
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 2                                                # ID of starting behavior
 target 1                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromNavigateToOperate
+agent.behavior.tast_delegation.change.FromNavigateToOperate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 2                                                # ID of starting behavior
 target 3                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromWanderToCharge
+agent.behavior.tast_delegation.change.FromWanderToCharge
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 1                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 1                                                # ID of starting behavior
 target 4                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromNavigateToCharge
+agent.behavior.tast_delegation.change.FromNavigateToCharge
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 1                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 2                                                # ID of starting behavior
 target 4                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromChargeToWander
+agent.behavior.tast_delegation.change.FromChargeToWander
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 6                                                # ID of starting behavior
 target 1                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromChargeToNavigate
+agent.behavior.tast_delegation.change.FromChargeToNavigate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 6                                                # ID of starting behavior
 target 2                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromToStationToWait
+agent.behavior.tast_delegation.change.FromToStationToWait
 nbArgs 2
 Integer 1
 Integer 1
@@ -100,7 +100,7 @@ priority 0                                              # Higher value −> high
 source 4                                                # ID of starting behavior
 target 5                                                # ID of resulting behavior
 
-agent.behavior.part3.change.FromWaitToCharging
+agent.behavior.tast_delegation.change.FromWaitToCharging
 nbArgs 1
 Integer 0
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)

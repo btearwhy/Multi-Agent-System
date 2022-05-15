@@ -1,4 +1,4 @@
-package agent.behavior.part3.change;/**
+package agent.behavior.tast_delegation.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 02:43
  * @description：An agent finds a goal
@@ -7,7 +7,7 @@ package agent.behavior.part3.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part3.Utils;
+import agent.behavior.tast_delegation.Utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

@@ -1,4 +1,4 @@
-package agent.behavior.part3.change;/**
+package agent.behavior.tast_delegation.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 02:45
  * @description：An agent successfully deliver a packet but cannot find a goal at that moment
@@ -7,7 +7,7 @@ package agent.behavior.part3.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part3.Utils;
+import agent.behavior.tast_delegation.Utils;
 
 /**
  * @author     ：mmzs

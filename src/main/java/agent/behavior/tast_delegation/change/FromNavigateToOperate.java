@@ -1,4 +1,4 @@
-package agent.behavior.part3.change;/**
+package agent.behavior.tast_delegation.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:51
  * @description：Arrive
@@ -7,7 +7,7 @@ package agent.behavior.part3.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part3.Utils;
+import agent.behavior.tast_delegation.Utils;
 import environment.Coordinate;
 
 /**

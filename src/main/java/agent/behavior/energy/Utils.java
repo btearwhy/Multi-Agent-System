@@ -238,7 +238,6 @@ public class Utils {
         double threshold = navigateEnergy + agentStepEnergy + waitEnergy + 20;
         // in the Wait action, sometimes the agent needs to take extra steps to reach charge station,
         // therefore add 20 here
-        //System.out.println(agentNum+" "+waitEnergy+" "+threshold);///
         return threshold;
     }
 
@@ -249,7 +248,6 @@ public class Utils {
         JsonObject agentObj = new Gson().fromJson(agentState.getMemoryFragment(key), JsonObject.class);
         if(agentObj!=null) {
             JsonArray agentArray = agentObj.get(key).getAsJsonArray();
-            //System.out.println("agentnum"+agentArray.size());
             agentNum = agentArray.size()+1;
         }
         return agentNum;
@@ -262,7 +260,6 @@ public class Utils {
         for(CellPerception cell : allCells){
             if(cell.containsAgent()){
                 if (cell.getX()!=agentState.getX()&&cell.getY()!=agentState.getY()) {
-                    //System.out.println("agent"+agentState.getX()+" "+agentState.getY()+"cell"+cell.getX()+" "+cell.getY());///
                     updateAgentNum(agentState, cell.getRepOfType(AgentRep.class));
                 }
             }
@@ -274,7 +271,6 @@ public class Utils {
         ActiveItemID id = ((AgentRep) representation).getId();
         if(agentState.getMemoryFragment(key) != null){
             JsonObject data = new Gson().fromJson(agentState.getMemoryFragment(key), JsonObject.class);
-            // System.out.println("id1");///
             JsonArray array = data.get(key).getAsJsonArray();
             boolean mark = false;
             for(int i = 0;i < array.size(); i++){
@@ -287,7 +283,6 @@ public class Utils {
             if(!mark){
                 JsonObject newIdObj = new JsonObject();
                 newIdObj.addProperty("id", String.valueOf(id.getID()));
-                //System.out.println("id2");///
                 array.add(newIdObj);
             }
             agentState.removeMemoryFragment(key);
@@ -301,7 +296,6 @@ public class Utils {
             idArray.add(idObject);
             basicObj.add(key, idArray);
             agentState.addMemoryFragment(key, basicObj.toString());
-            //System.out.println("id0");
         }
     }
 

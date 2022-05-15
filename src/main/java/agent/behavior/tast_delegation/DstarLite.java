@@ -477,12 +477,12 @@ enum Obstacle{
     },
     AGENT{
         public int getCost(){
-            return Integer.MAX_VALUE;
+            return 50;
         }
     },
     PACKET{
         public int getCost(){
-            return 100;
+            return 200;
         }
     },
     NULL{

@@ -481,7 +481,7 @@ enum Obstacle{
     },
     PACKET{
         public int getCost(){
-            return 1000;
+            return Integer.MAX_VALUE;
         }
     },
     NULL{

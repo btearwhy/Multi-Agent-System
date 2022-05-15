@@ -477,12 +477,12 @@ enum Obstacle{
     },
     AGENT{
         public int getCost(){
-            return 50;
+            return 30;
         }
     },
     PACKET{
         public int getCost(){
-            return 200;
+            return 100;
         }
     },
     NULL{

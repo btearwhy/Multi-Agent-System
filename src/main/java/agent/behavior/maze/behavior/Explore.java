@@ -33,7 +33,6 @@ public class Explore extends Behavior {
 
         //handle message
         for (Mail mail:agentCommunication.getMessages()){
-            //mail.getMessage().startsWith("info")
             if(mail.message().startsWith("exchange")){
                 String sender = mail.getFrom();
                 if(agentState.getMemoryFragment("exchange") != null

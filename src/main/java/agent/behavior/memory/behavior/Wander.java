@@ -1,4 +1,4 @@
-package agent.behavior.tast_delegation.behavior;/**
+package agent.behavior.memory.behavior;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 02:39
  * @description：When an agent doesn't have a goal, it just wanders to search a possible goal
@@ -18,10 +18,7 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.tast_delegation.Utils;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import environment.Mail;
+import agent.behavior.memory.Utils;
 
 import java.util.*;
 
@@ -29,16 +26,6 @@ public class Wander extends Behavior {
 
     @Override
     public void communicate(AgentState agentState, AgentCommunication agentCommunication) {
-        // receive request message and add into memory
-        Collection<Mail> mails = agentCommunication.getMessages();
-        for (Mail m : mails){
-            JsonObject packetInfo = new Gson().fromJson(m.getMessage(), JsonObject.class);
-            Utils.pushRequestedQueue(agentState, packetInfo);
-        }
-
-        // process all messages, clear
-        agentCommunication.clearMessages();
-
     }
 
 
@@ -46,12 +33,10 @@ public class Wander extends Behavior {
     public void act(AgentState agentState, AgentAction agentAction) {
         agentState.updateMapMemory();
 
-
         int dir;
         if(agentState.getPerceptionLastCell() == null){
             Random ra = new Random();
             dir = ra.nextInt(8);
-            dir = Utils.getClockwiseDirectionIfBlocked(agentState, dir);
         }
         else{
             int preDir = Utils.getPreviousDir(agentState);
@@ -65,8 +50,8 @@ public class Wander extends Behavior {
             else if(ran < 8 * t) dir = (preDir + 6) % 8;
             else if(ran < 10 * t) dir = (preDir + 7) % 8;
             else dir = preDir;
-            dir = Utils.getClockwiseDirectionIfBlocked(agentState, dir);
         }
+        dir = Utils.getClockwiseDirectionIfBlocked(agentState, dir);
 
         agentAction.step(agentState.getX() + Utils.moves.get(dir).getX(), agentState.getY() + Utils.moves.get(dir).getY());
 

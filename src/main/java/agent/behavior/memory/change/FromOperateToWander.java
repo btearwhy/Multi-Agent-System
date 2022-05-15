@@ -1,4 +1,4 @@
-package agent.behavior.tast_delegation.change;/**
+package agent.behavior.memory.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 02:46
  * @description：An agent successfully deliver a goal and finds there a packet to fetch
@@ -7,7 +7,7 @@ package agent.behavior.tast_delegation.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.tast_delegation.Utils;
+import agent.behavior.memory.Utils;
 import com.google.gson.JsonObject;
 
 /**
@@ -25,15 +25,9 @@ public class FromOperateToWander extends BehaviorChange {
     @Override
     public void updateChange(){
         JsonObject goal = new JsonObject();
-        if(getAgentState().hasCarry() && !Utils.requestedQueueEmpty(getAgentState())){
+        if(getAgentState().hasCarry() ){
             //Find empty place as goal
-            goal = Utils.getSafeDropPlaceAsGoal(getAgentState());
-        }
-        else if(getAgentState().hasCarry() && Utils.requestedQueueEmpty(getAgentState())){
             goal = Utils.searchNearestDestination(getAgentState(), getAgentState().getCarry().get().getColor());
-        }
-        else if (!getAgentState().hasCarry() && !Utils.requestedQueueEmpty(getAgentState())){
-            goal = Utils.topRequestedQueue(getAgentState());
         }
         else{
             goal = Utils.searchGoal(this.getAgentState());

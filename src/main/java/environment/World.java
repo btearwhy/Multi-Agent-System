@@ -39,11 +39,11 @@ public abstract class World<T extends Item<?>> {
 
 
     /**
-     * Returns a random coordinate in this world.
+     * Returns a random.txt coordinate in this world.
      *
      * @param maxX The width of this world
      * @param maxY The height of this world
-     * @return     The random coordinate
+     * @return     The random.txt coordinate
      */
     protected static Coordinate getRandomCoordinate(int maxX, int maxY) {
         int x = rnd.nextInt(maxX);

@@ -7,8 +7,8 @@ import java.util.Set;
 
 import agent.behavior.Behavior;
 import agent.behavior.BehaviorState;
-import agent.behavior.tast_delegation.CellMemory;
-import agent.behavior.tast_delegation.MapMemory;
+import agent.behavior.memory.CellMemory;
+import agent.behavior.memory.MapMemory;
 import environment.CellPerception;
 import environment.Perception;
 import environment.world.packet.Packet;
@@ -117,37 +117,37 @@ public interface AgentState {
 
 
     /**
-     * Adds a memory fragment to this agent (if its memory is not full).
+     * Adds a memory.txt fragment to this agent (if its memory.txt is not full).
      *
-     * @param key     The key associated with the memory fragment
-     * @param data    The memory fragment itself
+     * @param key     The key associated with the memory.txt fragment
+     * @param data    The memory.txt fragment itself
      */
     void addMemoryFragment(String key, String data);
 
     /**
-     * Removes a memory fragment with given key from this agent's memory.
-     * @param key  The key of the memory fragment to remove.
+     * Removes a memory.txt fragment with given key from this agent's memory.txt.
+     * @param key  The key of the memory.txt fragment to remove.
      */
     void removeMemoryFragment(String key);
 
     /**
-     * Get a memory fragment with given key from this agent's memory.
-     * @param key  The key of the memory fragment to retrieve.
+     * Get a memory.txt fragment with given key from this agent's memory.txt.
+     * @param key  The key of the memory.txt fragment to retrieve.
      */
     String getMemoryFragment(String key);
 
     /**
-     * Get all the keys of stored memory fragments in this agent's memory.
+     * Get all the keys of stored memory.txt fragments in this agent's memory.txt.
      */
     Set<String> getMemoryFragmentKeys();
 
     /**
-     * Get the current number of memory fragments in memory of this agent.
+     * Get the current number of memory.txt fragments in memory.txt of this agent.
      */
     int getNbMemoryFragments();
 
     /**
-     * Get the maximum number of memory fragments for this agent.
+     * Get the maximum number of memory.txt fragments for this agent.
      */
     int getMaxNbMemoryFragments();
 

@@ -1,4 +1,4 @@
-package agent.behavior.tast_delegation.change;/**
+package agent.behavior.memory.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:51
  * @description：Arrive
@@ -7,7 +7,7 @@ package agent.behavior.tast_delegation.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.tast_delegation.Utils;
+import agent.behavior.memory.Utils;
 import environment.Coordinate;
 
 /**
@@ -32,10 +32,7 @@ public class FromNavigateToOperate extends BehaviorChange {
 
     @Override
     public boolean isSatisfied(){
-        if(hasGoal && inReach){
-            return true;
-        }
-        return false;
+        return hasGoal && inReach;
     }
 
 }

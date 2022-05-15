@@ -52,7 +52,7 @@ public class BehaviorState {
     }
 
     /**
-     * Evaluates all succeeding BehaviorChanges in random order. When the
+     * Evaluates all succeeding BehaviorChanges in random.txt order. When the
      * post condition of the current Behavior is false, no updates or changes
      * are done.
      * If a BehaviorChange fires then the current Behavior State of the owner

@@ -75,7 +75,7 @@ public abstract class Handler<T extends ToHandle> implements Runnable {
      */
     protected abstract void process(T toBeHandled);
 
-    // a random number generator method transported from the old ControllerImp
+    // a random.txt number generator method transported from the old ControllerImp
     protected int nextActive(boolean[] turns) {
         boolean hit = false;
         int next = 0;

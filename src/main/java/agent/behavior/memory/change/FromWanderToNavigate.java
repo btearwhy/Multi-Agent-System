@@ -1,4 +1,4 @@
-package agent.behavior.tast_delegation.change;/**
+package agent.behavior.memory.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:41
  * @description：An agent finds a goal far away and navigates towards it
@@ -7,7 +7,7 @@ package agent.behavior.tast_delegation.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.tast_delegation.Utils;
+import agent.behavior.memory.Utils;
 import com.google.gson.JsonObject;
 import environment.Coordinate;
 
@@ -28,12 +28,7 @@ public class FromWanderToNavigate extends BehaviorChange {
     public void updateChange(){
         JsonObject goal = new JsonObject();
 
-        if (!Utils.requestedQueueEmpty(getAgentState())){
-            goal = Utils.popRequestedQueue(getAgentState());
-        }
-        else{
-            goal = Utils.searchGoal(this.getAgentState());
-        }
+        goal = Utils.searchGoal(this.getAgentState());
 
         if(goal != null){
             Utils.setGoal(getAgentState(), goal);

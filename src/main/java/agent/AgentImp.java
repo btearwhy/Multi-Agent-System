@@ -5,8 +5,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 
-import agent.behavior.tast_delegation.CellMemory;
-import agent.behavior.tast_delegation.MapMemory;
+import agent.behavior.memory.CellMemory;
+import agent.behavior.memory.MapMemory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -64,7 +64,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     private boolean committedAction;
 
     /**
-     * The memory of an agent has the form of a key mapped to a memory fragment (represented as String)
+     * The memory.txt of an agent has the form of a key mapped to a memory.txt fragment (represented as String)
      * e.g.  "target" -> "3, 4"
      */
     private Map<String, String> memory;
@@ -651,10 +651,10 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
 
     /**
-     * Adds a memory fragment to this agent (if its memory is not full).
+     * Adds a memory.txt fragment to this agent (if its memory.txt is not full).
      *
-     * @param key     The key associated with the memory fragment
-     * @param data    The memory fragment itself
+     * @param key     The key associated with the memory.txt fragment
+     * @param data    The memory.txt fragment itself
      */
     @Override
     public void addMemoryFragment(String key, String data) {
@@ -664,8 +664,8 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     }
 
     /**
-     * Removes a memory fragment with given key from this agent's memory.
-     * @param key  The key of the memory fragment to remove.
+     * Removes a memory.txt fragment with given key from this agent's memory.txt.
+     * @param key  The key of the memory.txt fragment to remove.
      */
     @Override
     public void removeMemoryFragment(String key) {
@@ -673,8 +673,8 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     }
 
     /**
-     * Get a memory fragment with given key from this agent's memory.
-     * @param key  The key of the memory fragment to retrieve.
+     * Get a memory.txt fragment with given key from this agent's memory.txt.
+     * @param key  The key of the memory.txt fragment to retrieve.
      */
     @Override
     public String getMemoryFragment(String key) {
@@ -682,7 +682,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     }
 
     /**
-     * Get all the keys of stored memory fragments in this agent's memory.
+     * Get all the keys of stored memory.txt fragments in this agent's memory.txt.
      */
     @Override
     public Set<String> getMemoryFragmentKeys() {
@@ -690,7 +690,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     }
 
     /**
-     * Get the current number of memory fragments in memory of this agent.
+     * Get the current number of memory.txt fragments in memory.txt of this agent.
      */
     @Override
     public int getNbMemoryFragments() {
@@ -698,7 +698,7 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
     }
 
     /**
-     * Get the maximum number of memory fragments for this agent.
+     * Get the maximum number of memory.txt fragments for this agent.
      */
     @Override
     public int getMaxNbMemoryFragments() {

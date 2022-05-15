@@ -1,4 +1,4 @@
-package agent.behavior.tast_delegation;/**
+package agent.behavior.memory;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 03:00
  * @description：Some utils methods
@@ -13,13 +13,8 @@ import com.google.gson.JsonObject;
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Perception;
-import environment.Representation;
-import environment.ActiveItemID;
-import environment.EnergyValues;
 import environment.world.destination.DestinationRep;
 import environment.world.packet.PacketRep;
-import environment.world.agent.AgentRep;
-import environment.Mail;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -41,8 +36,6 @@ public class Utils {
             new Coordinate(0, -1), new Coordinate(-1, -1),
             new Coordinate(-1, 0), new Coordinate(-1, 1)
     ));
-
-    public static final int trapTimes = 5;
 
 
     public static int getDir(int x1, int y1, int x2, int y2){
@@ -89,9 +82,6 @@ public class Utils {
         return new Color(Integer.parseInt(goal.get("color").getAsString()));
     }
 
-    public static JsonObject getGoalJsonObj(AgentState agentState){
-        return new Gson().fromJson(agentState.getMemoryFragment("goal"), JsonObject.class);
-    }
 
     public static Coordinate getCoordinateFromGoal(AgentState agentState){
         JsonObject goalObject = new Gson().fromJson(agentState.getMemoryFragment("goal"), JsonObject.class);
@@ -207,127 +197,5 @@ public class Utils {
                 Perception.distance(agentState.getX(), agentState.getY(), coordinate.getX(), coordinate.getY()) < 2;
     }
 
-
-
-    public static boolean jsonarray_contain (JsonArray list, JsonObject object){
-        for (int i = 0; i < list.size(); i ++){
-            JsonObject packet = list.get(i).getAsJsonObject();
-            if (packet.get("x").getAsInt() == object.get("x").getAsInt() &&
-                packet.get("y").getAsInt() == object.get("y").getAsInt()){
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
-
-
-     public static boolean requestedQueueEmpty(AgentState agentState){
-        if(agentState.getMemoryFragment("requested") == null) return true;
-        else{
-            JsonArray requested = new Gson().fromJson(agentState.getMemoryFragment("requested"),
-                    JsonArray.class);
-            return requested.size() == 0;
-        }
-     }
-
-     public static JsonObject topRequestedQueue(AgentState agentState){
-         JsonObject goal = new JsonObject();
-         JsonArray requested = new Gson().fromJson(agentState.getMemoryFragment("requested"),
-                 JsonArray.class);
-
-         // add into goal
-         goal.addProperty("target", "packet");
-         goal.addProperty("color", agentState.getColor().get().getRGB());
-         goal.add("coordinate", requested.get(0).getAsJsonObject());
-
-         return goal;
-     }
-     public static JsonObject popRequestedQueue(AgentState agentState){
-        JsonObject goal = new JsonObject();
-        JsonArray requested = new Gson().fromJson(agentState.getMemoryFragment("requested"),
-                 JsonArray.class);
-
-         // add into goal
-         goal.addProperty("target", "packet");
-         goal.addProperty("color", agentState.getColor().get().getRGB());
-         goal.add("coordinate", requested.get(0).getAsJsonObject());
-         requested.remove(0);
-
-         agentState.addMemoryFragment("requested", requested.toString());
-         // no more requested goals, remove memory
-         //if (requested.size() == 0) agentState.removeMemoryFragment("requested");
-         return goal;
-     }
-
-     public static void pushRequestedQueue(AgentState agentState, JsonObject packetInfo){
-
-         // doesn't have memory fragment "requested", create
-         if (requestedQueueEmpty(agentState)){
-             JsonArray requested = new JsonArray();
-
-             requested.add(packetInfo);
-             agentState.addMemoryFragment("requested",requested.toString());
-         }
-
-         // "requested" exists in memory
-         JsonArray requested = new Gson().fromJson(agentState.getMemoryFragment("requested"),
-                 JsonArray.class);
-         // if agent already remember the packet don't put it into memory; if not add into memory
-         if (!Utils.jsonarray_contain(requested, packetInfo)){
-             requested.add(packetInfo);
-             agentState.addMemoryFragment("requested",requested.toString());
-         }
-     }
-
-     public static JsonObject getSafeDropPlaceAsGoal(AgentState agentState){
-        CellPerception cell = null;
-        int max = 0;
-        for (CellPerception c:agentState.getPerception().getAllCells()){
-            if(!c.isFree()) continue;
-            List<CellPerception> neighbors = agentState.getPerception().getNeighbors(c);
-            neighbors.removeIf(t -> t == null || !t.isWalkable() && !t.containsAgent());
-            if(neighbors.size() > max){
-                max = neighbors.size();
-                cell = c;
-            }
-        }
-         JsonObject goal = new JsonObject();
-         JsonObject corObject = new JsonObject();
-         corObject.addProperty("x", String.valueOf(cell.getX()));
-         corObject.addProperty("y", String.valueOf(cell.getY()));
-         goal.addProperty("target", "empty");
-         goal.add("coordinate", corObject);
-         return goal;
-
-     }
-
-     public static void addToAsked(AgentState agentState, JsonObject corObj){
-
-         if (agentState.getMemoryFragment("asked") == null){
-             JsonArray asked = new JsonArray();
-             asked.add(corObj);
-             agentState.addMemoryFragment("asked",asked.toString());
-         }
-
-
-         JsonArray asked = new Gson().fromJson(agentState.getMemoryFragment("asked"),
-                 JsonArray.class);
-
-         if (!Utils.jsonarray_contain(asked, corObj)){
-             asked.add(corObj);
-             agentState.addMemoryFragment("asked",asked.toString());
-         }
-     }
-
-     public static boolean asked(AgentState agentState, JsonObject corObj){
-        if(agentState.getMemoryFragment("asked") == null) return false;
-
-
-         JsonArray asked = new Gson().fromJson(agentState.getMemoryFragment("asked"),
-                 JsonArray.class);
-         return jsonarray_contain(asked, corObj);
-     }
 }
 

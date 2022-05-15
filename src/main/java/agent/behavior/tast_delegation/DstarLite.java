@@ -31,7 +31,7 @@ public class DstarLite{
     int width = BORDER;
     int height = BORDER;
 
-    static final int BORDER = 30;
+    static public final int BORDER = 30;
     public DstarLite(){
         priorityQueue = new PriorityQueueU<>();
         obstacles = new HashMap<>();
@@ -477,7 +477,7 @@ enum Obstacle{
     },
     AGENT{
         public int getCost(){
-            return 20;
+            return Integer.MAX_VALUE;
         }
     },
     PACKET{

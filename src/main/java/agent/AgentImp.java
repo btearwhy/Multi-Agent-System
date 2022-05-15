@@ -5,9 +5,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 
-import agent.behavior.part2.CellMemory;
-import agent.behavior.part2.DstarLite;
-import agent.behavior.part2.MapMemory;
+import agent.behavior.energy.CellMemory;
+import agent.behavior.energy.MapMemory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -104,8 +103,13 @@ abstract public class AgentImp extends ActiveImp implements AgentState, AgentCom
 
     @Override
     public void updateMapMemory(){
+        getMapMemory().getDstarLite().setStart(new Coordinate(getX(), getY()));
         List<CellPerception> cellPerceptions = getPerception().getAllCells();
-        mapMemory.updateMapMemory(cellPerceptions, new Coordinate(getX(), getY()), getPerception().getWidth(), getPerception().getHeight());
+        List<CellPerception> neighbors = new ArrayList<>(Arrays.asList(getPerception().getNeighbours()));
+        neighbors.removeIf(Objects::isNull);
+        mapMemory.updateBorder(neighbors, new Coordinate(getX(), getY()));
+        cellPerceptions.removeIf(c->c.getX() == getAgent().getX() && c.getY() == getAgent().getY());
+        mapMemory.updateMapMemory(cellPerceptions);
     }
 
     @Override

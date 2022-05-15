@@ -1,14 +1,11 @@
-package agent.behavior.part2.behavior;
+package agent.behavior.energy.behavior;
 
 import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.part2.Utils;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import agent.behavior.energy.Utils;
 import environment.CellPerception;
-import environment.Coordinate;
 import environment.Mail;
 import environment.Perception;
 

@@ -1,11 +1,7 @@
-package agent.behavior.part2.change;
+package agent.behavior.energy.change;
 
-import agent.AgentState;
 import agent.behavior.BehaviorChange;
-import agent.behavior.part2.Utils;
-import agent.behavior.part2.behavior.Navigate;
-import environment.CellPerception;
-import environment.Coordinate;
+import agent.behavior.energy.Utils;
 
 public class FromNavigateToCharge extends BehaviorChange {
     @Override

@@ -1,4 +1,4 @@
-package agent.behavior.part2.change;/**
+package agent.behavior.energy.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 02:45
  * @description：An agent successfully deliver a packet but cannot find a goal at that moment
@@ -6,12 +6,8 @@ package agent.behavior.part2.change;/**
  * @version: $
  */
 
-import agent.AgentState;
 import agent.behavior.BehaviorChange;
-import agent.behavior.part2.Utils;
-import agent.behavior.part2.behavior.Navigate;
-import environment.CellPerception;
-import environment.Coordinate;
+import agent.behavior.energy.Utils;
 
 /**
  * @author     ：mmzs

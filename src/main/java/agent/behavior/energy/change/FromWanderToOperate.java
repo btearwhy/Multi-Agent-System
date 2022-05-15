@@ -1,4 +1,4 @@
-package agent.behavior.part2.change;/**
+package agent.behavior.energy.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 02:43
  * @description：An agent finds a goal
@@ -7,7 +7,7 @@ package agent.behavior.part2.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part2.Utils;
+import agent.behavior.energy.Utils;
 import com.google.gson.JsonObject;
 
 /**

@@ -1,4 +1,4 @@
-package agent.behavior.part2.change;
+package agent.behavior.energy.change;
 import agent.behavior.BehaviorChange;
 
 public class FromWaitToCharging extends BehaviorChange {

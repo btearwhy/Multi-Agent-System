@@ -1,4 +1,4 @@
-package agent.behavior.part2.change;/**
+package agent.behavior.energy.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:41
  * @description：An agent finds a goal far away and navigates towards it
@@ -7,10 +7,9 @@ package agent.behavior.part2.change;/**
  */
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part2.Utils;
+import agent.behavior.energy.Utils;
 import com.google.gson.JsonObject;
 import environment.Coordinate;
-import environment.Perception;
 
 /**
  * @author     ：mmzs

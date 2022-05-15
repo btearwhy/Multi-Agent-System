@@ -1,7 +1,7 @@
-package agent.behavior.part2.change;
+package agent.behavior.energy.change;
 
 import agent.behavior.BehaviorChange;
-import agent.behavior.part2.Utils;
+import agent.behavior.energy.Utils;
 
 public class FromWanderToCharge extends BehaviorChange {
     @Override

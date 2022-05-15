@@ -1,4 +1,4 @@
-package agent.behavior.part2;/**
+package agent.behavior.energy;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 03:00
  * @description：Some utils methods
@@ -6,11 +6,9 @@ package agent.behavior.part2;/**
  * @version: $
  */
 
-import agent.AgentAction;
 import agent.AgentState;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import environment.CellPerception;
 import environment.Coordinate;
@@ -18,13 +16,9 @@ import environment.Perception;
 import environment.Representation;
 import environment.ActiveItemID;
 import environment.EnergyValues;
-import environment.world.agent.Agent;
 import environment.world.destination.DestinationRep;
-import environment.world.energystation.EnergyStation;
-import environment.world.generator.PacketGeneratorRep;
 import environment.world.packet.PacketRep;
 import environment.world.agent.AgentRep;
-import util.Pair;
 import environment.Mail;
 
 import javax.annotation.Nullable;

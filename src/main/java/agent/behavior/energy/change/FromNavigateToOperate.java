@@ -1,4 +1,4 @@
-package agent.behavior.part2.change;/**
+package agent.behavior.energy.change;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:51
  * @description：Arrive
@@ -6,11 +6,8 @@ package agent.behavior.part2.change;/**
  * @version: $
  */
 
-import agent.AgentState;
 import agent.behavior.BehaviorChange;
-import agent.behavior.part2.Utils;
-import agent.behavior.part2.behavior.Navigate;
-import environment.CellPerception;
+import agent.behavior.energy.Utils;
 import environment.Coordinate;
 
 /**

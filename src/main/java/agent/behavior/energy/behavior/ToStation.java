@@ -1,15 +1,13 @@
-package agent.behavior.part2.behavior;
+package agent.behavior.energy.behavior;
 
 import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.part2.Utils;
+import agent.behavior.energy.Utils;
 import environment.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class ToStation extends Behavior {
@@ -21,6 +19,7 @@ public class ToStation extends Behavior {
 
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
+        agentState.updateMapMemory();
         Utils.updateAgentNum(agentState);
 
         var perception = agentState.getPerception();

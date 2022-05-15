@@ -1,7 +1,5 @@
-package agent.behavior.part2.change;
+package agent.behavior.energy.change;
 import agent.behavior.BehaviorChange;
-import agent.behavior.part2.Utils;
-import environment.Coordinate;
 
 public class FromToStationToWait extends BehaviorChange {
     private int wait_lower_bound;

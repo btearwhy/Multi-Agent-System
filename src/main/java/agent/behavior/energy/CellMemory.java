@@ -1,4 +1,4 @@
-package agent.behavior.part2;/**
+package agent.behavior.energy;/**
  * @author ：mmzs
  * @date ：Created in 2022/4/30 16:06
  * @description：
@@ -9,11 +9,7 @@ package agent.behavior.part2;/**
 import environment.CellPerception;
 import environment.Coordinate;
 import environment.Representation;
-import environment.world.agent.AgentRep;
-import util.Pair;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -32,7 +28,6 @@ public class CellMemory extends CellPerception{
     public CellMemory(CellPerception cellPerception){
         super(cellPerception.getX(), cellPerception.getY());
         List<Representation> reps = cellPerception.getReps();
-        //reps.removeIf(e->e instanceof AgentRep);
         for (Representation rep:reps){
             this.addRep(rep);
         }
@@ -54,4 +49,3 @@ public class CellMemory extends CellPerception{
     }
 
 }
-

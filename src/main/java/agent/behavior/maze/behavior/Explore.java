@@ -64,7 +64,6 @@ public class Explore extends Behavior {
             else{
                 try {
                     String info = mail.getMessage();
-                    //String info = mail.getMessage().split("/")[1];
                     ByteArrayInputStream bais = new ByteArrayInputStream(info.getBytes(StandardCharsets.ISO_8859_1));
                     ObjectInputStream ois = new ObjectInputStream(bais);
                     MapMemory mm = (MapMemory) ois.readObject();

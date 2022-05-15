@@ -178,20 +178,7 @@ public class MapMemory implements Serializable {
         }
     }
     public Map<Cor, Obstacle> extractObstacles(List<CellPerception> cellPerceptions){
-//        List<Cor> cors = new ArrayList<>();
-//        for (CellPerception c:cellPerceptions){
-//            cors.add(new Cor(c.getX(), c.getY()));
-//        }
         Map<Cor, Obstacle> obstacles = new HashMap<>();
-//        List<Cor> agents = new ArrayList<>();
-//        for (Map.Entry<Cor, Obstacle> entry:dstarLite.getObstacles().entrySet()){
-//            if(entry.getValue() == Obstacle.AGENT)  agents.add(entry.getKey());
-//        }
-//        for (Cor agent:agents){
-//            if(!cors.contains(agent)){
-//                obstacles.put(agent, Obstacle.NULL);
-//            }
-//        }
         for (CellPerception cellPerception:cellPerceptions){
             Cor cor = new Cor(cellPerception.getX(), cellPerception.getY());
             obstacles.put(cor, getObstacleFromCell(cellPerception));

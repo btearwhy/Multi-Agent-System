@@ -82,7 +82,4 @@ public class Cor implements Serializable {
     public int hashCode() {
         return Objects.hash(x, y);
     }
-    /**
-     * Returns a new Cor containing the sign of this (-1, 0 or 1)
-     */
 }

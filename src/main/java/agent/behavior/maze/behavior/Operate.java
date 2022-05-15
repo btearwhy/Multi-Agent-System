@@ -11,12 +11,16 @@ import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
 import agent.behavior.maze.Cor;
+import agent.behavior.maze.MapMemory;
 import agent.behavior.maze.Utils;
 import environment.CellPerception;
 import environment.Perception;
 import environment.world.packet.PacketRep;
 
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author     ：mmzs
@@ -32,6 +36,33 @@ public class Operate extends Behavior{
         // No communication
         Utils.updateTime(agentState);
         agentState.updateMapMemory();
+
+        if(agentState.getPerception().getAllCells().stream().anyMatch(c ->
+                !(c.getX() == agentState.getX() && c.getY() == agentState.getY()) && c.containsAgent())){
+            //sending map info
+            String mapMessage = "";
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);
+                MapMemory mapMemory = agentState.getMapMemory();
+                oos.writeObject(mapMemory);
+                oos.writeObject(null);
+                oos.flush();
+                mapMessage = baos.toString(StandardCharsets.ISO_8859_1);
+                oos.close();
+                baos.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            for (CellPerception c: agentState.getAllCellsMemory()){
+                if(c.containsAgent() && !(c.getX() == agentState.getX() && c.getY() == agentState.getY())){
+                    agentCommunication.sendMessage(c.getAgentRepresentation().get(), mapMessage);
+                }
+            }
+        }
+
+        agentCommunication.clearMessages();
     }
 
 
@@ -56,7 +87,5 @@ public class Operate extends Behavior{
             agentAction.putPacket(goalCor.getX(), goalCor.getY());
         }
         else agentAction.skip();
-        //Utils.updateAgentNum(agentState);
-        //agentState.updateMapMemory();
     }
 }

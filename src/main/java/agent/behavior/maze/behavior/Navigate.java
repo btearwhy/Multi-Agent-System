@@ -36,7 +36,6 @@ public class Navigate extends Behavior {
 
         //handle message
         for (Mail mail:agentCommunication.getMessages()){
-            //mail.getMessage().startsWith("info")
             if(mail.message().startsWith("exchange")){
                 String sender = mail.getFrom();
                 if(agentState.getMemoryFragment("exchange") != null
@@ -67,7 +66,6 @@ public class Navigate extends Behavior {
             else{
                 try {
                     String info = mail.getMessage();
-                    //String info = mail.getMessage().split("/")[1];
                     ByteArrayInputStream bais = new ByteArrayInputStream(info.getBytes(StandardCharsets.ISO_8859_1));
                     ObjectInputStream ois = new ObjectInputStream(bais);
                     MapMemory mm = (MapMemory) ois.readObject();
@@ -118,7 +116,6 @@ public class Navigate extends Behavior {
                 e.printStackTrace();
             }
 
-            //mapMessage = "info/" + mapMessage;
             for (CellPerception c: agentState.getAllCellsMemory()){
                 if(c.containsAgent() && !(c.getX() == agentState.getX() && c.getY() == agentState.getY())){
                     agentCommunication.sendMessage(c.getAgentRepresentation().get(), mapMessage);

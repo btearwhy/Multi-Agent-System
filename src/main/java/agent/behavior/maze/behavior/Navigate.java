@@ -1,4 +1,4 @@
-package agent.behavior.part2.behavior;/**
+package agent.behavior.maze.behavior;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:15
  * @description：An agent has a goal and move towards the goal until the goal is in reach
@@ -10,18 +10,13 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.part2.*;
+import agent.behavior.maze.*;
 import environment.*;
 import environment.world.agent.AgentRep;
 import environment.world.destination.DestinationRep;
-import environment.world.packet.Packet;
 import environment.world.packet.PacketRep;
-import environment.world.wall.SolidWallRep;
-import environment.world.wall.WallRep;
 
-import javax.swing.*;
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 

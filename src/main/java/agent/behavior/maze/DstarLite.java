@@ -1,4 +1,4 @@
-package agent.behavior.part2;/**
+package agent.behavior.maze;/**
  * @author ：mmzs
  * @date ：Created in 2022/5/3 12:25
  * @description：

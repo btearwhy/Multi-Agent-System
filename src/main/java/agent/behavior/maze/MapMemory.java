@@ -1,4 +1,4 @@
-package agent.behavior.part2;/**
+package agent.behavior.maze;/**
  * @author ：mmzs
  * @date ：Created in 2022/4/30 14:29
  * @description：
@@ -6,18 +6,11 @@ package agent.behavior.part2;/**
  * @version: $
  */
 
-import com.google.common.collect.Table;
 import environment.CellPerception;
-import environment.Coordinate;
-import environment.Representation;
-import org.checkerframework.checker.units.qual.C;
-import org.w3c.dom.ls.LSException;
 
 
 import java.io.Serializable;
-import java.lang.reflect.AnnotatedArrayType;
 import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * @author     ：mmzs

@@ -5,11 +5,11 @@ description "Executing using memory"
 # The amount of the behavior states the agent has
 # ------------------------------------------------
 nbStates 3                          # The wander behavior is implemented in a single state
-1 agent.behavior.part2.behavior.Explore       # First behavior
+1 agent.behavior.maze.behavior.Explore       # First behavior
 nbArgs 0                            # Constructor with no args
-2 agent.behavior.part2.behavior.Navigate     # Second behavior
+2 agent.behavior.maze.behavior.Navigate     # Second behavior
 nbArgs 0                            # // (no arguments)
-3 agent.behavior.part2.behavior.Operate      # Second behavior
+3 agent.behavior.maze.behavior.Operate      # Second behavior
 nbArgs 0                            # // (no arguments)
 
 
@@ -21,37 +21,37 @@ nbArgs 0                            # // (no arguments)
 nbChanges 6                                             # This implementation does not have any behavior changes
                                                         # (no different agent behavior state to change to)
                                                         # First change, from behavior with ID 1 to behavior with ID 2
-agent.behavior.part2.change.FromExploreToNavigate
+agent.behavior.maze.change.FromExploreToNavigate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 1                                                # ID of starting behavior
 target 2                                                # ID of resulting behavior
 
-agent.behavior.part2.change.FromExploreToOperate
+agent.behavior.maze.change.FromExploreToOperate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 1                                                # ID of starting behavior
 target 3                                                # ID of resulting behavior
 
-agent.behavior.part2.change.FromOperateToNavigate
+agent.behavior.maze.change.FromOperateToNavigate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 3                                                # ID of starting behavior
 target 2                                                # ID of resulting behavior
 
-agent.behavior.part2.change.FromOperateToExplore
+agent.behavior.maze.change.FromOperateToExplore
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 3                                                # ID of starting behavior
 target 1                                                # ID of resulting behavior
 
-agent.behavior.part2.change.FromNavigateToExplore
+agent.behavior.maze.change.FromNavigateToExplore
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 2                                                # ID of starting behavior
 target 1                                                # ID of resulting behavior
 
-agent.behavior.part2.change.FromNavigateToOperate
+agent.behavior.maze.change.FromNavigateToOperate
 nbArgs 0                                                # The constructor of ConditionOne takes 0 args
 priority 0                                              # Higher value −> higher priority (in case of multiple satisfied change conditions from current behavior state)
 source 2                                                # ID of starting behavior

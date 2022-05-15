@@ -1,4 +1,4 @@
-package agent.behavior.part2;/**
+package agent.behavior.maze;/**
  * @author ：mmzs
  * @date ：Created in 2022/5/9 17:29
  * @description：
@@ -8,7 +8,6 @@ package agent.behavior.part2;/**
 
 import environment.Coordinate;
 
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Predicate;

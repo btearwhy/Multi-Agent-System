@@ -1,4 +1,4 @@
-package agent.behavior.part2.behavior;/**
+package agent.behavior.maze.behavior;/**
  * @author ：mmzs
  * @date ：Created in 2022/3/19 18:38
  * @description：Agent picks up, drops or do anything except moving
@@ -10,10 +10,9 @@ import agent.AgentAction;
 import agent.AgentCommunication;
 import agent.AgentState;
 import agent.behavior.Behavior;
-import agent.behavior.part2.Cor;
-import agent.behavior.part2.Utils;
+import agent.behavior.maze.Cor;
+import agent.behavior.maze.Utils;
 import environment.CellPerception;
-import environment.Coordinate;
 import environment.Perception;
 import environment.world.packet.PacketRep;
 

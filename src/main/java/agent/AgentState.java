@@ -7,11 +7,9 @@ import java.util.Set;
 
 import agent.behavior.Behavior;
 import agent.behavior.BehaviorState;
-import agent.behavior.part2.CellMemory;
-import agent.behavior.part2.DstarLite;
-import agent.behavior.part2.MapMemory;
+import agent.behavior.maze.CellMemory;
+import agent.behavior.maze.MapMemory;
 import environment.CellPerception;
-import environment.Coordinate;
 import environment.Perception;
 import environment.world.packet.Packet;
 

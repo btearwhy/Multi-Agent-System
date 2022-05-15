@@ -44,7 +44,6 @@ public class Wait extends Behavior {
     @Override
     public void act(AgentState agentState, AgentAction agentAction) {
         Utils.updateAgentNum(agentState);
-        //System.out.println("name: " + agentState.getName() + " energy: " + agentState.getBatteryState());
 
         var perception = agentState.getPerception();
 
@@ -144,33 +143,6 @@ public class Wait extends Behavior {
             }
 
         }
-
-        /*Coordinate cur = new Coordinate(agentState.getX(), agentState.getY());
-        Coordinate goal = new Coordinate(target.getX(), target.getY()-jam_avoid_number);
-        Coordinate target_cell = agentState.getMapMemory().getNextMove(cur, goal);
-        System.out.println(target_cell);
-        if(target_cell.equals(new Coordinate(-1, -1))) {
-            if(Utils.trapped(agentState)){
-                agentState.getMapMemory().getDstarLite().startOver(cur, goal);
-                Coordinate n = agentState.getMapMemory().getNextMove(cur, goal);
-                CellPerception m = agentState.getPerception().getCellPerceptionOnAbsPos(n.getX(), n.getY());
-                if(m != null && m.isWalkable())
-                    agentAction.step(n.getX(), n.getY());
-                else agentAction.skip();
-            }
-            else{
-                agentAction.skip();
-            }
-        }
-        else{
-
-            CellPerception m = agentState.getPerception().getCellPerceptionOnAbsPos(target_cell.getX(), target_cell.getY());
-            if(m != null && m.isWalkable()){
-                System.out.println("Agent: " + agentState.getName() + " steps from (" + agentState.getX() + ","
-                        + agentState.getY() + ") to (" + target_cell.getX() + "," + target_cell.getY() + ")");
-                agentAction.step(target_cell.getX(), target_cell.getY());}
-            else agentAction.skip();
-        }*/
 
         agentAction.step(target_cell.getX(),target_cell.getY());
         return;

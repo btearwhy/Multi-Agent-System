@@ -59,46 +59,5 @@ public class Wander extends Behavior {
         agentAction.step(agentState.getX() + Utils.moves.get(dir).getX(), agentState.getY() + Utils.moves.get(dir).getY());
 
         Utils.updateAgentNum(agentState);
-
-//        int j = 0;
-//        for (CellPerception c:agentState.getPerception().getAllCells()){
-//            if(c.getNbReps() == 0){
-//                System.out.print('#');
-//            }
-//            if(c.getRepOfType(PacketRep.class) != null){
-//                System.out.print('1');
-//            }
-//            if(c.getRepOfType(DestinationRep.class) != null){
-//                System.out.print('2');
-//            }
-//            if(j++ % 12 == 11) {
-//                System.out.print('\n');
-//            }
-//        }
-//        System.out.println("/////////////");
-//        int i = 0;
-//        List<CellMemory> cells = agentState.getAllCellsMemory();
-//        Collections.sort(cells, new Comparator<CellMemory>() {
-//            @Override
-//            public int compare(CellMemory o1, CellMemory o2) {
-//                int o = o1.getY() - o2.getY();
-//                if(o != 0) return o;
-//                return o1.getX() - o2.getX();
-//            }
-//        });
-//        for (CellMemory c:cells){
-//            if(c.getNbReps() == 0){
-//                System.out.print('#');
-//            }
-//            if(c.getRepOfType(PacketRep.class) != null){
-//                System.out.print('1');
-//            }
-//            if(c.getRepOfType(DestinationRep.class) != null){
-//                System.out.print('2');
-//            }
-//            if(i++ % 12 == 11) {
-//                System.out.print('\n');
-//            }
-//        }
     }
 }

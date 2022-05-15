@@ -79,7 +79,7 @@ public class MapMemory implements Serializable {
         Cor res = null;
         Random ra = new Random();
         if(allDiscovered()){
-            res = new Cor(-1, -1);
+            res = new Cor(ra.nextInt(width), ra.nextInt(height));
         }
         else if(borderDiscovered()){
             List<Cor> cors = new ArrayList<>();
@@ -109,8 +109,6 @@ public class MapMemory implements Serializable {
                     }
                 }).getY();
             do{
-//                x = Math.min(x_far + y_far, width);
-//                y = x;
                 x = ra.nextInt(Math.min(x_far * 2, width));
                 y = ra.nextInt(Math.min(y_far * 2, height));
             }while(discovered(new Cor(x, y)));
@@ -119,7 +117,6 @@ public class MapMemory implements Serializable {
         return res;
     }
     public CellMemory getFirstObstacle(Cor start){
-        System.out.println(dstarLite.getFirstObstacleCor(start));
         return map.get(dstarLite.getFirstObstacleCor(start));
     }
 
@@ -257,39 +254,5 @@ public class MapMemory implements Serializable {
         this.map = map;
     }
 
-    public void show(int width, int height){
-        for(int j = 0;j < height + 1; j++){
-            for(int i = 0; i < width + 1; i++){
-                Cor c = new Cor(i, j);
-                String s = "";
-                if(c.equals(dstarLite.start)) s = "s|";
-                if(map.containsKey(c)){
-                    if(map.get(c).containsAgent()){
-                        s += map.get(c).getAgentRepresentation().get().getName();
-                    }
-                    else if(map.get(c).containsPacket()){
-                        s += "包";
-                    }
-                    else if(map.get(c).containsAnyDestination()){
-                        s += "桶";
-                    }
-                    else if(map.get(c).containsWall()){
-                        s += "墙";
-                    }
-                }
-                if(i == width && this.width == width || j == height && this.height == height){
-                    s += "界";
-                }
-                if(s.equals("")){
-                    s += "无";
-                }
-                String g = dstarLite.getG(c) == Integer.MAX_VALUE? "X":String.valueOf(dstarLite.getG(c));
-                String rhs = dstarLite.getRhs(c) == Integer.MAX_VALUE? "X":String.valueOf(dstarLite.getRhs(c));
-                s += "|" + g + "|" + rhs + "|" + dstarLite.obstacles.getOrDefault(c, Obstacle.NULL);
-                System.out.print(String.format("%20s", s));
-            }
-            System.out.println();
-        }
-    }
 }
 

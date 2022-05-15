@@ -26,11 +26,11 @@ public class FromNavigateToWander extends BehaviorChange {
     private boolean force = false;
     @Override
     public void updateChange(){
-//        if(getAgentState().getMemoryFragment("switch") != null){
-//            getAgentState().removeMemoryFragment("switch");
-//            force = true;
-//        }
 
+        if(getAgentState().hasCarry() && !Utils.hasGoal(getAgentState())){
+            hasGoal = true;
+            Utils.setGoal(getAgentState(), Utils.searchNearestDestination(getAgentState(), getAgentState().getCarry().get().getColor()));
+        }
         hasGoal = Utils.hasGoal(getAgentState());
     }
 

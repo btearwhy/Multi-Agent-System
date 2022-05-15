@@ -28,10 +28,10 @@ public class FromNavigateToOperate extends BehaviorChange {
 
     @Override
     public void updateChange(){
+        Cor goal;
         hasGoal = Utils.hasGoal(getAgentState());
         if(hasGoal){
-
-            Cor goal = Utils.getCoordinateFromGoal(getAgentState());
+            goal = Utils.getCoordinateFromGoal(getAgentState());
             inReach = Utils.isInReach(getAgentState(), goal);
         }
 
